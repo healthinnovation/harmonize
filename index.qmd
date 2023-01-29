@@ -1,7 +1,7 @@
 ---
 page-layout: full
 comments: false
-css: css/innova.css
+css: innova.css
 ---
 
 ::: {#welcome-message-title .h1}

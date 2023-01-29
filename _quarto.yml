@@ -14,11 +14,15 @@ website:
         text: Methodology
       - href: https://healthinnovation.github.io/harmonize-dashboard/
         text: Dasatet
-
+    right:
+      - icon: github
+        href: https://github.com/healthinnovation/Harmonize-Project
+      - icon: twitter
+        href: https://twitter.com/innovalab_imt
 format:
   html:
     theme: cosmo
-    css: css/styles.scss
+    css: styles.scss
     toc: true
 
 editor: visual
