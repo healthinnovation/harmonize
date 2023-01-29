@@ -1,0 +1,24 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Innovalab"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: webmap.qmd
+        text: Webmap
+      - href: methodology.qmd
+        text: Methodology
+      - href: https://healthinnovation.github.io/harmonize-dashboard/
+        text: Dasatet
+
+format:
+  html:
+    theme: cosmo
+    css: css/styles.scss
+    toc: true
+
+editor: visual

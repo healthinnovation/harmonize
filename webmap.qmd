@@ -1,0 +1,75 @@
+---
+page-layout: full
+comments: false
+---
+
+```{r}
+#| column: screen
+#| echo: false
+#| message: false
+#| warning: false
+library(tidyverse)
+library(leaflet)
+library(leaflet.extras)
+library(viridis)
+library(sf)
+villages <- st_read("data/qfields_diresa/villages_analysed.gpkg",quiet = TRUE)
+areas <- st_read("data/qfields_diresa/tracking_area_by_communities.gpkg",quiet = TRUE)
+vill_pal <- colorFactor(palette = viridis(n = 2),domain = unique(villages$TRAMO))
+  
+map_layers <- function() {
+  #number of groups
+  k <- c("Monitoring villages","Heatmap","Sampling villages","DIRESA")
+  #base map
+  map <- leaflet() %>% 
+    addTiles(group = "Open.Street.Map") %>% 
+    addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>% 
+    addProviderTiles(provider = providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>% 
+    addProviderTiles(provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>% 
+    setView(lng = -73.44775,lat = -4.08754,zoom = 10)
+  #loop through all groups and add a layer one at a time
+  for (i in 1:length(k)) {
+    if("Monitoring villages" == k[[i]]){
+      map <- map %>% 
+        addPulseMarkers(
+        data = villages,
+        icon = makePulseIcon(heartbeat = 0.5,),
+        group = k[[i]],
+        popup = paste0(
+          "<h1>",villages$NOMCP,"</h1>"
+        ))
+      }
+    if(k[[i]]== "Heatmap"){
+      map <- map %>% 
+        addHeatmap(data = villages,radius = 15,group = k[[i]])
+    }
+    if(k[[i]]== "Sampling villages"){
+      map <- map %>% 
+        addCircleMarkers(
+          data = villages %>% filter(!NOMCP %in% c("Llanchama","Varillal","Quistococha","Zungarococha","Paujil Zona 1")),
+          fillColor = ~vill_pal(TRAMO),
+          group = k[[i]])
+    }
+    if (k[[i]]== "DIRESA"){
+      map <- map %>% 
+        addCircleMarkers(
+          data = villages %>% filter(NOMCP %in% c("Llanchama","Varillal","Quistococha","Zungarococha","Paujil Zona 1")),
+          fillColor = ~vill_pal(TRAMO),
+          group = k[[i]])
+    }
+    
+  }
+  
+  #create layer control
+  map %>% 
+    addLayersControl(
+      baseGroups =c("CartoDB","CartoDB.DarkMatter","Open.Street.Map","Esri.WorldImagery"),
+      overlayGroups = k[c(1:length(k))],
+      options = layersControlOptions(collapsed = FALSE)) %>% 
+    hideGroup(as.character(k[c(2:length(k))])) #hide all groups except the 1st one
+  
+}
+
+#plot the map
+map_layers()
+```

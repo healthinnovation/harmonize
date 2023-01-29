@@ -1,0 +1,83 @@
+---
+page-layout: full
+comments: false
+css: css/innova.css
+---
+
+::: {#welcome-message-title .h1}
+Hello and welcome to
+:::
+
+::: grid
+::: {.g-col-12 .g-col-md-10 .g-start-md-2}
+![](img/background.png)
+:::
+
+::: {.g-col-12 .g-col-md-10 .g-start-md-2}
+::: {#welcome-message-title2 .h3}
+<p class="multipleStrings">
+
+</p>
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.card .mb-2}
+::: card-body
+<h5 class="card-title">
+
+Workfields
+
+</h5>
+
+<p class="card-text">
+
+I enjoy exploring open datasets and pick up new {{< fa brands r-project >}} and {{< fa brands python >}} tricks on my way.<br>I share what I discover and learn.
+
+</p>
+
+<a href="posts.html" class="btn btn-info stretched-link">Start reading</a>
+:::
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.card .mb-2}
+::: card-body
+<h5 class="card-title">
+
+Statistic models
+
+</h5>
+
+<p class="card-text">
+
+A gallery of contributions to dataviz challenges, such as #TidyTuesday or #30DayChartChallenge
+
+</p>
+
+<a href="challenges.html" class="btn btn-warning stretched-link">Browse</a>
+:::
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.card .mb-2}
+::: card-body
+<h5 class="card-title">
+
+Data visualization
+
+</h5>
+
+<p class="card-text">
+
+A collection of ongoing personal data-endeavors and programming projects.
+
+</p>
+
+<br> <a href="projects.html" class="btn btn-danger stretched-link">Take me there</a>
+:::
+:::
+:::
+:::
