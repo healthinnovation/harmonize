@@ -1,5 +1,7 @@
 ---
 title: "Stratification and sampling️ of population centers in Loreto, Peru 🎲✨"
+subtitle: "Harmonize project"
+author: <i class="bi bi-person-circle"></i> Innovalab - 2022 <img src='https://raw.githubusercontent.com/healthinnovation/innovar/master/man/figures/logo.png' width='40px'/>
 number-sections: true
 format: 
  html:
@@ -7,24 +9,35 @@ format:
    code-summary: "Show code"
    toc: true
 editor: visual
+theme:
+  light: flatly
+  dark: darkly
+bibliography: references.bib
 ---
 
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
+
 library(dplyr)
 library(ggplot2)
 library(leaflet)
+library(cptcity)
 library(sf)
 library(reactable)
+library(leaflegend)
+library(showtext)
 library(purrr)
 library(cluster)
 library(pheatmap)
 library(factoextra)
 library(FactoMineR)
 library(yardstick)
-library(mapview)
+library(ggspatial)
+
+font_add_google("Roboto Slab", "roboto")
+showtext_auto()
 ```
 
 ```{css, echo=FALSE}
@@ -76,10 +89,13 @@ We can take a look at the data in the following table:
 
 ```{r}
 #| echo: false
+
 dataset = readr::read_csv("data/processed/dataset.csv", col_types = "ccd")
 ```
 
 ```{r}
+#| echo: false
+
 dataset %>% 
   mutate(across(where(is.numeric), ~ round(.x, 2))) %>% 
   DT::datatable(
@@ -89,86 +105,38 @@ dataset %>%
 
 ## Stratification
 
-The stratification of the population centers consisted of using the meteorological, environmental and human intervention variables to built groups of population centers with homogeneous characteristics. For this purpose, we tested two approaches. The first one consisted of performing an agglomerative ("bottom-up") hierarchical clustering analysis using different distances, linkage methods, and number of clusters selection methods. On the second one, we used Principal Component Analysis (PCA) to reduce the dimension of the variables to one principal dimension and used it's scores to create groups by quantile classification.
+The stratification of the population centers consisted of using the meteorological, environmental and human intervention variables to built groups of population centers with homogeneous characteristics. For this purpose, we tested two approaches. The first one consisted of performing an Agglomerative ("bottom-up") Hierarchical Clustering (AHC) analysis using different distances, linkage methods, and number of clusters selection methods. On the second one, we used Principal Component Analysis (PCA) to reduce the dimension of the variables to one principal dimension and used it's scores to create groups by quantile classification.
 
-#### Hierarchical clustering
+### Agglomerative hierarchical clustering analysis
+
+The AHC analysis consisted of two steps. First, we run several configurations the agglomerative nesting algorithms and selected the one which gave us the best hierarchical clustering (HC) structure. Secondly, from the selected hierarchical clustering structure, we calculated and examined a number of indices for determining the most appropriate number of clusters.
+
+#### Chosing the hierarchical clustering structure
+
+For this first step, we tested combinations of the following methods:
+
+-   Scaling method: Whether to use normalization (scaling from 0 to 1) or standardadization (subtracting the mean and dividing by the standard deviation).
+-   Distance: Whether to use euclidean distance or correlation-based distances, such as Pearson or Spearman correlation.
+-   Linkage method: Whether to use average, single, complete, Ward or weighted average linkage method.
+
+For each combination, we run the agglomerative nesting algorithm and calculated the *agglomerative coefficient* (AC) which is a measure of the strength of the HC structure [@boehmke2019hands, pp. 421-422]. For the 3 combinations of methods with larger AC, we also examined the resulting dendograms.
 
 ```{r}
 #| echo: false
+
 variables = select(dataset, malaria:malaria_diff)
 ```
 
 ```{r}
 #| echo: false
-variables_norm = mutate(variables, across(everything(), scales::rescale))
-variables_std = mutate(variables, across(everything(), ~as.numeric(scale(.x))))
+
+variables_norm <- mutate(variables, across(everything(), scales::rescale))
+variables_std <- mutate(variables, across(everything(), ~as.numeric(scale(.x))))
 ```
-
-```{r}
-dist_euclidean_norm = get_dist(variables_norm, method = "euclidean")
-dist_pearson_norm = get_dist(variables_norm, method = "pearson")
-dist_spearman_norm = get_dist(variables_norm, method = "spearman")
-dist_euclidean_std = get_dist(variables_std, method = "euclidean")
-dist_pearson_std = get_dist(variables_std, method = "pearson")
-dist_spearman_std = get_dist(variables_std, method = "spearman")
-```
-
-### 🔵 Heatmaps
-
-#### Normalization
-
-::: panel-tabset
-##### Euclidean distance
 
 ```{r}
 #| echo: false
-pheatmap(dist_euclidean_norm)
-```
 
-##### Pearson correlation
-
-```{r}
-#| echo: false
-pheatmap(dist_pearson_norm)
-```
-
-##### Spearman correlation
-
-```{r}
-#| echo: false
-pheatmap(dist_spearman_norm)
-```
-:::
-
-#### Standardization
-
-::: panel-tabset
-##### Euclidean distance
-
-```{r}
-#| echo: false
-pheatmap(dist_euclidean_std)
-```
-
-##### Pearson correlation
-
-```{r}
-#| echo: false
-pheatmap(dist_pearson_std)
-```
-
-##### Spearman correlation
-
-```{r}
-#| echo: false
-pheatmap(dist_spearman_std)
-```
-:::
-
-### 🔵 Selection of distance and linkage method
-
-```{r}
-#| echo: false
 scale_data = function(data, method = "standardization") {
   if (method == "standardization") {
     data_scaled = mutate(data, across(everything(), ~as.numeric(scale(.x))))
@@ -182,6 +150,7 @@ scale_data = function(data, method = "standardization") {
 
 ```{r}
 #| echo: false
+
 scaling_method = c("standardization", "normalization")
 dist_method = c("euclidean", "pearson", "spearman")
 linkage_method = c("average", "single", "complete", "ward", "weighted")
@@ -189,11 +158,13 @@ linkage_method = c("average", "single", "complete", "ward", "weighted")
 
 ```{r}
 #| echo: false
+
 design = tidyr::expand_grid(scaling_method, dist_method, linkage_method, variables)
 ```
 
 ```{r}
 #| echo: false
+
 agglomerative_coeff = design %>% 
   tidyr::nest(data = -c(scaling_method, dist_method, linkage_method)) %>% 
   mutate(
@@ -206,398 +177,404 @@ agglomerative_coeff = design %>%
   arrange(-ac)
 ```
 
+The best 3 HC structures according to the AC were the following:
+
 ```{r}
+#| echo: false
+
 agglomerative_coeff %>% 
+  slice_head(n = 3) %>% 
   select(-c(data, scaling, dist_mat, tree)) %>% 
-  DT::datatable()
+  mutate(across(where(is.character), stringr::str_to_title)) %>% 
+  mutate(across(where(is.numeric), round, 4)) %>% 
+  DT::datatable(
+    colnames = c("Scaling", "Distance", "Linkage", "AC"),
+    options = list(dom = 't')
+  )
 ```
 
-#### Dendograms
+<br>
+
+The difference of the AC values are almost negligible. Consequently, we examined the dendograms:
+
+```{r}
+#| echo: false
+
+dendogram = function(row, title) {
+  dendogram <- fviz_dend(agglomerative_coeff$tree[[row]], main = title) + 
+    theme(text = element_text(size = 18))
+  
+  dendogram
+}
+```
 
 ::: panel-tabset
-#### Standardization, Spearman correlation, Ward linkage
+##### HC structure 1
 
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
-fviz_dend(
-  agglomerative_coeff$tree[[1]], main = "Standardized data - Spearman correlation - Ward linkage"
-)
+
+dendogram(1, "Standardization, Spearman correlation, Ward linkage")
 ```
 
-#### Normalization, Pearson correlation, Ward linkage
+##### HC structure 2
 
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
-fviz_dend(
-  agglomerative_coeff$tree[[2]], main = "Normalized data - Pearson correlation - Ward linkage"
-)
+
+dendogram(2, "Normalization, Pearson correlation, Ward linkage")
+```
+
+##### HC structure 3
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+dendogram(3, "Standardization, Pearson correlation, Ward linkage")
 ```
 :::
 
-### 🔵 Selection of number of clusters
+After inspecting the dendrograms, we chose the first HC structure as it seemed to form more homogeneous groups with relatively similar sizes for the different height values.
 
-Selection of the number of clusters: The criteria of average silhouette width, total within sum of squares and gap statistic were used to select the number of clusters. Dimension reduction (PCA) was also used to visualize the data in 2 dimensions for different numbers of clusters and to evaluate how well the groups were formed. Furthermore, for different numbers of clusters, the differences between the means of the variables in different clusters were explored for cluster interpretability. Finally, the individual silhouette of each observation was evaluated for different numbers of clusters to assess whether the observations were well grouped. The final selection was made by evaluating all these criteria and selecting the most suitable number of clusters for the application.
+### Determining the number of clusters
 
-#### Evaluation of criteria
+We calculated and plotted the average silhouette width, total within sum of squares and gap statistic for a range of 1 to 10 number of clusters and examined the optimal number of cluster for each criteria. We defined a range of numbers of clusters that met or near met the optimal criteria and then for each one of them we used PCA to visualize the clusters in 2 dimensions to evaluate how well the groups were formed. In addition, the individual silhouette index of each observation was calculated and plotted to assess if there were observations that might have been misclustered.
 
-##### Standardization, Spearman correlation, Ward linkage
+#### Evaluation of the criteria of the optimal number of clusters
+
+```{r}
+#| echo: false
+
+nbclust_plot = function(data, method, ...) {
+  nbclust <- fviz_nbclust(
+    data, hcut, hc_func = "agnes", hc_method = "ward.D2", 
+    c_metric = "spearman", method = method, ...
+  ) + theme(text = element_text(size = 18))
+  
+  nbclust
+}
+```
 
 ::: panel-tabset
-###### Average silhouette width
+##### Average silhouette width
 
 ```{r}
 #| echo: false
+
 set.seed(2022)
-fviz_nbclust(
-  variables_std, hcut, hc_func = "agnes", hc_method = "ward.D2", 
-  c_metric = "spearman", method = "silhouette"
-)
+nbclust_plot(variables_std, "silhouette")
 ```
 
-###### Total within sum of squares
+##### Total within sum of squares
 
 ```{r}
 #| echo: false
-fviz_nbclust(
-  variables_std, hcut, hc_func = "agnes", hc_method = "ward.D2", hc_metric = "spearman", 
-  method = "wss"
-)
+
+nbclust_plot(variables_std, "wss")
 ```
 
-###### Gap statistic
+##### Gap statistic
 
 ```{r}
 #| echo: false
+
 set.seed(2022)
-fviz_nbclust(
-  variables_std, hcut, hc_func = "agnes", hc_method = "ward.D2", 
-  hc_metric = "spearman", method = "gap_stat"
-)
+nbclust_plot(variables_std, "gap_stat", verbose = FALSE)
 ```
 :::
 
-##### Normalization, Pearson correlation, Ward linkage
+From these plots, we determined that the optimal number of cluster may be between 2 and 4 clusters.
+
+#### Clusters plots {#clusters-plots}
+
+Next, we plotted the clusters in a plane using PCA for 2, 3 and 4 clusters.
+
+```{r}
+#| echo: false
+
+cut_tree = function(data, k) {
+  tree = hcut(
+    data, k = k, hc_func = "agnes", hc_method = "ward.D2", 
+    hc_metric = "spearman"
+  )
+  tree
+}
+```
+
+```{r}
+#| echo: false
+
+cluster_plot = function(tree) {
+  cluster = fviz_cluster(tree, ggtheme = theme_classic()) +
+    geom_vline(xintercept = 0, linetype = "dashed") +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    theme(text = element_text(size = 18))
+  
+  cluster
+}
+```
 
 ::: panel-tabset
-###### Average silhouette width
-
-```{r}
-#| echo: false
-set.seed(2022)
-fviz_nbclust(
-  variables_norm, hcut, hc_func = "agnes", hc_method = "ward.D2", 
-  c_metric = "pearson", method = "silhouette"
-)
-```
-
-###### Total within sum of squares
-
-```{r}
-#| echo: false
-fviz_nbclust(
-  variables_norm, hcut, hc_func = "agnes", hc_method = "ward.D2", hc_metric = "pearson", 
-  method = "wss"
-)
-```
-
-###### Gap statistic
-
-```{r}
-#| echo: false
-set.seed(2022)
-fviz_nbclust(
-  variables_norm, hcut, hc_func = "agnes", hc_method = "ward.D2", 
-  hc_metric = "pearson", method = "gap_stat"
-)
-```
-:::
-
-#### Evaluation of cluster sizes
-
 ##### 2 clusters
 
 ```{r}
-clustering_2 = hcut(
-  variables_std, k = 2, hc_func = "agnes", hc_method = "ward.D2", 
-  hc_metric = "spearman"
-)
-```
+#| echo: false
 
-::: panel-tabset
-###### Clusters on plane
+tree_2 = cut_tree(variables_std, 2)
+```
 
 ```{r}
 #| echo: false
-fviz_cluster(clustering_2, ggtheme = theme_classic()) +
-  geom_vline(xintercept = 0, linetype = "dashed") +
-  geom_hline(yintercept = 0, linetype = "dashed")
+
+cluster_plot(tree_2)
 ```
-
-###### Individual silhouette
-
-```{r}
-#| echo: false
-fviz_silhouette(clustering_2, ggtheme = theme_classic())
-```
-
-###### Mean difference between clusters
-
-```{r}
-#| echo: false
-variables_norm %>% 
-  mutate(group = as.factor(clustering_2$cluster)) %>% 
-  group_by(group) %>% 
-  summarise(across(everything(), mean), .groups = "drop") %>% 
-  tidyr::pivot_longer(-group) %>% 
-  ggplot(aes(group, value, color = name, group = name)) +
-  geom_point() +
-  geom_line() +
-  scale_x_discrete(expand = c(0.05, 0.05)) +
-  theme_classic()
-```
-:::
 
 ##### 3 clusters
 
 ```{r}
-clustering_3 = hcut(
-  variables_std, k = 3, hc_func = "agnes", hc_method = "ward.D2", 
-  hc_metric = "spearman"
-)
-```
+#| echo: false
 
-::: panel-tabset
-###### Clusters on plane
+tree_3 = cut_tree(variables_std, 3)
+```
 
 ```{r}
 #| echo: false
-fviz_cluster(clustering_3, ggtheme = theme_classic()) +
-  geom_vline(xintercept = 0, linetype = "dashed") +
-  geom_hline(yintercept = 0, linetype = "dashed")
+
+cluster_plot(tree_3)
 ```
-
-###### Individual silhouette
-
-```{r}
-#| echo: false
-fviz_silhouette(clustering_3, ggtheme = theme_classic())
-```
-
-###### Mean difference between clusters
-
-```{r}
-#| echo: false
-variables_norm %>% 
-  mutate(group = as.factor(clustering_3$cluster)) %>% 
-  group_by(group) %>% 
-  summarise(across(everything(), mean), .groups = "drop") %>% 
-  tidyr::pivot_longer(-group) %>% 
-  ggplot(aes(group, value, color = name, group = name)) +
-  geom_point() +
-  geom_line() +
-  scale_x_discrete(expand = c(0.05, 0.05)) +
-  theme_classic()
-```
-:::
 
 ##### 4 clusters
 
 ```{r}
-clustering_4 = hcut(
-  variables_std, k = 4, hc_func = "agnes", hc_method = "ward.D2", 
-  hc_metric = "spearman"
-)
-```
+#| echo: false
 
-::: panel-tabset
-###### Clusters on plane
+tree_4 = cut_tree(variables_std, 4)
+```
 
 ```{r}
 #| echo: false
-fviz_cluster(clustering_4, ggtheme = theme_classic()) +
-  geom_vline(xintercept = 0, linetype = "dashed") +
-  geom_hline(yintercept = 0, linetype = "dashed")
-```
 
-###### Individual silhouette
-
-```{r}
-#| echo: false
-fviz_silhouette(clustering_4, ggtheme = theme_classic())
-```
-
-###### Mean difference between clusters
-
-```{r}
-#| echo: false
-variables_norm %>% 
-  mutate(group = as.factor(clustering_4$cluster)) %>% 
-  group_by(group) %>% 
-  summarise(across(everything(), mean), .groups = "drop") %>% 
-  tidyr::pivot_longer(-group) %>% 
-  ggplot(aes(group, value, color = name, group = name)) +
-  geom_point() +
-  scale_x_discrete(expand = c(0.05, 0.05)) +
-  geom_line() +
-  theme_classic()
+cluster_plot(tree_4)
 ```
 :::
 
-### 🔵 Maps
+In the case of 2 clusters, the groups seem to be defined according to whether the scores of the observations on the first dimension are positive or negative. In the case of 3 clusters, the group with negative scores on the first dimension is divided if the scores on the second dimension are positive and negative. Finally, in the case of 4 clusters, the groups seem to be defined according to their belonging to one of the 4 quadrants.
+
+#### Individual silhouette widths
+
+Next, we plotted the individual silhouette width for the observations grouped in 2, 3 and 4 clusters.
 
 ```{r}
-dataset_clustering = dataset %>% 
-  mutate(
-    hc_group_2 = as.factor(clustering_2$cluster),
-    hc_group_3 = as.factor(clustering_3$cluster),
-    hc_group_4 = as.factor(clustering_4$cluster)
-  )
+#| echo: false
+
+silhouette_plot = function(tree) {
+  ind_silhouette <- tree %>%
+    fviz_silhouette(ggtheme = theme_classic(), print.summary = FALSE) +
+    theme(text = element_text(size = 18))
+  
+  ind_silhouette
+}
 ```
 
 ::: panel-tabset
-#### 2 clusters
+##### 2 clusters
+
+```{r}
+#| echo: false
+
+silhouette_plot(tree_2)
+```
+
+##### 3 clusters
+
+```{r}
+#| echo: false
+
+silhouette_plot(tree_3)
+```
+
+##### 4 clusters
+
+```{r}
+#| echo: false
+
+silhouette_plot(tree_4)
+```
+:::
+
+We see that with 2 clusters we obtain a greater average silhouette width (0.49), followed by 4 clusters (0.44) and lastly the case with 3 clusters (0.43). The least number of observations possibly misclustered is obtained with 3 clusters (2), followed by 2 clusters (3), and lastly the case with 4 clusters (5).
+
+#### HC groups on maps
+
+As an additional step, for a number of clusters of 2, 3 and 4, we plotted the population centers (polygon centroids) on a map coloured by group to see their spatial distribution.
+
+```{r}
+#| echo: false
+
+dataset_clustering = dataset %>% 
+  mutate(
+    hc_group_2 = as.factor(tree_2$cluster),
+    hc_group_3 = as.factor(tree_3$cluster),
+    hc_group_4 = as.factor(tree_4$cluster)
+  )
+```
+
+```{r}
+#| echo: false
+
+cluster_map = function(data, palette, group_var) {
+  values = pull(data, {{group_var}})
+  
+  map = dataset_clustering %>% 
+    st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
+    leaflet() %>% 
+    addTiles(group = "OpenStreetMap") %>% 
+    addProviderTiles(provider = providers$CartoDB, group = "CartoDB") %>%
+    addProviderTiles(provider = providers$Esri.WorldImagery, group = "Satelital") %>% 
+    addCircleMarkers(
+      popup = dataset$population_center, color = ~palette(values),
+      opacity = 1, radius = 0.1, fillOpacity = 0.5
+    )%>%
+    addLayersControl(baseGroups = c("CartoDB", "OpenStreetMap", "Satelital")) %>%
+    addLegend(
+      title = "Cluster", pal = palette, values = values, opacity = 1,
+      position = "bottomright"
+      )
+  map
+}
+```
+
+::: panel-tabset
+##### 2 clusters
+
+```{r}
+#| echo: false
+
+palette_hc_2 = colorFactor(
+  palette = "viridis", domain = dataset_clustering$hc_group_2
+)
+```
 
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
-paleta = colorFactor(palette = "viridis",domain = dataset_clustering$hc_group_2)
-dataset_clustering %>% 
-  st_as_sf(coords = c("lon", "lat"),crs=4326) %>%
-  leaflet() %>% 
-  addTiles(group = "OpenStreetMap") %>% 
-  addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>%
-  addProviderTiles(provider = providers$Esri.WorldImagery,group = "Satelital") %>% 
-  addCircleMarkers(
-    popup = dataset_clustering$village,
-    color = ~paleta(hc_group_2),
-    opacity = 1,
-    radius = 0.1,
-    fillOpacity = 0.5
-    )%>% 
-  addLayersControl(
-    baseGroups = c("CartoDB","OpenStreetMap","Satelital")
-    ) %>% 
-  addLegend(
-    title = "Cluster",
-    pal = paleta,
-    values = ~hc_group_2,
-    opacity = 1,
-    position = "bottomright"
-    )
+
+cluster_map(dataset_clustering, palette_hc_2, hc_group_2)
 ```
 
-#### 3 clusters
+##### 3 clusters
 
 ```{r}
 #| echo: false
 
-paleta = colorFactor(palette = "viridis",domain = dataset_clustering$hc_group_3)
-dataset_clustering %>% 
-  st_as_sf(coords = c("lon", "lat"),crs=4326) %>%
-  leaflet() %>% 
-  addTiles(group = "OpenStreetMap") %>% 
-  addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>%
-  addProviderTiles(provider = providers$Esri.WorldImagery,group = "Satelital") %>% 
-  addCircleMarkers(
-    popup = dataset_clustering$village,
-    color = ~paleta(hc_group_3),
-    opacity = 1,
-    radius = 0.1,
-    fillOpacity = 0.5
-    )%>% 
-  addLayersControl(
-    baseGroups = c("CartoDB","OpenStreetMap","Satelital")
-    ) %>% 
-  addLegend(
-    title = "Cluster",
-    pal = paleta,
-    values = ~hc_group_3,
-    opacity = 1,
-    position = "bottomright"
-    )
+palette_hc_3 = colorFactor(
+  palette = "viridis", domain = dataset_clustering$hc_group_3
+)
 ```
-
-#### 4 clusters
 
 ```{r}
 #| echo: false
-paleta = colorFactor(palette = "viridis",domain = dataset_clustering$hc_group_4)
-dataset_clustering %>% 
-  st_as_sf(coords = c("lon", "lat"),crs=4326) %>%
-  leaflet() %>% 
-  addTiles(group = "OpenStreetMap") %>% 
-  addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>%
-  addProviderTiles(provider = providers$Esri.WorldImagery,group = "Satelital") %>% 
-  addCircleMarkers(
-    popup = dataset_clustering$village,
-    color = ~paleta(hc_group_4),
-    opacity = 1,
-    radius = 0.1,
-    fillOpacity = 0.5
-    )%>% 
-  addLayersControl(
-    baseGroups = c("CartoDB","OpenStreetMap","Satelital")
-    ) %>% 
-  addLegend(
-    title = "Cluster",
-    pal = paleta,
-    values = ~hc_group_4,
-    opacity = 1,
-    position = "bottomright"
-    )
+#| warning: false
+#| message: false
+
+cluster_map(dataset_clustering, palette_hc_3, hc_group_3)
+```
+
+##### 4 clusters
+
+```{r}
+#| echo: false
+
+palette_hc_4 = colorFactor(
+  palette = "viridis", domain = dataset_clustering$hc_group_4
+)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+cluster_map(dataset_clustering, palette_hc_4, hc_group_4)
 ```
 :::
 
-### 🔵 Principal components analysis
+We see that the groups seem to divide longitudinally, showing a strong spatial component driving the separation between them.
 
-The communities were also tested for clustering using the principal component that best explained the variability of the variables used (first component). The scores of this component were divided into different categories given by the quantiles. Three forms of clustering were tested: 2 groups with the 50% quantile, 3 groups with the 33% and 66% quantiles, and 4 groups with the 25%, 50% and 75% quantiles.
+### Principal components analysis
+
+Principal component analysis (PCA) was used as an alternative method for clustering. Our approach was to use the principal component to build an aggregate index of all the variables considered. Then, the scores of the populated centers on this principal component were grouped into different categories according to the quantiles of the distribution. In order to compare this approach with the results of hierarchical clustering, we tested with 2 (50th quantile), 3 (33th and 66th quantiles) and 4 (25th, 50th and 75th quantiles) groups.
 
 ```{r}
+#| echo: false
+
 pca = PCA(variables_std, graph = FALSE)
 ```
 
 #### Scree plot
 
+After having performed the PCA, we plotted the scree plot to check the percentage of explained variance each component or dimension.
+
 ```{r}
-fviz_screeplot(pca)
+#| echo: false
+
+pca %>% 
+  fviz_screeplot() +
+  theme(text = element_text(size = 18))
 ```
+
+We see that the first component explain approximately 50% of the variance in the data. This is not such a high value, meaning that the variables do not seem to be strongly linearly correlated. Still, 50% is an acceptable value in practice.
 
 #### Contribution plot
 
-::: panel-tabset
-##### Dimension 1
+Next, we plotted the top 10 variables according to their contribution to the first component.
 
 ```{r}
-fviz_contrib(pca, choice = "var", axes = 1, top = 10)
+#| echo: false
+
+pca %>% 
+  fviz_contrib(choice = "var", axes = 1, top = 10) +
+  theme(text = element_text(size = 18))
 ```
 
-##### Dimension 2
+We see that the soil moisture, precipitation and runoff variables are the ones that contribute the most to explaining the first component.
+
+#### Coordinate plane
+
+Now, we plotted the population centers on a coordinate plane using the first and second components.
 
 ```{r}
-fviz_contrib(pca, choice = "var", axes = 2, top = 10)
+#| echo: false
+
+pca %>% 
+  fviz_pca_ind() +
+  theme(text = element_text(size = 18))
 ```
-:::
 
-### 🔵 Coordinate plane
+As in the @clusters-plots, we see that the variability of the points is distributed mostly over the first component (X axis).
 
-```{r}
-fviz_pca_ind(pca)
-```
+#### PCA groups on maps
 
-### 🔵 Maps
+Finally, we created the groups dividing the population centers according to the quantiles of the scores on the principal component. Then we plotted the population centers on maps for 2, 3 and 4 groups.
 
 ```{r}
+#| echo: false
+
 pca_results = get_pca_ind(pca)
 scores = pca_results$coord
 ```
 
 ```{r}
-dataset_pca = dataset_clustering %>% 
+#| echo: false
+
+dataset_strata = dataset_clustering %>% 
   mutate(pca_score = scores[, 1]) %>% 
   mutate(
     pca_group_2 = cut(
@@ -620,264 +597,216 @@ dataset_pca = dataset_clustering %>%
 ```
 
 ::: panel-tabset
-#### 2 groups
+##### 2 groups
 
 ```{r}
-paleta = colorFactor(palette = "viridis",domain = dataset_pca$pca_group_2)
-dataset_pca %>% 
-  st_as_sf(coords = c("lon", "lat"),crs=4326) %>%
-  leaflet() %>% 
-  addTiles(group = "OpenStreetMap") %>% 
-  addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>%
-  addProviderTiles(provider = providers$Esri.WorldImagery,group = "Satelital") %>% 
-  addCircleMarkers(
-    popup = dataset_pca$village,
-    color = ~paleta(pca_group_2),
-    opacity = 1,
-    radius = 0.1,
-    fillOpacity = 0.5
-    )%>% 
-  addLayersControl(
-    baseGroups = c("CartoDB","OpenStreetMap","Satelital")
-    ) %>% 
-  addLegend(
-    title = "Cluster",
-    pal = paleta,
-    values = ~pca_group_2,
-    opacity = 1,
-    position = "bottomright"
-    )
+#| echo: false
+
+palette_pca_2 = colorFactor(
+  palette = "viridis", domain = dataset_strata$pca_group_2
+)
 ```
 
-#### 3 groups
-
 ```{r}
-paleta = colorFactor(palette = "viridis",domain = dataset_pca$pca_group_3)
-dataset_pca %>% 
-  st_as_sf(coords = c("lon", "lat"),crs=4326) %>%
-  leaflet() %>% 
-  addTiles(group = "OpenStreetMap") %>% 
-  addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>%
-  addProviderTiles(provider = providers$Esri.WorldImagery,group = "Satelital") %>% 
-  addCircleMarkers(
-    popup = dataset_pca$village,
-    color = ~paleta(pca_group_3),
-    opacity = 1,
-    radius = 0.1,
-    fillOpacity = 0.5
-    )%>% 
-  addLayersControl(
-    baseGroups = c("CartoDB","OpenStreetMap","Satelital")
-    ) %>% 
-  addLegend(
-    title = "Cluster",
-    pal = paleta,
-    values = ~pca_group_3,
-    opacity = 1,
-    position = "bottomright"
-    )
+#| echo: false
+#| warning: false
+#| message: false
+
+cluster_map(dataset_strata, palette_pca_2, pca_group_2)
 ```
 
-#### 4 groups
+##### 3 groups
 
 ```{r}
-paleta = colorFactor(palette = "viridis",domain = dataset_pca$pca_group_4)
-dataset_pca %>% 
-  st_as_sf(coords = c("lon", "lat"),crs=4326) %>%
-  leaflet() %>% 
-  addTiles(group = "OpenStreetMap") %>% 
-  addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>%
-  addProviderTiles(provider = providers$Esri.WorldImagery,group = "Satelital") %>% 
-  addCircleMarkers(
-    popup = dataset_pca$village,
-    color = ~paleta(pca_group_4),
-    opacity = 1,
-    radius = 0.1,
-    fillOpacity = 0.5
-    )%>% 
-  addLayersControl(
-    baseGroups = c("CartoDB","OpenStreetMap","Satelital")
-    ) %>% 
-  addLegend(
-    title = "Cluster",
-    pal = paleta,
-    values = ~pca_group_4,
-    opacity = 1,
-    position = "bottomright"
-    )
+#| echo: false
+
+palette_pca_3 = colorFactor(
+  palette = "viridis", domain = dataset_strata$pca_group_3
+)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+cluster_map(dataset_strata, palette_pca_3, pca_group_3)
+```
+
+##### 4 groups
+
+```{r}
+#| echo: false
+
+palette_pca_4 = colorFactor(
+  palette = "viridis", domain = dataset_strata$pca_group_4
+)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+cluster_map(dataset_strata, palette_pca_4, pca_group_4)
 ```
 :::
 
-### 🔵 Comparison
+Geographically, the PCA groups seem to be distributed very similarly with the HC groups.
 
-Comparison between clustering and PCA: We assessed how well the clustering matched using agglomerative clustering and PCA for 2, 3 and 4 groups. Confusion matrices and the Kappa statistic were used to assess clustering agreement.
+### Comparing HC and PCA
 
-#### 2 groups
+We assessed how strong was the agreement between the HC method and PCA method on the grouping of the population centers, for 2, 3 and 4 groups. Confusion matrices and the Kappa statistic were used for this analysis.
 
-```{r}
-dataset_pca %>% 
-  conf_mat(hc_group_2, pca_group_2, dnn = c("PCA", "HC"))
-```
+#### Confusion matrices
 
-```{r}
-dataset_pca %>% 
-  kap(hc_group_2, pca_group_2)
-```
-
-#### 3 groups
+::: panel-tabset
+##### 2 groups
 
 ```{r}
-dataset_pca %>% 
-  conf_mat(hc_group_3, pca_group_3, dnn = c("PCA", "HC"))
+#| echo: false
+
+dataset_strata %>% 
+  conf_mat(hc_group_2, pca_group_2, dnn = c("PCA", "HC")) %>% 
+  autoplot(type = "heatmap") +
+  theme(text = element_text(size = 18))
 ```
+
+##### 3 groups
 
 ```{r}
-dataset_pca %>% 
-  kap(hc_group_3, pca_group_3)
+#| echo: false
+
+dataset_strata %>% 
+  conf_mat(hc_group_3, pca_group_3, dnn = c("PCA", "HC")) %>% 
+  autoplot(type = "heatmap") +
+  theme(text = element_text(size = 18))
 ```
 
-#### 4 groups
+##### 4 groups
 
 ```{r}
-dataset_pca %>% 
-  conf_mat(hc_group_4, pca_group_4, dnn = c("PCA", "HC"))
+#| echo: false
+
+dataset_strata %>% 
+  conf_mat(hc_group_4, pca_group_4, dnn = c("PCA", "HC")) %>% 
+  autoplot(type = "heatmap") +
+  theme(text = element_text(size = 18))
 ```
+:::
 
 ```{r}
-dataset_pca %>% 
-  kap(hc_group_4, pca_group_4)
+#| echo: false
+
+kap_2 = kap(dataset_strata, hc_group_2, pca_group_2)
+kap_3 = kap(dataset_strata, hc_group_3, pca_group_3)
+kap_4 = kap(dataset_strata, hc_group_4, pca_group_4)
 ```
+
+From the confusion matrices it is evident a strong agreement between the HC method and the PCA method.The agreement is stronger in the case of 2 clusters (kappa = `r round(kap_2$.estimate, 2)`), followed by the case of 3 clusters (kappa = `r round(kap_3$.estimate, 2)`) and lastly the case of 4 clusters (kappa = `r round(kap_4$.estimate, 2)`).
+
+Finally, we opted to work with 4 clusters because this number gives us a greater spatial heterogeneity of populated centers.
 
 ## Sampling
 
-Selection of the sample of communities: Having chosen the number of clusters, random sampling proceeded within each cluster proportional to the cluster size.
+Having chosen the number of clusters, we draw a random sample from each of them proportional to their size to obtain a sample size of no less than 10 or 20 population centers.
 
 ```{r}
+#| echo: false
+
 set.seed(2022)
-sampling_20 = dataset_pca %>% 
-  group_by(hc_group_2) %>% 
-  slice_sample(prop = signif(20/56, 1)) %>% 
+sampling_20 = dataset_strata %>% 
+  group_by(hc_group_4) %>% 
+  slice_sample(prop = 0.43) %>% 
   ungroup()
 
 set.seed(2022)
-sampling_10 = dataset_pca %>% 
-  group_by(hc_group_2) %>% 
-  slice_sample(prop = signif(10/56, 1)) %>% 
+sampling_10 = dataset_strata %>% 
+  group_by(hc_group_4) %>% 
+  slice_sample(prop = 0.23) %>% 
   ungroup()
 ```
 
 ```{r}
-full_dataset = dataset_pca %>% 
+#| echo: false
+# readr::write_csv(sampling_10, "data/processed/sample-10.csv")
+# readr::write_csv(sampling_20, "data/processed/sample-20.csv")
+```
+
+```{r}
+#| echo: false
+
+full_dataset = dataset_strata %>% 
   st_as_sf(coords = c("lon", "lat"))
+
 sample_10_dataset = sampling_10 %>% 
   st_as_sf(coords = c("lon", "lat"))
+
 sample_20_dataset = sampling_20 %>% 
   st_as_sf(coords = c("lon", "lat"))
 ```
 
+```{r}
+#| echo: false
+
+sample_map = function(data, palette, group_var) {
+  values = pull(data, {{group_var}})
+  map = data %>% 
+    leaflet() %>% 
+    addTiles(group = "OpenStreetMap") %>% 
+    addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>%
+    addProviderTiles(provider = providers$Esri.WorldImagery,group = "Satelital") %>%
+    addCircleMarkers(
+      data = full_dataset, opacity = 1, radius = 0.1, fillOpacity = 0.5, 
+      color = "lightgray"
+      ) %>% 
+    addCircleMarkers(
+      popup = data$population_center, color = ~palette(values),
+      opacity = 1, radius = 0.1, fillOpacity = 0.5
+      )%>% 
+    addLayersControl(baseGroups = c("CartoDB","OpenStreetMap", "Satelital")) %>% 
+    addLegend(
+      title = "Cluster", pal = palette, values = values, opacity = 1,
+      position = "bottomright"
+    )
+  map
+}
+```
+
 ::: panel-tabset
-## 10 samples
+### 10 samples
 
 ```{r}
 #| echo: false
-#| warning: false
-#| message: false
-paleta = colorFactor(palette = "viridis",domain = sample_10_dataset$hc_group_4)
 
-sample_10_dataset %>% 
-  leaflet() %>% 
-  addTiles(group = "OpenStreetMap") %>% 
-  addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>%
-  addProviderTiles(provider = providers$Esri.WorldImagery,group = "Satelital") %>%
-  addCircleMarkers(
-    data = full_dataset,
-    opacity = 1,
-    radius = 0.1,
-    fillOpacity = 0.5, 
-    color = "lightgray"
-    ) %>% 
-  addCircleMarkers(
-    popup = sample_20_dataset$village,
-    color = ~paleta(hc_group_4),
-    opacity = 1,
-    radius = 0.1,
-    fillOpacity = 0.5
-    )%>% 
-  addLayersControl(
-    baseGroups = c("CartoDB","OpenStreetMap","Satelital")
-    ) %>% 
-  addLegend(
-    title = "Cluster",
-    pal = paleta,
-    values = ~hc_group_4,
-    opacity = 1,
-    position = "bottomright"
-    )
+palette_10 = colorFactor(
+  palette = "viridis", domain = sample_10_dataset$hc_group_4
+)
 ```
 
-## 20 samples
-
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
-paleta = colorFactor(palette = "viridis",domain = sample_20_dataset$hc_group_4)
-sample_20_dataset %>% 
-  leaflet() %>% 
-  addTiles(group = "OpenStreetMap") %>% 
-  addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>%
-  addProviderTiles(provider = providers$Esri.WorldImagery,group = "Satelital") %>% 
-  addCircleMarkers(
-    data = full_dataset,
-    opacity = 1,
-    radius = 0.1,
-    fillOpacity = 0.5, 
-    color = "lightgray"
-    ) %>% 
-  addCircleMarkers(
-    popup = sample_20_dataset$village,
-    color = ~paleta(hc_group_4),
-    opacity = 1,
-    radius = 0.1,
-    fillOpacity = 0.5
-    )%>% 
-  addLayersControl(
-    baseGroups = c("CartoDB","OpenStreetMap","Satelital")
-    ) %>% 
-  addLegend(
-    title = "Cluster",
-    pal = paleta,
-    values = ~hc_group_4,
-    opacity = 1,
-    position = "bottomright"
-    )
+
+sample_map(sample_10_dataset, palette_10, hc_group_4)
 ```
 
-## DIRESA proposal
+### 20 samples
+
+```{r}
+#| echo: false
+
+palette_20 = colorFactor(
+  palette = "viridis", domain = sample_20_dataset$hc_group_4
+)
+```
 
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
-vias <- st_read("data/first_sampling/first_sampling.gpkg",layer = "red_vial")
-zungarococha <- st_read("data/first_sampling/first_sampling.gpkg",layer = "zungarococha")
-iquitos_nauta <- st_read("data/first_sampling/first_sampling.gpkg",layer = "iquitos_nauta")
-  
-m1 = mapview(
-  vias,
-  layer.name = "Red vial",
-  color = "red")
 
-m2 = mapview(
-  zungarococha,
-  layer.name = "Centro poblados en la carretera Zungarococha",
-  col.regions = "green")
-
-m3 = mapview(
-  iquitos_nauta,
-  layer.name = "Centro poblados en la carretera Iquitos - Nauta",
-  col.regions = "blue")
-
-m1 + m2 + m3
+sample_map(sample_20_dataset, palette_20, hc_group_4)
 ```
 :::
