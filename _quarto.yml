@@ -13,7 +13,7 @@ website:
       - href: methodology.qmd
         text: Methodology
       - href: https://healthinnovation.github.io/harmonize-dashboard/
-        text: Dasatet
+        text: Data audit
     right:
       - icon: github
         href: https://github.com/healthinnovation/Harmonize-Project
