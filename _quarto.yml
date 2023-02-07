@@ -22,7 +22,7 @@ website:
 format:
   html:
     theme: cosmo
-    css: styles.scss
+    css: css/style.css
     toc: true
 
 editor: visual

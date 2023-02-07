@@ -1,7 +1,5 @@
 ---
 title: "Stratification and sampling️ of population centers in Loreto, Peru 🎲✨"
-subtitle: "Harmonize project"
-author: <i class="bi bi-person-circle"></i> Innovalab - 2022 <img src='https://raw.githubusercontent.com/healthinnovation/innovar/master/man/figures/logo.png' width='40px'/>
 number-sections: true
 format: 
  html:
@@ -12,7 +10,7 @@ editor: visual
 theme:
   light: flatly
   dark: darkly
-bibliography: references.bib
+bibliography: references/references.bib
 ---
 
 ```{r}
@@ -20,24 +18,17 @@ bibliography: references.bib
 #| warning: false
 #| message: false
 
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 library(leaflet)
-library(cptcity)
 library(sf)
 library(reactable)
 library(leaflegend)
-library(showtext)
 library(purrr)
 library(cluster)
 library(pheatmap)
 library(factoextra)
 library(FactoMineR)
 library(yardstick)
-library(ggspatial)
-
-font_add_google("Roboto Slab", "roboto")
-showtext_auto()
 ```
 
 ```{css, echo=FALSE}
