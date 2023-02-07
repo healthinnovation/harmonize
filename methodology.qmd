@@ -90,7 +90,9 @@ We can take a look at the data in the following table:
 ```{r}
 #| echo: false
 
-dataset = readr::read_csv("data/processed/dataset.csv", col_types = "ccd")
+parent_path = "methodology/"
+file_path = fs::path(parent_path, "data/processed/dataset.csv")
+dataset = readr::read_csv(file_path, col_types = "ccd")
 ```
 
 ```{r}
@@ -181,6 +183,7 @@ The best 3 HC structures according to the AC were the following:
 
 ```{r}
 #| echo: false
+#| warning: false
 
 agglomerative_coeff %>% 
   slice_head(n = 3) %>% 
@@ -729,8 +732,10 @@ sampling_10 = dataset_strata %>%
 
 ```{r}
 #| echo: false
-# readr::write_csv(sampling_10, "data/processed/sample-10.csv")
-# readr::write_csv(sampling_20, "data/processed/sample-20.csv")
+# sampling_10_filepath = fs::path(parent_path, "data/processed/sample-10.csv")
+# sampling_20_filepath = fs::path(parent_path, "data/processed/sample-20.csv")
+# readr::write_csv(sampling_10, sampling_10_filepath)
+# readr::write_csv(sampling_20, sampling_20_filepath)
 ```
 
 ```{r}
