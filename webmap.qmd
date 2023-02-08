@@ -126,7 +126,9 @@ map_layers <- function() {
           fillColor = ~s10_pal(hc_group_3),
           fillOpacity = 0.6,
           stroke = 0,
-          group = k[[i]]
+          group = k[[i]],
+          popup = paste0(
+            "<h3>","🏡",sample_10_dat$population_center,"</h3>")
           ) 
     }
     if ("20 sampling cluster" == k[[i]]){
@@ -136,7 +138,9 @@ map_layers <- function() {
           fillColor = ~s20_pal(hc_group_4),
           fillOpacity = 0.6,
           stroke = 0,
-          group = k[[i]]
+          group = k[[i]],
+          popup = paste0(
+            "<h3>","🏡",sample_10_dat$population_center,"</h3>")
         ) 
     }
     if("Perimeter qfield" == k[[i]]){
