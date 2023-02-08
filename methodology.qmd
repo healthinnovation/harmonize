@@ -65,31 +65,22 @@ We can take a look at the data in the following table:
 #| message: false
 
 # Load necessary packages
-library(dplyr)
-library(factoextra)
-library(cluster)
-library(leaflet)
-# library(sf)
-# library(reactable)
-# library(leaflegend)
-# library(purrr)
-# 
-# library(pheatmap)
-# 
-# library(FactoMineR)
-# library(yardstick)
+# library(dplyr)
+# library(factoextra)
+# library(cluster)
+# library(leaflet)
 
 # Read dataset
-parent_path = "methodology/"
-file_path = fs::path(parent_path, "data/processed/dataset.csv")
-dataset = readr::read_csv(file_path, col_types = "ccd")
+# parent_path = "methodology/"
+# file_path = fs::path(parent_path, "data/processed/dataset.csv")
+# dataset = readr::read_csv(file_path, col_types = "ccd")
 
 # Display dataset
-dataset %>% 
-  mutate(across(where(is.numeric), ~ round(.x, 2))) %>% 
-  DT::datatable(
-    options = list(display = "compact", pageLength = 5, scrollX = TRUE)
-  )
+# dataset %>% 
+#   mutate(across(where(is.numeric), ~ round(.x, 2))) %>% 
+#   DT::datatable(
+#     options = list(display = "compact", pageLength = 5, scrollX = TRUE)
+#   )
 ```
 
 ```{r}
@@ -97,19 +88,10 @@ dataset %>%
 #| message: false
 
 # Load necessary packages
-library(dplyr)
-library(factoextra)
-library(cluster)
-library(leaflet)
-# library(sf)
-# library(reactable)
-# library(leaflegend)
-# library(purrr)
-# 
-# library(pheatmap)
-# 
-# library(FactoMineR)
-# library(yardstick)
+library(dplyr, quietly = TRUE)
+library(factoextra, quietly = TRUE)
+library(cluster, quietly = TRUE)
+library(leaflet, quietly = TRUE)
 
 # Read dataset
 dataset = readr::read_csv("data/processed/sample-10.csv", col_types = "ccd")
@@ -287,8 +269,7 @@ From these plots, we determined that the optimal number of cluster may be betwee
 Next, we plotted the clusters in a plane using PCA for 2, 3 and 4 clusters.
 
 ```{r}
-#| echo: false
-
+# Function to cut tree
 cut_tree = function(data, k) {
   tree = hcut(
     data, k = k, hc_func = "agnes", hc_method = "ward.D2", 
@@ -296,11 +277,8 @@ cut_tree = function(data, k) {
   )
   tree
 }
-```
 
-```{r}
-#| echo: false
-
+# Function to generate cluster plot
 cluster_plot = function(tree) {
   cluster = fviz_cluster(tree, ggtheme = theme_classic()) +
     geom_vline(xintercept = 0, linetype = "dashed") +
@@ -315,42 +293,21 @@ cluster_plot = function(tree) {
 ##### 2 clusters
 
 ```{r}
-#| echo: false
-
 tree_2 = cut_tree(variables_std, 2)
-```
-
-```{r}
-#| echo: false
-
 cluster_plot(tree_2)
 ```
 
 ##### 3 clusters
 
 ```{r}
-#| echo: false
-
 tree_3 = cut_tree(variables_std, 3)
-```
-
-```{r}
-#| echo: false
-
 cluster_plot(tree_3)
 ```
 
 ##### 4 clusters
 
 ```{r}
-#| echo: false
-
 tree_4 = cut_tree(variables_std, 4)
-```
-
-```{r}
-#| echo: false
-
 cluster_plot(tree_4)
 ```
 :::
@@ -362,8 +319,7 @@ In the case of 2 clusters, the groups seem to be defined according to whether th
 Next, we plotted the individual silhouette width for the observations grouped in 2, 3 and 4 clusters.
 
 ```{r}
-#| echo: false
-
+# Function to plot individual silhouette widths
 silhouette_plot = function(tree) {
   ind_silhouette <- tree %>%
     fviz_silhouette(ggtheme = theme_classic(), print.summary = FALSE) +
@@ -377,24 +333,18 @@ silhouette_plot = function(tree) {
 ##### 2 clusters
 
 ```{r}
-#| echo: false
-
 silhouette_plot(tree_2)
 ```
 
 ##### 3 clusters
 
 ```{r}
-#| echo: false
-
 silhouette_plot(tree_3)
 ```
 
 ##### 4 clusters
 
 ```{r}
-#| echo: false
-
 silhouette_plot(tree_4)
 ```
 :::
@@ -406,19 +356,15 @@ We see that with 2 clusters we obtain a greater average silhouette width (0.49),
 As an additional step, for a number of clusters of 2, 3 and 4, we plotted the population centers (polygon centroids) on a map coloured by group to see their spatial distribution.
 
 ```{r}
-#| echo: false
-
+# Create table with the groups
 dataset_clustering = dataset %>% 
   mutate(
     hc_group_2 = as.factor(tree_2$cluster),
     hc_group_3 = as.factor(tree_3$cluster),
     hc_group_4 = as.factor(tree_4$cluster)
   )
-```
 
-```{r}
-#| echo: false
-
+# Function to plot a map with the clusters
 cluster_map = function(data, palette, group_var) {
   values = pull(data, {{group_var}})
   
@@ -445,54 +391,45 @@ cluster_map = function(data, palette, group_var) {
 ##### 2 clusters
 
 ```{r}
-#| echo: false
-
-palette_hc_2 = colorFactor(
-  palette = "viridis", domain = dataset_clustering$hc_group_2
-)
-```
-
-```{r}
-#| echo: false
 #| warning: false
 #| message: false
 
+# Palette for 2 clusters
+palette_hc_2 = colorFactor(
+  palette = "viridis", domain = dataset_clustering$hc_group_2
+)
+
+# Plot cluster map
 cluster_map(dataset_clustering, palette_hc_2, hc_group_2)
 ```
 
 ##### 3 clusters
 
 ```{r}
-#| echo: false
-
-palette_hc_3 = colorFactor(
-  palette = "viridis", domain = dataset_clustering$hc_group_3
-)
-```
-
-```{r}
-#| echo: false
 #| warning: false
 #| message: false
 
+# Palette for 3 clusters
+palette_hc_3 = colorFactor(
+  palette = "viridis", domain = dataset_clustering$hc_group_3
+)
+
+# Plot cluster map
 cluster_map(dataset_clustering, palette_hc_3, hc_group_3)
 ```
 
 ##### 4 clusters
 
 ```{r}
-#| echo: false
-
-palette_hc_4 = colorFactor(
-  palette = "viridis", domain = dataset_clustering$hc_group_4
-)
-```
-
-```{r}
-#| echo: false
 #| warning: false
 #| message: false
 
+# Palette for 4 clusters
+palette_hc_4 = colorFactor(
+  palette = "viridis", domain = dataset_clustering$hc_group_4
+)
+
+# Plot cluster map
 cluster_map(dataset_clustering, palette_hc_4, hc_group_4)
 ```
 :::
@@ -504,8 +441,7 @@ We see that the groups seem to divide longitudinally, showing a strong spatial c
 Principal component analysis (PCA) was used as an alternative method for clustering. Our approach was to use the principal component to build an aggregate index of all the variables considered. Then, the scores of the populated centers on this principal component were grouped into different categories according to the quantiles of the distribution. In order to compare this approach with the results of hierarchical clustering, we tested with 2 (50th quantile), 3 (33th and 66th quantiles) and 4 (25th, 50th and 75th quantiles) groups.
 
 ```{r}
-#| echo: false
-
+# Perform PCA
 pca = FactoMineR::PCA(variables_std, graph = FALSE)
 ```
 
@@ -514,8 +450,6 @@ pca = FactoMineR::PCA(variables_std, graph = FALSE)
 After having performed the PCA, we plotted the scree plot to check the percentage of explained variance each component or dimension.
 
 ```{r}
-#| echo: false
-
 pca %>% 
   fviz_screeplot() +
   theme(text = element_text(size = 18))
@@ -528,8 +462,6 @@ We see that the first component explain approximately 50% of the variance in the
 Next, we plotted the top 10 variables according to their contribution to the first component.
 
 ```{r}
-#| echo: false
-
 pca %>% 
   fviz_contrib(choice = "var", axes = 1, top = 10) +
   theme(text = element_text(size = 18))
@@ -542,8 +474,6 @@ We see that the soil moisture, precipitation and runoff variables are the ones t
 Now, we plotted the population centers on a coordinate plane using the first and second components.
 
 ```{r}
-#| echo: false
-
 pca %>% 
   fviz_pca_ind() +
   theme(text = element_text(size = 18))
@@ -556,15 +486,11 @@ As in the \@ref(clusters-plots), we see that the variability of the points is di
 Finally, we created the groups dividing the population centers according to the quantiles of the scores on the principal component. Then we plotted the population centers on maps for 2, 3 and 4 groups.
 
 ```{r}
-#| echo: false
-
+# Get scores
 pca_results = get_pca_ind(pca)
 scores = pca_results$coord
-```
 
-```{r}
-#| echo: false
-
+# Create groups by quantile categorization
 dataset_strata = dataset_clustering %>% 
   mutate(pca_score = scores[, 1]) %>% 
   mutate(
@@ -591,54 +517,45 @@ dataset_strata = dataset_clustering %>%
 ##### 2 groups
 
 ```{r}
-#| echo: false
-
-palette_pca_2 = colorFactor(
-  palette = "viridis", domain = dataset_strata$pca_group_2
-)
-```
-
-```{r}
-#| echo: false
 #| warning: false
 #| message: false
 
+# Palette for 2 groups
+palette_pca_2 = colorFactor(
+  palette = "viridis", domain = dataset_strata$pca_group_2
+)
+
+# Plot cluster map
 cluster_map(dataset_strata, palette_pca_2, pca_group_2)
 ```
 
 ##### 3 groups
 
 ```{r}
-#| echo: false
-
-palette_pca_3 = colorFactor(
-  palette = "viridis", domain = dataset_strata$pca_group_3
-)
-```
-
-```{r}
-#| echo: false
 #| warning: false
 #| message: false
 
+# Palette for 3 groups
+palette_pca_3 = colorFactor(
+  palette = "viridis", domain = dataset_strata$pca_group_3
+)
+
+# Plot cluster map
 cluster_map(dataset_strata, palette_pca_3, pca_group_3)
 ```
 
 ##### 4 groups
 
 ```{r}
-#| echo: false
-
-palette_pca_4 = colorFactor(
-  palette = "viridis", domain = dataset_strata$pca_group_4
-)
-```
-
-```{r}
-#| echo: false
 #| warning: false
 #| message: false
 
+# Palette for 4 groups
+palette_pca_4 = colorFactor(
+  palette = "viridis", domain = dataset_strata$pca_group_4
+)
+
+# Plot cluster map
 cluster_map(dataset_strata, palette_pca_4, pca_group_4)
 ```
 :::
@@ -655,8 +572,6 @@ We assessed how strong was the agreement between the HC method and PCA method on
 ##### 2 groups
 
 ```{r}
-#| echo: false
-
 dataset_strata %>% 
   yardstick::conf_mat(hc_group_2, pca_group_2, dnn = c("PCA", "HC")) %>% 
   autoplot(type = "heatmap") +
@@ -666,8 +581,6 @@ dataset_strata %>%
 ##### 3 groups
 
 ```{r}
-#| echo: false
-
 dataset_strata %>% 
   yardstick::conf_mat(hc_group_3, pca_group_3, dnn = c("PCA", "HC")) %>% 
   autoplot(type = "heatmap") +
@@ -677,8 +590,6 @@ dataset_strata %>%
 ##### 4 groups
 
 ```{r}
-#| echo: false
-
 dataset_strata %>% 
   yardstick::conf_mat(hc_group_4, pca_group_4, dnn = c("PCA", "HC")) %>% 
   autoplot(type = "heatmap") +
@@ -687,8 +598,7 @@ dataset_strata %>%
 :::
 
 ```{r}
-#| echo: false
-
+# Get kappa statistic
 kap_2 = yardstick::kap(dataset_strata, hc_group_2, pca_group_2)
 kap_3 = yardstick::kap(dataset_strata, hc_group_3, pca_group_3)
 kap_4 = yardstick::kap(dataset_strata, hc_group_4, pca_group_4)
@@ -703,14 +613,14 @@ Finally, we opted to work with 4 clusters because this number gives us a greater
 Having chosen the number of clusters, we draw a random sample from each of them proportional to their size to obtain a sample size of no less than 10 or 20 population centers.
 
 ```{r}
-#| echo: false
-
+# Sample 20 population centers
 set.seed(2022)
 sampling_20 = dataset_strata %>% 
   group_by(hc_group_4) %>% 
   slice_sample(prop = 0.43) %>% 
   ungroup()
 
+# Sample 10 population centers
 set.seed(2022)
 sampling_10 = dataset_strata %>% 
   group_by(hc_group_4) %>% 
@@ -726,22 +636,22 @@ sampling_10 = dataset_strata %>%
 # readr::write_csv(sampling_20, sampling_20_filepath)
 ```
 
-```{r}
-#| echo: false
+Next, we plot the samples in a map to see their geographical distribution.
 
+```{r}
+# Coordinates of the full dataset
 full_dataset = dataset_strata %>% 
   sf::st_as_sf(coords = c("lon", "lat"))
 
+# Coordinates of the 10 samples
 sample_10_dataset = sampling_10 %>% 
   sf::st_as_sf(coords = c("lon", "lat"))
 
+# Coordinates of the 20 samples
 sample_20_dataset = sampling_20 %>% 
   sf::st_as_sf(coords = c("lon", "lat"))
-```
 
-```{r}
-#| echo: false
-
+# Function to plot the samples on a map
 sample_map = function(data, palette, group_var) {
   values = pull(data, {{group_var}})
   map = data %>% 
@@ -770,36 +680,30 @@ sample_map = function(data, palette, group_var) {
 ### 10 samples
 
 ```{r}
-#| echo: false
-
-palette_10 = colorFactor(
-  palette = "viridis", domain = sample_10_dataset$hc_group_4
-)
-```
-
-```{r}
-#| echo: false
 #| warning: false
 #| message: false
 
+# Palette for 10 samples
+palette_10 = colorFactor(
+  palette = "viridis", domain = sample_10_dataset$hc_group_4
+)
+
+# Map the 10 samples
 sample_map(sample_10_dataset, palette_10, hc_group_4)
 ```
 
 ### 20 samples
 
 ```{r}
-#| echo: false
-
-palette_20 = colorFactor(
-  palette = "viridis", domain = sample_20_dataset$hc_group_4
-)
-```
-
-```{r}
-#| echo: false
 #| warning: false
 #| message: false
 
+# Palette for 20 samples
+palette_20 = colorFactor(
+  palette = "viridis", domain = sample_20_dataset$hc_group_4
+)
+
+# Map the 20 samples
 sample_map(sample_20_dataset, palette_20, hc_group_4)
 ```
 :::
