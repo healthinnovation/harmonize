@@ -3,11 +3,16 @@ project:
   output-dir: docs
 
 website:
+  favicon: img/harmonize.ico
   title: "Innovalab"
-  open-graph: true
+  twitter-card: 
+    image: "img/DJI_0860_13febrero.JPG"
+    creator: "@antony_barja"
+    site: "@antony_barja"
+  open-graph:
+    description: description
   navbar:
     logo: https://raw.githubusercontent.com/healthinnovation/Harmonize-Project/main/img/harmonize.svg
-    favicon: https://raw.githubusercontent.com/healthinnovation/Harmonize-Project/main/img/Harmonize_darkbg.jpg
     left:
       - href: index.qmd
         text: Home
