@@ -5,12 +5,11 @@ css: css/innova.css
 ---
 
 ::: {#welcome-message-title .h1}
-Hello and welcome to
+
 :::
 
 ::: grid
 ::: {.g-col-12 .g-col-md-10 .g-start-md-2}
-![](img/background.png)
 :::
 
 ::: {.g-col-12 .g-col-md-10 .g-start-md-2}

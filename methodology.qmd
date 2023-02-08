@@ -1,5 +1,5 @@
 ---
-title: "Stratification and sampling️ of population centers in Loreto, Peru 🎲✨"
+title: "<br><br>Stratification and sampling️ of population centers in Loreto, Peru 🎲✨"
 number-sections: true
 format: 
  html:
@@ -7,9 +7,7 @@ format:
    code-summary: "Show code"
    toc: true
 editor: visual
-theme:
-  light: flatly
-  dark: darkly
+css: css/methodology.css
 bibliography: references/references.bib
 ---
 

@@ -4,7 +4,10 @@ project:
 
 website:
   title: "Innovalab"
+  open-graph: true
   navbar:
+    logo: img/Harmonize.svg
+    favicon: img/background.png
     left:
       - href: index.qmd
         text: Home
@@ -19,6 +22,7 @@ website:
         href: https://github.com/healthinnovation/Harmonize-Project
       - icon: twitter
         href: https://twitter.com/innovalab_imt
+  
 format:
   html:
     theme: cosmo
