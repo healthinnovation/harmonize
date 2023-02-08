@@ -2,7 +2,7 @@ body{
 
     background-repeat:no-repeat;
     background-position: center;
-    background-image:url(../img/background.JPG);
+    background-image:url("https://raw.githubusercontent.com/healthinnovation/Harmonize-Project/main/img/background.JPG");
     color:#FFF;
     font-family:'Roboto Slab', serif;
     background-size: cover;
