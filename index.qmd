@@ -50,7 +50,7 @@ Statistic models
 
 <p class="card-text">
 
-Stratification and sampling of population centers in Loreto, Peru using Agglomerative Hierarchical Clustering and  Stratified Sampling.
+Stratification and sampling of population centers in Loreto, Peru using Agglomerative Hierarchical Clustering and Stratified Sampling.
 
 </p>
 
