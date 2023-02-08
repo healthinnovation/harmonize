@@ -10,7 +10,8 @@ website:
     creator: "@antony_barja"
     site: "@antony_barja"
   open-graph:
-    description: description
+    description: "description"
+    image: "img/DJI_0860_13febrero.JPG"
   navbar:
     logo: https://raw.githubusercontent.com/healthinnovation/Harmonize-Project/main/img/harmonize.svg
     left:
