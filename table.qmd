@@ -1,6 +1,7 @@
 ---
 page-layout: full
 comments: false
+css: table.css
 ---
 <br>
 <br>
