@@ -1,0 +1,25 @@
+---
+page-layout: full
+comments: false
+---
+<br>
+<br>
+```{r}
+#| column: screen
+#| echo: false
+#| message: false
+#| warning: false
+library(tidyverse)
+library(reactablefmtr)
+data <- read_csv("data/processed/db_variables.csv")
+data <- read_csv("data/processed/db_variables.csv")
+reactable(
+  data,
+  columns = list(       
+    UBIGEO = colDef(
+      cell = color_tiles(data)
+    )
+  )
+)
+
+```

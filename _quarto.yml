@@ -17,6 +17,8 @@ website:
         text: Methodology
       - href: https://healthinnovation.github.io/harmonize-dashboard/
         text: Data audit
+      - href: table.qmd
+        text: Dataset  
     right:
       - icon: github
         href: https://github.com/healthinnovation/Harmonize-Project
