@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;600&display=swap');
+#quarto-content>* {
+    padding-top: 0;
+    margin:0;
+}
+
+#quarto-content>* {
+    padding-top: 0;
+    margin: 0;
+}
+body {
+    font-family:'Roboto Slab', serif;
+}
+
+body .page-columns {
+    display: block;
+    font-family:'Roboto Slab', serif;
+}
+
+.leaflet-container {
+    font: 16px/1.5 'Roboto Slab', serif;
+}
+
+.leaflet-top .leaflet-control {
+    margin-top: 90px;
+}
+
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+    background: #111111cc;
+    color: #fff;
+}
+
+
+
+
+

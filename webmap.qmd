@@ -1,7 +1,7 @@
 ---
 page-layout: full
 comments: false
-css: map.css
+css: css/map.css
 ---
 
 ```{r}
@@ -9,7 +9,7 @@ css: map.css
 #| echo: false
 #| message: false
 #| warning: false
-#| out-height: 95vh
+#| out-height: 100vh
 #| out-width: 100%
 library(tidyverse)
 library(leaflet)
@@ -17,12 +17,55 @@ library(leaflet.extras)
 library(viridis)
 library(sf)
 
-villages <- st_read("data/qfields_diresa/villages_analysed.gpkg",quiet = TRUE)
-areas <- st_read("data/qfields_diresa/tracking_area_by_communities.gpkg",quiet = TRUE)
-vill_pal <- colorFactor(palette = viridis(n = 2),domain = unique(villages$TRAMO))
-sample_10_dat <- read_csv("methodology/data/processed/sample-10.csv") %>% 
-  st_as_sf(coords = c("lon","lat"),crs=4326)
+villages <- read_csv("methodology/data/processed/db_variables.csv") %>% 
+  st_as_sf(
+    coords = c("LNG","LAT"),
+    crs = 4326)
 
+innovalab <- villages %>% 
+  filter(GROUP != "DIRESA")
+
+diresa  <- villages %>% 
+  filter(GROUP == "DIRESA")
+
+areas <- st_read(
+  "data/qfields_diresa/tracking_area_by_communities.gpkg",
+  quiet = TRUE
+  )
+sample_10_dat <- read_csv(
+  "methodology/data/processed/sample-10.csv"
+  ) %>% 
+  st_as_sf(
+    coords = c("lon","lat"),
+    crs=4326
+    )
+
+# my_icons <- iconList(
+#   circle <- makeIcon(
+#     iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/1circle.svg",
+#     iconWidth = 18,
+#     iconHeight = 18
+#     ),
+#   square <- makeIcon(
+#     iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/3square.svg",
+#     iconWidth = 18,
+#     iconHeight = 18
+#     ),
+#   triangle <- makeIcon(
+#     iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/2triangle.svg",
+#     iconWidth = 18, iconHeight = 18
+#     ),
+#   start <- makeIcon(
+#     iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/4star.svg",
+#     iconWidth = 18,
+#     iconHeight = 18
+#     )
+# )
+
+s10_pal <- colorFactor(
+  palette = viridis(n = 4),
+  domain = sample_10_dat$hc_group_4
+)
 
 
 map_layers <- function() {
@@ -30,91 +73,143 @@ map_layers <- function() {
   k <- c(
     "Sampling villages",
     "DIRESA villages",
-    "10 sampling cluster",
-    "20 sampling cluster",
+    "1 cluster",
+    "2 cluster",
+    "3 cluster",
+    "4 cluster",
     "Perimeter qfield"
-    )
+  )
   #base map
   map <- leaflet() %>% 
     addTiles(group = "Open.Street.Map") %>% 
     addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>% 
     addProviderTiles(provider = providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>% 
     addProviderTiles(provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>% 
-    setView(lng = -73.44775,lat = -4.08754,zoom = 11)
+    setView(lng = -73.44775,lat = -4.08754,zoom = 10)
   #loop through all groups and add a layer one at a time
   for (i in 1:length(k)) {
-    if("Monitoring villages" == k[[i]]){
+    if("Sampling villages" == k[[i]]){
       map <- map %>% 
         addPulseMarkers(
-          data = villages,
-          icon = makePulseIcon(heartbeat = 0.5,),
+          data = innovalab,
+          icon = makePulseIcon(heartbeat = 0.5),
           group = k[[i]],
           popup = paste0(
-            "<h1>",villages$NOMCP,"</h1>"
+            "<center><h3> 🏕️",diresa$NOMCP,"</h3></center>","<hr>",
+            "- ⛈️Precipitation: ",round(diresa$pr_mean,4),"<br>",
+            "- 💧Runoff: ",round(diresa$ro_mean,4),"<br>",
+            "- ♒Soil mousture: ", round(diresa$soil_mean,4),"<br>",
+            "- 🌡️Maximum temperature: ",round(diresa$tmax_mean,4),"<br>",
+            "- 🧊Minimum temperature: ",round(diresa$tmin_mean,4),"<br>",
+            "- 💦Evapotranspiration: ", round(diresa$tmin_mean,4),"<br>",
+            "- ☁️Humidity: ", round(diresa$humidity_mean,4),"<br>",
+            "- 🌳🪓Deforestation: ", round(diresa$def_mean,4),"<br>",
+            "- 🛣️Global Superficie Human: ",round(diresa$gsh_mean,4),"<br>",
+            "- ✨Nigth lights: ", round(diresa$ln_mean,4),"<br>",
+            "- 🏙Population: ",round(diresa$pop_mean,4) 
           ))
     }
-    if("10 sampling cluster"==k[[i]]){
-      palette_10 = colorFactor(
-        palette = "viridis", domain = sample_10_dat$hc_group_4
-        )
+    if("DIRESA villages"==k[[i]]){
+      map <- map %>% 
+        addPulseMarkers(
+          data = diresa,
+          icon = makePulseIcon(heartbeat = 0.5),
+          group = k[[i]],
+          popup = paste0(
+            "<center><h3> 🏕️",diresa$NOMCP,"</h3></center>","<hr>",
+            "- ⛈️Precipitation: ",round(diresa$pr_mean,4),"<br>",
+            "- 💧Runoff: ",round(diresa$ro_mean,4),"<br>",
+            "- ♒Soil mousture: ", round(diresa$soil_mean,4),"<br>",
+            "- 🌡️Maximum temperature: ",round(diresa$tmax_mean,4),"<br>",
+            "- 🧊Minimum temperature: ",round(diresa$tmin_mean,4),"<br>",
+            "- 💦Evapotranspiration: ", round(diresa$tmin_mean,4),"<br>",
+            "- ☁️Humidity: ", round(diresa$humidity_mean,4),"<br>",
+            "- 🌳🪓Deforestation: ", round(diresa$def_mean,4),"<br>",
+            "- 🛣️Global Superficie Human: ",round(diresa$gsh_mean,4),"<br>",
+            "- ✨Nigth lights: ", round(diresa$ln_mean,4),"<br>",
+            "- 🏙Population: ",round(diresa$pop_mean,4) 
+          ))
+    }
+    if("1 cluster" == k[[i]]){
       map <- map %>% 
         addCircleMarkers(
-          data = sample_10_dat,
-          opacity = 1,
-          radius = 0.1,
-          fillOpacity = 0.5, 
-          color = "lightgray"
-            ) %>% 
-        addCircleMarkers(
-          data = sample_10_dat,
-          popup = sample_10_dat$population_center,
-          color = ~palette_10(hc_group_4),
-          opacity = 1, radius = 0.1, fillOpacity = 0.5
-          ) %>% 
-        addLegend(
-          data = sample_10_dat,
-          title = "Cluster", 
-          pal = palette_10,
-          values = ~hc_group_4,
-          opacity = 1,
-          position = "bottomright"
-          )
-
+          data = sample_10_dat %>% filter(hc_group_4 == 1),
+          group = k[[i]],
+          popup = paste0(
+            "<h3>","🏡",sample_10_dat$population_center,"</h3>"),
+          fillColor = ~s10_pal(hc_group_4),
+          stroke = 0,
+          fillOpacity = 0.4
+          ) 
     }
-    if(k[[i]]== "Sampling villages"){
+    if ("2 cluster" == k[[i]]){
       map <- map %>% 
         addCircleMarkers(
-          data = villages %>% filter(!NOMCP %in% c("Llanchama","Varillal","Quistococha","Zungarococha","Paujil Zona 1","Perimeter qfield")),
-          fillColor = ~vill_pal(TRAMO),
-          group = k[[i]])
+          data = sample_10_dat %>% filter(hc_group_4 == 2),
+          group = k[[i]],
+          popup = paste0(
+            "<h3>","🏡",sample_10_dat$population_center,"</h3>"),
+          fillColor = ~s10_pal(hc_group_4),
+          stroke = 0,
+          fillOpacity = 0.4
+          ) 
     }
-    if (k[[i]]== "DIRESA"){
+    if ("3 cluster" == k[[i]]){
       map <- map %>% 
         addCircleMarkers(
-          data = villages %>% filter(NOMCP %in% c("Llanchama","Varillal","Quistococha","Zungarococha","Paujil Zona 1","Perimeter qfield")),
-          fillColor = ~vill_pal(TRAMO),
-          group = k[[i]])
+          data = sample_10_dat %>% filter(hc_group_4 == 3),
+          group = k[[i]],
+          popup = paste0(
+            "<h3>","🏡",sample_10_dat$population_center,"</h3>"),
+          fillColor = ~s10_pal(hc_group_4),
+          stroke = 0,
+          fillOpacity = 0.4
+          ) 
     }
-    if(k[[i]] == "Perimeter qfield"){
+    
+    if ("4 cluster" == k[[i]]){
+        map <- map %>% 
+        addCircleMarkers(
+          data = sample_10_dat %>% filter(hc_group_4 == 4),
+          group = k[[i]],
+          popup = paste0(
+            "<h3>","🏡",sample_10_dat$population_center,"</h3>"),
+          fillColor = ~s10_pal(hc_group_4),
+          stroke = 0,
+          fillOpacity = 0.4
+          ) 
+    }
+    
+    if("Perimeter qfield" == k[[i]]){
       map <- map %>% 
         addPolygons(
           data = areas ,
-          group = k[[i]])
+          stroke = 2,
+          fillOpacity = 0.8,
+          fillColor = "orange",
+          color = "orange",
+          opacity = 1,
+          popup = paste0(
+            "<h3>","🏡",areas$village,"</h3>","<hr>",
+            "- Area-Ha: ",round(areas$area_ha,4),"<br>",
+            "- Area-km2: ",round(areas$area_km2,4)),
+          group = k[[i]]
+          )
     }
     
   }
   
   #create layer control
-  map %>% 
+  map = map %>% 
     addLayersControl(
-      baseGroups =c("CartoDB","CartoDB.DarkMatter","Open.Street.Map","Esri.WorldImagery"),
+      baseGroups = c("CartoDB","CartoDB.DarkMatter","Open.Street.Map","Esri.WorldImagery"),
       overlayGroups = k[c(1:length(k))],
-      options = layersControlOptions(collapsed = FALSE)) %>% 
-    hideGroup(as.character(k[c(2:length(k))])) #hide all groups except the 1st one
-  
+      options = layersControlOptions(collapsed = FALSE)
+      ) %>% 
+    hideGroup(as.character(k[c(0:length(k))])) #hide all groups except the 1st one
+  map
 }
 
 #plot the map
 map_layers()
-
 ```
