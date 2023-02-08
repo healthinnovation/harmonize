@@ -1,6 +1,7 @@
 ---
 page-layout: full
 comments: false
+css: map.css
 ---
 
 ```{r}
@@ -8,25 +9,38 @@ comments: false
 #| echo: false
 #| message: false
 #| warning: false
+#| out-height: 95vh
+#| out-width: 100%
 library(tidyverse)
 library(leaflet)
 library(leaflet.extras)
 library(viridis)
 library(sf)
+
 villages <- st_read("data/qfields_diresa/villages_analysed.gpkg",quiet = TRUE)
 areas <- st_read("data/qfields_diresa/tracking_area_by_communities.gpkg",quiet = TRUE)
 vill_pal <- colorFactor(palette = viridis(n = 2),domain = unique(villages$TRAMO))
+sample_10_dat <- read_csv("methodology/data/processed/sample-10.csv") %>% 
+  st_as_sf(coords = c("lon","lat"),crs=4326)
+
+
 
 map_layers <- function() {
   #number of groups
-  k <- c("Monitoring villages","Heatmap","Sampling villages","DIRESA","Perimeter qfield")
+  k <- c(
+    "Sampling villages",
+    "DIRESA villages",
+    "10 sampling cluster",
+    "20 sampling cluster",
+    "Perimeter qfield"
+    )
   #base map
   map <- leaflet() %>% 
     addTiles(group = "Open.Street.Map") %>% 
     addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>% 
     addProviderTiles(provider = providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>% 
     addProviderTiles(provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>% 
-    setView(lng = -73.44775,lat = -4.08754,zoom = 10)
+    setView(lng = -73.44775,lat = -4.08754,zoom = 11)
   #loop through all groups and add a layer one at a time
   for (i in 1:length(k)) {
     if("Monitoring villages" == k[[i]]){
@@ -39,9 +53,33 @@ map_layers <- function() {
             "<h1>",villages$NOMCP,"</h1>"
           ))
     }
-    if(k[[i]]== "Heatmap"){
+    if("10 sampling cluster"==k[[i]]){
+      palette_10 = colorFactor(
+        palette = "viridis", domain = sample_10_dat$hc_group_4
+        )
       map <- map %>% 
-        addHeatmap(data = villages,radius = 15,group = k[[i]])
+        addCircleMarkers(
+          data = sample_10_dat,
+          opacity = 1,
+          radius = 0.1,
+          fillOpacity = 0.5, 
+          color = "lightgray"
+            ) %>% 
+        addCircleMarkers(
+          data = sample_10_dat,
+          popup = sample_10_dat$population_center,
+          color = ~palette_10(hc_group_4),
+          opacity = 1, radius = 0.1, fillOpacity = 0.5
+          ) %>% 
+        addLegend(
+          data = sample_10_dat,
+          title = "Cluster", 
+          pal = palette_10,
+          values = ~hc_group_4,
+          opacity = 1,
+          position = "bottomright"
+          )
+
     }
     if(k[[i]]== "Sampling villages"){
       map <- map %>% 

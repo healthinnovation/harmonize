@@ -561,7 +561,7 @@ pca %>%
   theme(text = element_text(size = 18))
 ```
 
-As in the @clusters-plots, we see that the variability of the points is distributed mostly over the first component (X axis).
+As in the \@ref(clusters-plots), we see that the variability of the points is distributed mostly over the first component (X axis).
 
 #### PCA groups on maps
 
