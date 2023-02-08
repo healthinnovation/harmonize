@@ -11,34 +11,30 @@ css: css/map.css
 #| warning: false
 #| out-height: 100vh
 #| out-width: 100%
-library(tidyverse)
+library(dplyr)
 library(leaflet)
 library(leaflet.extras)
 library(viridis)
 library(sf)
 
-villages <- read_csv("methodology/data/processed/db_variables.csv") %>% 
-  st_as_sf(
-    coords = c("LNG","LAT"),
-    crs = 4326)
+methodology_path <- "data/methodology/"
+villages_path <- fs::path(methodology_path, "data/processed/db_variables.csv")
+villages <- readr::read_csv(villages_path) %>% 
+  st_as_sf(coords = c("LNG","LAT"), crs = 4326)
 
 innovalab <- villages %>% 
   filter(GROUP != "DIRESA")
 
-diresa  <- villages %>% 
+diresa <- villages %>% 
   filter(GROUP == "DIRESA")
 
 areas <- st_read(
-  "data/qfields_diresa/tracking_area_by_communities.gpkg",
-  quiet = TRUE
-  )
-sample_10_dat <- read_csv(
-  "methodology/data/processed/sample-10.csv"
-  ) %>% 
-  st_as_sf(
-    coords = c("lon","lat"),
-    crs=4326
-    )
+  "data/qfields_diresa/tracking_area_by_communities.gpkg", quiet = TRUE
+)
+
+sample_path <- fs::path(methodology_path, "data/processed/sample-10.csv")
+sample_10_dat <- readr::read_csv(sample_path) %>% 
+  st_as_sf(coords = c("lon","lat"), crs = 4326)
 
 # my_icons <- iconList(
 #   circle <- makeIcon(

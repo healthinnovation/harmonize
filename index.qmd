@@ -30,11 +30,11 @@ Workfields
 
 <p class="card-text">
 
-I enjoy exploring open datasets and pick up new {{< fa brands r-project >}} and {{< fa brands python >}} tricks on my way.<br>I share what I discover and learn.
+A web map-based monitoring system for the collection of geo-referenced information in the field using open source applications.
 
 </p>
 
-<a href="#" class="btn btn-info stretched-link">Start reading</a>
+<a href="webmap.html" class="btn btn-info stretched-link">Start reading</a>
 :::
 :::
 :::
@@ -50,11 +50,11 @@ Statistic models
 
 <p class="card-text">
 
-A gallery of contributions to dataviz challenges, such as #TidyTuesday or #30DayChartChallenge
+Stratification and sampling of population centers in Loreto, Peru using Agglomerative Hierarchical Clustering and Stratified Sampling.
 
 </p>
 
-<a href="#" class="btn btn-warning stretched-link">Browse</a>
+<a href="methodology.html" class="btn btn-warning stretched-link">Browse</a>
 :::
 :::
 :::
@@ -64,17 +64,17 @@ A gallery of contributions to dataviz challenges, such as #TidyTuesday or #30Day
 ::: card-body
 <h5 class="card-title">
 
-Data visualization
+Data audit
 
 </h5>
 
 <p class="card-text">
 
-A collection of ongoing personal data-endeavors and programming projects.
+Is a comprehensive summarize of databases on climate, health and sociodemographic variables. We include a metadata of all the main characteristics of each database. Our aim is to provide a friendly-user tool to visualize and select the most appropiate database to use.
 
 </p>
 
-<br> <a href="#" class="btn btn-danger stretched-link">Take me there</a>
+<br> <a href="https://healthinnovation.github.io/harmonize-dashboard/" class="btn btn-danger stretched-link">Take me there</a>
 :::
 :::
 :::

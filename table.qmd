@@ -10,17 +10,11 @@ css: table.css
 #| echo: false
 #| message: false
 #| warning: false
-library(tidyverse)
 library(reactablefmtr)
-data <- read_csv("methodology/data/processed/db_variables.csv")
-data <- read_csv("methodology/data/processed/db_variables.csv")
-reactable(
-  data,
-  columns = list(       
-    UBIGEO = colDef(
-      cell = color_tiles(data)
-    )
-  )
-)
 
+parent_path = "data/methodology/"
+file_path = fs::path(parent_path, "data/processed/db_variables.csv")
+dataset = readr::read_csv(file_path, col_types = "ccd")
+
+reactable(dataset, columns = list(UBIGEO = colDef(cell = color_tiles(data))))
 ```

@@ -59,46 +59,23 @@ For each population center, we gathered records on the following fields:
 We can take a look at the data in the following table:
 
 ```{r}
-#| eval: false
-#| echo: false
 #| warning: false
 #| message: false
 
 # Load necessary packages
-# library(dplyr)
-# library(factoextra)
-# library(cluster)
-# library(leaflet)
+library(dplyr)
+library(factoextra)
+library(cluster)
+library(leaflet)
 
 # Read dataset
-# parent_path = "methodology/"
-# file_path = fs::path(parent_path, "data/processed/dataset.csv")
-# dataset = readr::read_csv(file_path, col_types = "ccd")
+parent_path = "data/methodology/"
+file_path = fs::path(parent_path, "data/processed/dataset.csv")
+dataset = readr::read_csv(file_path, col_types = "ccd")
 
 # Display dataset
-# dataset %>% 
-#   mutate(across(where(is.numeric), ~ round(.x, 2))) %>% 
-#   DT::datatable(
-#     options = list(display = "compact", pageLength = 5, scrollX = TRUE)
-#   )
-```
-
-```{r}
-#| warning: false
-#| message: false
-
-# Load necessary packages
-library(dplyr, quietly = TRUE)
-library(factoextra, quietly = TRUE)
-library(cluster, quietly = TRUE)
-library(leaflet, quietly = TRUE)
-
-# Read dataset
-dataset = readr::read_csv("dataset/processed/sample-10.csv", col_types = "ccd")
-
-# Display dataset
-dataset %>% 
-  mutate(across(where(is.numeric), ~ round(.x, 2))) %>% 
+dataset %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2))) %>%
   DT::datatable(
     options = list(display = "compact", pageLength = 5, scrollX = TRUE)
   )
@@ -182,7 +159,7 @@ The difference of the AC values are almost negligible. Consequently, we examined
 # Function to plot a dendogram
 dendogram = function(row, title) {
   dendogram <- fviz_dend(agglomerative_coeff$tree[[row]], main = title) + 
-    theme(text = element_text(size = 18))
+    theme(text = element_text(size = 13))
   
   dendogram
 }
@@ -231,7 +208,7 @@ nbclust_plot = function(data, method, ...) {
   nbclust <- fviz_nbclust(
     data, hcut, hc_func = "agnes", hc_method = "ward.D2", 
     c_metric = "spearman", method = method, ...
-  ) + theme(text = element_text(size = 18))
+  ) + theme(text = element_text(size = 13))
   
   nbclust
 }
@@ -283,7 +260,7 @@ cluster_plot = function(tree) {
   cluster = fviz_cluster(tree, ggtheme = theme_classic()) +
     geom_vline(xintercept = 0, linetype = "dashed") +
     geom_hline(yintercept = 0, linetype = "dashed") +
-    theme(text = element_text(size = 18))
+    theme(text = element_text(size = 13))
   
   cluster
 }
@@ -310,7 +287,6 @@ cluster_plot(tree_3)
 tree_4 = cut_tree(variables_std, 4)
 cluster_plot(tree_4)
 ```
-
 :::
 
 In the case of 2 clusters, the groups seem to be defined according to whether the scores of the observations on the first dimension are positive or negative. In the case of 3 clusters, the group with negative scores on the first dimension is divided if the scores on the second dimension are positive and negative. Finally, in the case of 4 clusters, the groups seem to be defined according to their belonging to one of the 4 quadrants.
@@ -324,7 +300,7 @@ Next, we plotted the individual silhouette width for the observations grouped in
 silhouette_plot = function(tree) {
   ind_silhouette <- tree %>%
     fviz_silhouette(ggtheme = theme_classic(), print.summary = FALSE) +
-    theme(text = element_text(size = 18))
+    theme(text = element_text(size = 13))
   
   ind_silhouette
 }
@@ -433,7 +409,6 @@ palette_hc_4 = colorFactor(
 # Plot cluster map
 cluster_map(dataset_clustering, palette_hc_4, hc_group_4)
 ```
-
 :::
 
 We see that the groups seem to divide longitudinally, showing a strong spatial component driving the separation between them.
@@ -454,7 +429,7 @@ After having performed the PCA, we plotted the scree plot to check the percentag
 ```{r}
 pca %>% 
   fviz_screeplot() +
-  theme(text = element_text(size = 18))
+  theme(text = element_text(size = 13))
 ```
 
 We see that the first component explain approximately 50% of the variance in the data. This is not such a high value, meaning that the variables do not seem to be strongly linearly correlated. Still, 50% is an acceptable value in practice.
@@ -466,7 +441,7 @@ Next, we plotted the top 10 variables according to their contribution to the fir
 ```{r}
 pca %>% 
   fviz_contrib(choice = "var", axes = 1, top = 10) +
-  theme(text = element_text(size = 18))
+  theme(text = element_text(size = 13))
 ```
 
 We see that the soil moisture, precipitation and runoff variables are the ones that contribute the most to explaining the first component.
@@ -478,7 +453,7 @@ Now, we plotted the population centers on a coordinate plane using the first and
 ```{r}
 pca %>% 
   fviz_pca_ind() +
-  theme(text = element_text(size = 18))
+  theme(text = element_text(size = 13))
 ```
 
 As in the \@ref(clusters-plots), we see that the variability of the points is distributed mostly over the first component (X axis).
@@ -560,7 +535,6 @@ palette_pca_4 = colorFactor(
 # Plot cluster map
 cluster_map(dataset_strata, palette_pca_4, pca_group_4)
 ```
-
 :::
 
 Geographically, the PCA groups seem to be distributed very similarly with the HC groups.
@@ -578,7 +552,7 @@ We assessed how strong was the agreement between the HC method and PCA method on
 dataset_strata %>% 
   yardstick::conf_mat(hc_group_2, pca_group_2, dnn = c("PCA", "HC")) %>% 
   autoplot(type = "heatmap") +
-  theme(text = element_text(size = 18))
+  theme(text = element_text(size = 13))
 ```
 
 ##### 3 groups
@@ -587,7 +561,7 @@ dataset_strata %>%
 dataset_strata %>% 
   yardstick::conf_mat(hc_group_3, pca_group_3, dnn = c("PCA", "HC")) %>% 
   autoplot(type = "heatmap") +
-  theme(text = element_text(size = 18))
+  theme(text = element_text(size = 13))
 ```
 
 ##### 4 groups
@@ -596,7 +570,7 @@ dataset_strata %>%
 dataset_strata %>% 
   yardstick::conf_mat(hc_group_4, pca_group_4, dnn = c("PCA", "HC")) %>% 
   autoplot(type = "heatmap") +
-  theme(text = element_text(size = 18))
+  theme(text = element_text(size = 13))
 ```
 :::
 
@@ -709,5 +683,4 @@ palette_20 = colorFactor(
 # Map the 20 samples
 sample_map(sample_20_dataset, palette_20, hc_group_4)
 ```
-
 :::
