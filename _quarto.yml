@@ -6,12 +6,12 @@ website:
   favicon: img/harmonize.ico
   title: "Innovalab"
   twitter-card: 
-    image: "/img/twitter-card.png"
+    image: "https://raw.githubusercontent.com/healthinnovation/Harmonize-Project/main/img/twitter-card.png"
     creator: "@antony_barja"
     site: "@antony_barja"
   open-graph:
     description: "Harmonize is a collaboration project with Colombia, Brazil, Dominican Republic and Peru, led by the Barcelona Supercomputing Center and funded by Wellcome Trust, that aims to develop a digital infrastructure to harmonize climate, health and drone data for every country in the consortium."
-    image: "/img/twitter-card.png"
+    image: "https://raw.githubusercontent.com/healthinnovation/Harmonize-Project/main/img/twitter-card.png"
   navbar:
     logo: https://raw.githubusercontent.com/healthinnovation/Harmonize-Project/main/img/harmonize.svg
     left:
