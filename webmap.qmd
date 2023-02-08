@@ -40,43 +40,31 @@ sample_10_dat <- read_csv(
     crs=4326
     )
 
-sample_20_dat <- read_csv(
-  "data/processed/sample-20.csv"
-) %>% 
-  st_as_sf(
-    coords = c("lon","lat"),
-    crs=4326
-  )
+# my_icons <- iconList(
+#   circle <- makeIcon(
+#     iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/1circle.svg",
+#     iconWidth = 18,
+#     iconHeight = 18
+#     ),
+#   square <- makeIcon(
+#     iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/3square.svg",
+#     iconWidth = 18,
+#     iconHeight = 18
+#     ),
+#   triangle <- makeIcon(
+#     iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/2triangle.svg",
+#     iconWidth = 18, iconHeight = 18
+#     ),
+#   start <- makeIcon(
+#     iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/4star.svg",
+#     iconWidth = 18,
+#     iconHeight = 18
+#     )
+# )
 
-my_icons <- iconList(
-  circle <- makeIcon(
-    iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/1circle.svg",
-    iconWidth = 18,
-    iconHeight = 18
-    ),
-  square <- makeIcon(
-    iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/3square.svg",
-    iconWidth = 18,
-    iconHeight = 18
-    ),
-  triangle <- makeIcon(
-    iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/2triangle.svg",
-    iconWidth = 18, iconHeight = 18
-    ),
-  start <- makeIcon(
-    iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/4star.svg",
-    iconWidth = 18,
-    iconHeight = 18
-    )
-)
 s10_pal <- colorFactor(
-  palette = mako(n = 3),
-  domain = sample_10_dat$hc_group_3
-  )
-
-s20_pal <- colorFactor(
   palette = viridis(n = 4),
-  domain = sample_20_dat$hc_group_4
+  domain = sample_10_dat$hc_group_4
 )
 
 
@@ -97,7 +85,7 @@ map_layers <- function() {
     addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>% 
     addProviderTiles(provider = providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>% 
     addProviderTiles(provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>% 
-    setView(lng = -73.44775,lat = -4.08754,zoom = 11)
+    setView(lng = -73.44775,lat = -4.08754,zoom = 10)
   #loop through all groups and add a layer one at a time
   for (i in 1:length(k)) {
     if("Sampling villages" == k[[i]]){
@@ -144,43 +132,51 @@ map_layers <- function() {
     }
     if("1 cluster" == k[[i]]){
       map <- map %>% 
-        addMarkers(
+        addCircleMarkers(
           data = sample_10_dat %>% filter(hc_group_4 == 1),
           group = k[[i]],
-          icon = ~my_icons[hc_group_4],
           popup = paste0(
-            "<h3>","🏡",sample_10_dat$population_center,"</h3>")
+            "<h3>","🏡",sample_10_dat$population_center,"</h3>"),
+          fillColor = ~s10_pal(hc_group_4),
+          stroke = 0,
+          fillOpacity = 0.4
           ) 
     }
     if ("2 cluster" == k[[i]]){
       map <- map %>% 
-        addMarkers(
+        addCircleMarkers(
           data = sample_10_dat %>% filter(hc_group_4 == 2),
           group = k[[i]],
-          icon = ~my_icons[hc_group_4],
           popup = paste0(
-            "<h3>","🏡",sample_10_dat$population_center,"</h3>")
-          )  
+            "<h3>","🏡",sample_10_dat$population_center,"</h3>"),
+          fillColor = ~s10_pal(hc_group_4),
+          stroke = 0,
+          fillOpacity = 0.4
+          ) 
     }
     if ("3 cluster" == k[[i]]){
       map <- map %>% 
-        addMarkers(
+        addCircleMarkers(
           data = sample_10_dat %>% filter(hc_group_4 == 3),
           group = k[[i]],
-          icon = ~my_icons[hc_group_4],
           popup = paste0(
-            "<h3>","🏡",sample_10_dat$population_center,"</h3>")
+            "<h3>","🏡",sample_10_dat$population_center,"</h3>"),
+          fillColor = ~s10_pal(hc_group_4),
+          stroke = 0,
+          fillOpacity = 0.4
           ) 
     }
     
     if ("4 cluster" == k[[i]]){
         map <- map %>% 
-          addMarkers(
+        addCircleMarkers(
           data = sample_10_dat %>% filter(hc_group_4 == 4),
           group = k[[i]],
-          icon = ~my_icons[hc_group_4],
           popup = paste0(
-            "<h3>","🏡",sample_10_dat$population_center,"</h3>")
+            "<h3>","🏡",sample_10_dat$population_center,"</h3>"),
+          fillColor = ~s10_pal(hc_group_4),
+          stroke = 0,
+          fillOpacity = 0.4
           ) 
     }
     
@@ -188,9 +184,11 @@ map_layers <- function() {
       map <- map %>% 
         addPolygons(
           data = areas ,
-          stroke = 0,
+          stroke = 2,
           fillOpacity = 0.8,
           fillColor = "orange",
+          color = "orange",
+          opacity = 1,
           popup = paste0(
             "<h3>","🏡",areas$village,"</h3>","<hr>",
             "- Area-Ha: ",round(areas$area_ha,4),"<br>",
