@@ -48,6 +48,27 @@ sample_20_dat <- read_csv(
     crs=4326
   )
 
+my_icons <- iconList(
+  circle <- makeIcon(
+    iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/1circle.svg",
+    iconWidth = 18,
+    iconHeight = 18
+    ),
+  square <- makeIcon(
+    iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/3square.svg",
+    iconWidth = 18,
+    iconHeight = 18
+    ),
+  triangle <- makeIcon(
+    iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/2triangle.svg",
+    iconWidth = 18, iconHeight = 18
+    ),
+  start <- makeIcon(
+    iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/4star.svg",
+    iconWidth = 18,
+    iconHeight = 18
+    )
+)
 s10_pal <- colorFactor(
   palette = mako(n = 3),
   domain = sample_10_dat$hc_group_3
@@ -64,8 +85,10 @@ map_layers <- function() {
   k <- c(
     "Sampling villages",
     "DIRESA villages",
-    "10 sampling cluster",
-    "20 sampling cluster",
+    "1 cluster",
+    "2 cluster",
+    "3 cluster",
+    "4 cluster",
     "Perimeter qfield"
   )
   #base map
@@ -119,30 +142,48 @@ map_layers <- function() {
             "- 🏙Population: ",round(diresa$pop_mean,4) 
           ))
     }
-    if("10 sampling cluster" == k[[i]]){
+    if("1 cluster" == k[[i]]){
       map <- map %>% 
-        addCircleMarkers(
-          data = sample_10_dat,
-          fillColor = ~s10_pal(hc_group_3),
-          fillOpacity = 0.6,
-          stroke = 0,
+        addMarkers(
+          data = sample_10_dat %>% filter(hc_group_4 == 1),
           group = k[[i]],
+          icon = ~my_icons[hc_group_4],
           popup = paste0(
             "<h3>","🏡",sample_10_dat$population_center,"</h3>")
           ) 
     }
-    if ("20 sampling cluster" == k[[i]]){
+    if ("2 cluster" == k[[i]]){
       map <- map %>% 
-        addCircleMarkers(
-          data = sample_20_dat,
-          fillColor = ~s20_pal(hc_group_4),
-          fillOpacity = 0.6,
-          stroke = 0,
+        addMarkers(
+          data = sample_10_dat %>% filter(hc_group_4 == 2),
           group = k[[i]],
+          icon = ~my_icons[hc_group_4],
           popup = paste0(
             "<h3>","🏡",sample_10_dat$population_center,"</h3>")
-        ) 
+          )  
     }
+    if ("3 cluster" == k[[i]]){
+      map <- map %>% 
+        addMarkers(
+          data = sample_10_dat %>% filter(hc_group_4 == 3),
+          group = k[[i]],
+          icon = ~my_icons[hc_group_4],
+          popup = paste0(
+            "<h3>","🏡",sample_10_dat$population_center,"</h3>")
+          ) 
+    }
+    
+    if ("4 cluster" == k[[i]]){
+        map <- map %>% 
+          addMarkers(
+          data = sample_10_dat %>% filter(hc_group_4 == 4),
+          group = k[[i]],
+          icon = ~my_icons[hc_group_4],
+          popup = paste0(
+            "<h3>","🏡",sample_10_dat$population_center,"</h3>")
+          ) 
+    }
+    
     if("Perimeter qfield" == k[[i]]){
       map <- map %>% 
         addPolygons(
