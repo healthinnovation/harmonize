@@ -1,1 +1,2 @@
-# **Harmonize-Project**
+# **Welcome to Harmonize project**
+
