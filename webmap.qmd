@@ -13,6 +13,7 @@ css: css/map.css
 #| out-width: 100%
 library(dplyr)
 library(leaflet)
+library(htmltools)
 library(leaflet.extras)
 library(viridis)
 library(sf)
@@ -63,7 +64,6 @@ s10_pal <- colorFactor(
   domain = sample_10_dat$hc_group_4
 )
 
-
 map_layers <- function() {
   #number of groups
   k <- c(
@@ -90,19 +90,19 @@ map_layers <- function() {
           data = innovalab,
           icon = makePulseIcon(heartbeat = 0.5),
           group = k[[i]],
-          popup = paste0(
-            "<center><h3> 🏕️",diresa$NOMCP,"</h3></center>","<hr>",
-            "- ⛈️Precipitation: ",round(diresa$pr_mean,4),"<br>",
-            "- 💧Runoff: ",round(diresa$ro_mean,4),"<br>",
-            "- ♒Soil mousture: ", round(diresa$soil_mean,4),"<br>",
-            "- 🌡️Maximum temperature: ",round(diresa$tmax_mean,4),"<br>",
-            "- 🧊Minimum temperature: ",round(diresa$tmin_mean,4),"<br>",
-            "- 💦Evapotranspiration: ", round(diresa$tmin_mean,4),"<br>",
-            "- ☁️Humidity: ", round(diresa$humidity_mean,4),"<br>",
-            "- 🌳🪓Deforestation: ", round(diresa$def_mean,4),"<br>",
-            "- 🛣️Global Superficie Human: ",round(diresa$gsh_mean,4),"<br>",
-            "- ✨Nigth lights: ", round(diresa$ln_mean,4),"<br>",
-            "- 🏙Population: ",round(diresa$pop_mean,4) 
+          popup = ~paste0(
+            "<center><h3> 🏕️",innovalab$NOMCP,"</h3></center>","<hr>",
+            "- ⛈️Precipitation: ",round(innovalab$pr_mean,4),"<br>",
+            "- 💧Runoff: ",round(innovalab$ro_mean,4),"<br>",
+            "- ♒Soil mousture: ", round(innovalab$soil_mean,4),"<br>",
+            "- 🌡️Maximum temperature: ",round(innovalab$tmax_mean,4),"<br>",
+            "- 🧊Minimum temperature: ",round(innovalab$tmin_mean,4),"<br>",
+            "- 💦Evapotranspiration: ", round(innovalab$tmin_mean,4),"<br>",
+            "- ☁️Humidity: ", round(innovalab$humidity_mean,4),"<br>",
+            "- 🌳🪓Deforestation: ", round(innovalab$def_mean,4),"<br>",
+            "- 🛣️Global Superficie Human: ",round(innovalab$gsh_mean,4),"<br>",
+            "- ✨Nigth lights: ", round(innovalab$ln_mean,4),"<br>",
+            "- 🏙Population: ",round(innovalab$pop_mean,4) 
           ))
     }
     if("DIRESA villages"==k[[i]]){
@@ -111,7 +111,7 @@ map_layers <- function() {
           data = diresa,
           icon = makePulseIcon(heartbeat = 0.5),
           group = k[[i]],
-          popup = paste0(
+          popup = ~paste0(
             "<center><h3> 🏕️",diresa$NOMCP,"</h3></center>","<hr>",
             "- ⛈️Precipitation: ",round(diresa$pr_mean,4),"<br>",
             "- 💧Runoff: ",round(diresa$ro_mean,4),"<br>",
@@ -136,7 +136,7 @@ map_layers <- function() {
           fillColor = ~s10_pal(hc_group_4),
           stroke = 0,
           fillOpacity = 0.4
-          ) 
+        ) 
     }
     if ("2 cluster" == k[[i]]){
       map <- map %>% 
@@ -148,7 +148,7 @@ map_layers <- function() {
           fillColor = ~s10_pal(hc_group_4),
           stroke = 0,
           fillOpacity = 0.4
-          ) 
+        ) 
     }
     if ("3 cluster" == k[[i]]){
       map <- map %>% 
@@ -160,11 +160,11 @@ map_layers <- function() {
           fillColor = ~s10_pal(hc_group_4),
           stroke = 0,
           fillOpacity = 0.4
-          ) 
+        ) 
     }
     
     if ("4 cluster" == k[[i]]){
-        map <- map %>% 
+      map <- map %>% 
         addCircleMarkers(
           data = sample_10_dat %>% filter(hc_group_4 == 4),
           group = k[[i]],
@@ -173,7 +173,7 @@ map_layers <- function() {
           fillColor = ~s10_pal(hc_group_4),
           stroke = 0,
           fillOpacity = 0.4
-          ) 
+        ) 
     }
     
     if("Perimeter qfield" == k[[i]]){
@@ -190,7 +190,7 @@ map_layers <- function() {
             "- Area-Ha: ",round(areas$area_ha,4),"<br>",
             "- Area-km2: ",round(areas$area_km2,4)),
           group = k[[i]]
-          )
+        )
     }
     
   }
@@ -201,10 +201,11 @@ map_layers <- function() {
       baseGroups = c("CartoDB","CartoDB.DarkMatter","Open.Street.Map","Esri.WorldImagery"),
       overlayGroups = k[c(1:length(k))],
       options = layersControlOptions(collapsed = FALSE)
-      ) %>% 
+    ) %>% 
     hideGroup(as.character(k[c(0:length(k))])) #hide all groups except the 1st one
   map
 }
+
 
 #plot the map
 map_layers()
