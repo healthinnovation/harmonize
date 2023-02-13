@@ -340,7 +340,17 @@ dataset_clustering = dataset %>%
     hc_group_3 = as.factor(tree_3$cluster),
     hc_group_4 = as.factor(tree_4$cluster)
   )
+```
 
+```{r echo=FALSE}
+# clusters_path = fs::path(parent_path, "data/processed/clusters.csv")
+# 
+# dataset_clustering %>%
+#   select(ubigeo, cluster = hc_group_4) %>%
+#   readr::write_csv(clusters_path, na = "")
+```
+
+```{r}
 # Function to plot a map with the clusters
 cluster_map = function(data, palette, group_var) {
   values = pull(data, {{group_var}})
