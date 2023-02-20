@@ -342,12 +342,35 @@ dataset_clustering = dataset %>%
   )
 ```
 
-```{r echo=FALSE}
-# clusters_path = fs::path(parent_path, "data/processed/clusters.csv")
+```{r echo=FALSE, eval=FALSE}
+#| echo: false
+#| eval: false
+# dataset_full = readr::read_csv(
+#   "data/methodology/data/processed/db_variables.csv",
+#   col_types = "cccccccd"
+# )
 # 
-# dataset_clustering %>%
-#   select(ubigeo, cluster = hc_group_4) %>%
-#   readr::write_csv(clusters_path, na = "")
+# dataset_mod = dataset_clustering %>%
+#   mutate(
+#     population_center = case_when(
+#       population_center == "ZUNGARO COCHA" ~ "ZUNGAROCOCHA",
+#       population_center == "PAUJIL I ZONA" ~ "EL PAUJIL",
+#       population_center == "VARILLAL" ~ "EL VARILLAL",
+#       population_center == "VILLA CRUZ" ~ "VILLA PUERTO CRUZ",
+#       population_center == "HUAMBE" ~ "EL HUAMBE",
+#       TRUE ~ population_center
+#     )
+#   ) %>% 
+#   select(ubigeo, population_center, hc_group_4)
+# 
+# dataset_visor = dataset_full %>% 
+#   left_join(
+#     dataset_mod, by = c("NOMCP" = "population_center")
+#   )
+# 
+# clusters_path = fs::path(parent_path, "data/processed/db_variables_clusters.csv")
+# 
+# readr::write_csv(dataset_visor, clusters_path, na = "")
 ```
 
 ```{r}
