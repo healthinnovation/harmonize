@@ -1,0 +1,32 @@
+---
+page-layout: full
+comments: false
+css: table.css
+---
+<br>
+<br>
+
+```{r}
+#| column: screen
+#| echo: false
+#| message: false
+#| warning: false
+#| out-height: 100vh
+#| out-width: 100%
+library(readxl)
+library(ganttrify)
+library(tidyverse)
+
+data <- read_excel("data/data.xlsx") %>% 
+  mutate(start_date = as.Date(start_date),
+         end_date = as.Date(end_date))
+
+
+ganttrify(project = data,
+          by_date = TRUE,
+          exact_date = TRUE,
+          size_text_relative = 1.2,
+          month_number_label = FALSE,
+          font_family = "Roboto Condensed")
+
+```

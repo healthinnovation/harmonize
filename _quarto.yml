@@ -25,9 +25,11 @@ website:
         text: Data audit
       - href: table.qmd
         text: Dataset  
+      - href: gantt_fieldwork.qmd
+        text: Fieldwork Gantt
     right:
       - icon: github
-        href: https://github.com/healthinnovation/Harmonize-Project
+        href: https://github.com/healthinnovation/harmonize
       - icon: twitter
         href: https://twitter.com/innovalab_imt
   
