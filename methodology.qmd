@@ -11,13 +11,6 @@ css: css/methodology.css
 bibliography: references/references.bib
 ---
 
-```{css, echo=FALSE}
-.panel-tabset .nav-item {
-  font-size: 10px;
-  font-style: italic
-}
-```
-
 ## Introduction {#intro}
 
 This document describes the methodology carried out for the stratification and selection of population centers in Loreto for drone surveillance. This activity is part of the the *Harmonize project: Harmonisation of spatio-temporal multi-scale data for health in climate change hotspots in the Peruvian Amazon* (SIDISI 209821), in collaboration with the Barcelona Supercomputing Center.
