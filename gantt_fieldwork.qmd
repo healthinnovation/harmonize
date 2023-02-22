@@ -11,7 +11,7 @@ css: table.css
 #| echo: false
 #| message: false
 #| warning: false
-#| out-height: 100vh
+#| out-height: 80vh
 #| out-width: 100%
 
 library(tidyverse)
