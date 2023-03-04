@@ -1,0 +1,85 @@
+---
+page-layout: full
+comments: false
+css: table.css
+---
+
+<br> <br>
+
+```{r}
+#| column: screen
+#| echo: false
+#| message: false
+#| warning: false
+#| out-height: 80vh
+#| out-width: 100%
+
+library(tidyverse)
+library(readxl)
+library(innovar)
+library(plotly)
+
+
+# Data Wrangling-----------------------------------------------------------
+
+data <- read_excel("data/gantt/data.xlsx") %>% 
+  rename(group = wp,
+         task = activity) %>% 
+  mutate(
+    start_date = as.Date(start_date),
+    end_date = as.Date(end_date),
+    task = str_sub(task, 3)
+  ) %>% 
+  group_by(group, task) %>% 
+  arrange(task, start_date) %>% 
+  mutate(
+    salida = 1:length(task)
+  ) %>% 
+  relocate(
+    salida, .after = task
+  ) %>% 
+  ungroup()
+
+data_tidy <- data %>% 
+  pivot_longer(cols = start_date:end_date,
+               names_to = "date_type",
+               values_to = "date") 
+
+
+# Gantt Chart -------------------------------------------------------------
+
+a <- data_tidy %>% 
+  ggplot(aes(x = fct_rev(fct_inorder(task)), y = date, 
+             group = interaction(task, salida), color = task)) +
+  geom_line(linewidth=3)+
+  geom_hline(yintercept= as.Date("2023-04-10"), color = "black", linetype = "dashed") +
+  scale_color_innova("npr") +
+  coord_flip() +
+  labs(
+    title = "Harmonize - Fieldwork Campaings - Year 1",
+    x = "Components",
+    y = "",
+    color = "Components"
+  ) +
+  scale_y_date(date_breaks = "30 day") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5),
+    panel.grid.minor = element_line(colour="white", size=0.5),
+    legend.position="right",
+    plot.title = element_text(hjust = 0.5)
+  )
+
+# Dynamic Gantt -----------------------------------------------------------
+
+ggplotly(a) %>% 
+  config(displayModeBar = F) %>% 
+  layout(margin = list(l = 150, r = 20, b = 50, t = 50),
+         yaxis = list(title = paste0(c(rep("&nbsp;", 20),
+                                       "Components",
+                                       rep("&nbsp;", 20),
+                                       rep("\n&nbsp;", 3)),
+                                     collapse = "")))
+
+
+```

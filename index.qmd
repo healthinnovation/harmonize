@@ -24,7 +24,7 @@ css: css/innova.css
 ::: card-body
 <h5 class="card-title">
 
-Workfields
+Fieldwork
 
 </h5>
 
@@ -44,7 +44,7 @@ A web map-based monitoring system for the collection of geo-referenced informati
 ::: card-body
 <h5 class="card-title">
 
-Statistic models
+Statistical methods
 
 </h5>
 
