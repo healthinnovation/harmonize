@@ -3,8 +3,9 @@ page-layout: full
 comments: false
 css: table.css
 ---
-<br>
-<br>
+
+<br> <br>
+
 ```{r}
 #| column: screen
 #| echo: false
@@ -12,9 +13,9 @@ css: table.css
 #| warning: false
 library(reactablefmtr)
 
-parent_path = "data/methodology/"
-file_path = fs::path(parent_path, "data/processed/db_variables.csv")
-dataset = readr::read_csv(file_path, col_types = "ccd")
+processed_path = "data/processed/"
+file_path = fs::path(processed_path, "ccpp-10km.csv")
+dataset = readr::read_csv(file_path, col_types = "cccccccd")
 
-reactable(dataset, columns = list(UBIGEO = colDef(cell = color_tiles(data))))
+reactable(dataset, columns = list(ubigeo = colDef(cell = color_tiles(data))))
 ```

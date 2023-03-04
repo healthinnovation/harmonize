@@ -25,16 +25,17 @@ The Harmonize project has the following objectives:
 
 4)  Determine the impact of the use of these new technologies on infectious disease reduction interventions carried out by the Dirección Regional de Salud (DIRESA) of Loreto.
 
-The methodology described here corresponds to the second objective above. Since we cannot map the whole study area of Loreto, our approach was to characterize the population centers in Loreto according to the incidence of relevant diseases in the area (Malaria, Dengue and Leptospirosis) and meteorological, environmental and human intervention variables (temperature, precipitation, soil moisture, deforestation, etc.) and then use this variables to create sampling strata using clustering techniques. Finally, we randomly sampled a number of the population centers from each stratum proportional to the stratum size.
+The methodology described here corresponds to the second objective above. Since we cannot map the whole study area of Loreto, our approach was to characterize the population centers in Loreto according to the incidence of relevant diseases in the area (Malaria, Dengue and Leptospirosis) and meteorological, environmental and human intervention variables and then use this variables to create sampling strata using clustering techniques. Finally, we randomly sampled a number of the population centers from each stratum proportional to the stratum size.
 
 ## Dataset {#dataset}
 
 For each population center, we gathered records on the following fields:
 
--   UBIGEO, which is the official identification code of the population centers used by the Instituto Nacional de Estadística e Informática (INEI).
--   Official name .
--   Latitude and longitud.
--   Cumulative incidence of malaria, dengue and leptospirosis from epidemiological week 1 to 39 of 2022.
+-   UBIGEOCP, which is the official identification code of the population centers used by the Instituto Nacional de Estadística e Informática (INEI).
+-   Official name.
+-   Latitude and longitude.
+-   2022 cumulative incidence of Malaria, Dengue and Leptospirosis.
+-   Difference in the cumulative incidence of Malaria between 2010 and 2019.
 -   Mean and difference of the annual mean values of the years 2010 and 2021 of the following variables:
     -   Precipitation accumulation (mm),
     -   Runoff (mm),
@@ -62,12 +63,13 @@ library(cluster)
 library(leaflet)
 
 # Read dataset
-parent_path = "data/methodology/"
-file_path = fs::path(parent_path, "data/processed/dataset.csv")
-dataset = readr::read_csv(file_path, col_types = "ccd")
+processed_path = "data/processed/"
+file_name = "ccpp-10km.csv"
+file_path = fs::path(processed_path, file_name)
+ccpp = readr::read_csv(file_path, col_types = "ccccccddcd")
 
 # Display dataset
-dataset %>%
+ccpp %>%
   mutate(across(where(is.numeric), ~ round(.x, 2))) %>%
   DT::datatable(
     options = list(display = "compact", pageLength = 5, scrollX = TRUE)
@@ -94,10 +96,10 @@ For each combination, we run the agglomerative nesting algorithm and calculated 
 
 ```{r}
 # Select variables for analysis
-variables = select(dataset, malaria:malaria_diff)
+variables = select(ccpp, dengue:malaria_diff)
 
 # Function to scale data either by standardization or normalization
-scale_data = function(data, method = "standardization") {
+scale_data = function(data, method) {
   if (method == "standardization") {
     data_scaled = mutate(data, across(everything(), ~as.numeric(scale(.x))))
   } 
@@ -126,7 +128,6 @@ agglomerative_coeff = design %>%
   ) %>% 
   tidyr::unnest(ac) %>% 
   arrange(-ac)
-
 ```
 
 The best 3 HC structures according to the AC were the following:
@@ -146,7 +147,7 @@ agglomerative_coeff %>%
 
 <br>
 
-The difference of the AC values are almost negligible. Consequently, we examined the dendograms:
+The difference of the first 3 AC values are almost negligible. Consequently, we examined the dendograms:
 
 ```{r}
 # Function to plot a dendogram
@@ -165,7 +166,7 @@ dendogram = function(row, title) {
 #| warning: false
 #| message: false
 
-dendogram(1, "Standardization, Spearman correlation, Ward linkage")
+dendogram(1, "Normalization, Pearson correlation, Ward linkage")
 ```
 
 ##### HC structure 2
@@ -174,7 +175,7 @@ dendogram(1, "Standardization, Spearman correlation, Ward linkage")
 #| warning: false
 #| message: false
 
-dendogram(2, "Normalization, Pearson correlation, Ward linkage")
+dendogram(2, "Standardization, Spearman correlation, Ward linkage")
 ```
 
 ##### HC structure 3
@@ -187,11 +188,11 @@ dendogram(3, "Standardization, Pearson correlation, Ward linkage")
 ```
 :::
 
-After inspecting the dendrograms, we chose the first HC structure as it seemed to form more homogeneous groups with relatively similar sizes for the different height values.
+After inspecting the dendograms, we chose the second HC structure as it seems to yield more homogeneous groups with relatively similar sizes for the different height values.
 
 ### Determining the number of clusters
 
-We calculated and plotted the average silhouette width, total within sum of squares and gap statistic for a range of 1 to 10 number of clusters and examined the optimal number of cluster for each criteria. We defined a range of numbers of clusters that met or near met the optimal criteria and then for each one of them we used PCA to visualize the clusters in 2 dimensions to evaluate how well the groups were formed. In addition, the individual silhouette index of each observation was calculated and plotted to assess if there were observations that might have been misclustered.
+We calculated and plotted the Average silhouette width, Total within sum of squares and Gap statistic for a range of 1 to 10 number of clusters and examined the optimal number of cluster for each criteria. We defined a range of numbers of clusters that met or near met the optimal criteria and then for each one of them we used PCA to visualize the clusters in 2 dimensions to evaluate how well the groups were formed. In addition, the silhouette information of each observation was plotted to assess if there were observations that might have been misclustered.
 
 #### Evaluation of the criteria of the optimal number of clusters
 
@@ -232,18 +233,18 @@ nbclust_plot(variables_std, "gap_stat", verbose = FALSE)
 ```
 :::
 
-From these plots, we determined that the optimal number of cluster may be between 2 and 4 clusters.
+According to the average silhouette width, the optimal number of clusters is 5. In the total within sum of squares plot, we see an apparent elbow at 4 clusters. Finally, the Gap statistic tells us that the optimal number of clusters is 10 or more. However, we do not wanted to work with more than 5 clusters, 4 or 5 clusters would be the closest optimal.
 
 #### Clusters plots {#clusters-plots}
 
-Next, we plotted the clusters in a plane using PCA for 2, 3 and 4 clusters.
+Next, we plotted the clusters in a plane using PCA for 4 and 5 clusters.
 
 ```{r}
 # Function to cut tree
 cut_tree = function(data, k) {
   tree = hcut(
     data, k = k, hc_func = "agnes", hc_method = "ward.D2", 
-    hc_metric = "spearman"
+    hc_metric = "spearman", graph = TRUE
   )
   tree
 }
@@ -260,33 +261,27 @@ cluster_plot = function(tree) {
 ```
 
 ::: panel-tabset
-##### 2 clusters
-
-```{r}
-tree_2 = cut_tree(variables_std, 2)
-cluster_plot(tree_2)
-```
-
-##### 3 clusters
-
-```{r}
-tree_3 = cut_tree(variables_std, 3)
-cluster_plot(tree_3)
-```
-
 ##### 4 clusters
 
 ```{r}
 tree_4 = cut_tree(variables_std, 4)
 cluster_plot(tree_4)
 ```
+
+##### 5 clusters
+
+```{r}
+tree_5 = cut_tree(variables_std, 5)
+cluster_plot(tree_5)
+```
+
 :::
 
-In the case of 2 clusters, the groups seem to be defined according to whether the scores of the observations on the first dimension are positive or negative. In the case of 3 clusters, the group with negative scores on the first dimension is divided if the scores on the second dimension are positive and negative. Finally, in the case of 4 clusters, the groups seem to be defined according to their belonging to one of the 4 quadrants.
+We can see that the fifth group is formed from some populated centers of clusters 2 and 3 in the 4-cluster graph.
 
 #### Individual silhouette widths
 
-Next, we plotted the individual silhouette width for the observations grouped in 2, 3 and 4 clusters.
+Next, we plotted the individual silhouette width for the observations grouped 4 and 5 clusters.
 
 ```{r}
 # Function to plot individual silhouette widths
@@ -300,39 +295,59 @@ silhouette_plot = function(tree) {
 ```
 
 ::: panel-tabset
-##### 2 clusters
-
-```{r}
-silhouette_plot(tree_2)
-```
-
-##### 3 clusters
-
-```{r}
-silhouette_plot(tree_3)
-```
-
 ##### 4 clusters
 
 ```{r}
 silhouette_plot(tree_4)
 ```
+
+##### 5 clusters
+
+```{r}
+silhouette_plot(tree_5)
+```
+
 :::
 
-We see that with 2 clusters we obtain a greater average silhouette width (0.49), followed by 4 clusters (0.44) and lastly the case with 3 clusters (0.43). The least number of observations possibly misclustered is obtained with 3 clusters (2), followed by 2 clusters (3), and lastly the case with 4 clusters (5).
+We see that with 5 clusters we obtain a greater average silhouette width (0.44) than with 4 clusters (0.41). However, with 5 clusters with get greater negative values for some populated centers, indicating that they may be misclustered.
 
 #### HC groups on maps
 
-As an additional step, for a number of clusters of 2, 3 and 4, we plotted the population centers (polygon centroids) on a map coloured by group to see their spatial distribution.
+As an additional step, for each number of clusters, we plotted the population centers (polygon centroids) on a map to see their spatial distribution.
 
 ```{r}
 # Create table with the groups
-dataset_clustering = dataset %>% 
+ccpp_clusters = ccpp %>% 
   mutate(
-    hc_group_2 = as.factor(tree_2$cluster),
-    hc_group_3 = as.factor(tree_3$cluster),
-    hc_group_4 = as.factor(tree_4$cluster)
+    hc_group_4 = as.factor(tree_4$cluster),
+    hc_group_5 = as.factor(tree_5$cluster)
   )
+
+# Function to plot a map with the clusters
+cluster_map = function(data, palette, group_var) {
+  values = pull(data, {{group_var}})
+  
+  map = data %>% 
+    sf::st_as_sf(coords = c("lng", "lat"), crs = 4326) %>%
+    leaflet() %>% 
+    addTiles(group = "OpenStreetMap") %>% 
+    addProviderTiles(provider = providers$CartoDB, group = "CartoDB") %>%
+    addProviderTiles(
+      provider = providers$Esri.WorldImagery, group = "Satelital"
+    ) %>%
+    addCircleMarkers(
+      popup = ccpp$population_center, color = ~palette(values),
+      opacity = 1, radius = 0.1, fillOpacity = 0.5
+    )%>%
+    addLayersControl(
+      baseGroups = c("CartoDB", "OpenStreetMap", "Satelital")
+    ) %>%
+    addLegend(
+      title = "Cluster", pal = palette, values = values, opacity = 1,
+      position = "bottomright"
+      )
+  map
+}
 ```
 
 ```{r echo=FALSE, eval=FALSE}
@@ -366,61 +381,7 @@ dataset_clustering = dataset %>%
 # readr::write_csv(dataset_visor, clusters_path, na = "")
 ```
 
-```{r}
-# Function to plot a map with the clusters
-cluster_map = function(data, palette, group_var) {
-  values = pull(data, {{group_var}})
-  
-  map = dataset_clustering %>% 
-    sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
-    leaflet() %>% 
-    addTiles(group = "OpenStreetMap") %>% 
-    addProviderTiles(provider = providers$CartoDB, group = "CartoDB") %>%
-    addProviderTiles(provider = providers$Esri.WorldImagery, group = "Satelital") %>% 
-    addCircleMarkers(
-      popup = dataset$population_center, color = ~palette(values),
-      opacity = 1, radius = 0.1, fillOpacity = 0.5
-    )%>%
-    addLayersControl(baseGroups = c("CartoDB", "OpenStreetMap", "Satelital")) %>%
-    addLegend(
-      title = "Cluster", pal = palette, values = values, opacity = 1,
-      position = "bottomright"
-      )
-  map
-}
-```
-
 ::: panel-tabset
-##### 2 clusters
-
-```{r}
-#| warning: false
-#| message: false
-
-# Palette for 2 clusters
-palette_hc_2 = colorFactor(
-  palette = "viridis", domain = dataset_clustering$hc_group_2
-)
-
-# Plot cluster map
-cluster_map(dataset_clustering, palette_hc_2, hc_group_2)
-```
-
-##### 3 clusters
-
-```{r}
-#| warning: false
-#| message: false
-
-# Palette for 3 clusters
-palette_hc_3 = colorFactor(
-  palette = "viridis", domain = dataset_clustering$hc_group_3
-)
-
-# Plot cluster map
-cluster_map(dataset_clustering, palette_hc_3, hc_group_3)
-```
-
 ##### 4 clusters
 
 ```{r}
@@ -429,19 +390,35 @@ cluster_map(dataset_clustering, palette_hc_3, hc_group_3)
 
 # Palette for 4 clusters
 palette_hc_4 = colorFactor(
-  palette = "viridis", domain = dataset_clustering$hc_group_4
+  palette = "viridis", domain = ccpp_clusters$hc_group_4
 )
 
 # Plot cluster map
-cluster_map(dataset_clustering, palette_hc_4, hc_group_4)
+cluster_map(ccpp_clusters, palette_hc_4, hc_group_4)
 ```
+
+##### 5 clusters
+
+```{r}
+#| warning: false
+#| message: false
+
+# Palette for 5 clusters
+palette_hc_5 = colorFactor(
+  palette = "viridis", domain = ccpp_clusters$hc_group_5
+)
+
+# Plot cluster map
+cluster_map(ccpp_clusters, palette_hc_5, hc_group_5)
+```
+
 :::
 
-We see that the groups seem to divide longitudinally, showing a strong spatial component driving the separation between them.
+We see that the population centers seem to group, showing a strong spatial component driving the clustering. 
 
 ### Principal components analysis
 
-Principal component analysis (PCA) was used as an alternative method for clustering. Our approach was to use the principal component to build an aggregate index of all the variables considered. Then, the scores of the populated centers on this principal component were grouped into different categories according to the quantiles of the distribution. In order to compare this approach with the results of hierarchical clustering, we tested with 2 (50th quantile), 3 (33th and 66th quantiles) and 4 (25th, 50th and 75th quantiles) groups.
+Principal component analysis (PCA) was used as an alternative method for clustering. Our approach was to use the principal component to build an aggregate index of all the variables considered. Then, the scores of the populated centers on this principal component were grouped into different categories according to the quantiles of the distribution. In order to compare this approach with the results of hierarchical clustering, we tested with 4 (25th, 50th and 75th quantiles) and 5 (20th, 40th, 60th and 80th quantiles) groups.
 
 ```{r}
 # Perform PCA
@@ -472,18 +449,6 @@ pca %>%
 
 We see that the soil moisture, precipitation and runoff variables are the ones that contribute the most to explaining the first component.
 
-#### Coordinate plane
-
-Now, we plotted the population centers on a coordinate plane using the first and second components.
-
-```{r}
-pca %>% 
-  fviz_pca_ind() +
-  theme(text = element_text(size = 13))
-```
-
-As in the \@ref(clusters-plots), we see that the variability of the points is distributed mostly over the first component (X axis).
-
 #### PCA groups on maps
 
 Finally, we created the groups dividing the population centers according to the quantiles of the scores on the principal component. Then we plotted the population centers on maps for 2, 3 and 4 groups.
@@ -494,59 +459,24 @@ pca_results = get_pca_ind(pca)
 scores = pca_results$coord
 
 # Create groups by quantile categorization
-dataset_strata = dataset_clustering %>% 
+ccpp_strata = ccpp_clusters %>% 
   mutate(pca_score = scores[, 1]) %>% 
   mutate(
-    pca_group_2 = cut(
-      pca_score, breaks = quantile(pca_score, c(0, .5, 1)), 
-      labels = as.character(rev(1:2)),
-      include.lowest = TRUE
-    ),
-    pca_group_3 = cut(
-      pca_score, breaks = quantile(pca_score, c(0, .33, .66, 1)), 
-      labels = as.character(rev(1:3)),
-      include.lowest = TRUE
-    ),
     pca_group_4 = cut(
       pca_score, breaks = quantile(pca_score, c(0, .25, .5, .75, 1)), 
       labels = as.character(rev(1:4)),
       include.lowest = TRUE
+    ),
+    pca_group_5 = cut(
+      pca_score, breaks = quantile(pca_score, c(0, .2, .4, .6, .8, 1)), 
+      labels = as.character(rev(1:5)),
+      include.lowest = TRUE
     )
   ) %>% 
-  mutate(across(pca_group_2:pca_group_4, forcats::fct_rev))
+  mutate(across(pca_group_4:pca_group_5, forcats::fct_rev))
 ```
 
 ::: panel-tabset
-##### 2 groups
-
-```{r}
-#| warning: false
-#| message: false
-
-# Palette for 2 groups
-palette_pca_2 = colorFactor(
-  palette = "viridis", domain = dataset_strata$pca_group_2
-)
-
-# Plot cluster map
-cluster_map(dataset_strata, palette_pca_2, pca_group_2)
-```
-
-##### 3 groups
-
-```{r}
-#| warning: false
-#| message: false
-
-# Palette for 3 groups
-palette_pca_3 = colorFactor(
-  palette = "viridis", domain = dataset_strata$pca_group_3
-)
-
-# Plot cluster map
-cluster_map(dataset_strata, palette_pca_3, pca_group_3)
-```
-
 ##### 4 groups
 
 ```{r}
@@ -555,104 +485,234 @@ cluster_map(dataset_strata, palette_pca_3, pca_group_3)
 
 # Palette for 4 groups
 palette_pca_4 = colorFactor(
-  palette = "viridis", domain = dataset_strata$pca_group_4
+  palette = "viridis", domain = ccpp_strata$pca_group_4
 )
 
 # Plot cluster map
-cluster_map(dataset_strata, palette_pca_4, pca_group_4)
+cluster_map(ccpp_strata, palette_pca_4, pca_group_4)
 ```
+
+##### 5 groups
+
+```{r}
+#| warning: false
+#| message: false
+
+# Palette for 5 groups
+palette_pca_5 = colorFactor(
+  palette = "viridis", domain = ccpp_strata$pca_group_5
+)
+
+# Plot cluster map
+cluster_map(ccpp_strata, palette_pca_5, pca_group_5)
+```
+
 :::
 
-Geographically, the PCA groups seem to be distributed very similarly with the HC groups.
+Geographically, the PCA groups seem to be distributed very similar to the HC groups.
 
 ### Comparing HC and PCA
 
-We assessed how strong was the agreement between the HC method and PCA method on the grouping of the population centers, for 2, 3 and 4 groups. Confusion matrices and the Kappa statistic were used for this analysis.
+We assessed how strong was the agreement between the HC method and PCA method on the grouping of the population centers for 4 and 5 groups. Confusion matrices and the Kappa statistic were used for this analysis.
 
 #### Confusion matrices
 
 ::: panel-tabset
-##### 2 groups
-
-```{r}
-dataset_strata %>% 
-  yardstick::conf_mat(hc_group_2, pca_group_2, dnn = c("PCA", "HC")) %>% 
-  autoplot(type = "heatmap") +
-  theme(text = element_text(size = 13))
-```
-
-##### 3 groups
-
-```{r}
-dataset_strata %>% 
-  yardstick::conf_mat(hc_group_3, pca_group_3, dnn = c("PCA", "HC")) %>% 
-  autoplot(type = "heatmap") +
-  theme(text = element_text(size = 13))
-```
-
 ##### 4 groups
 
 ```{r}
-dataset_strata %>% 
+ccpp_strata %>% 
   yardstick::conf_mat(hc_group_4, pca_group_4, dnn = c("PCA", "HC")) %>% 
   autoplot(type = "heatmap") +
   theme(text = element_text(size = 13))
 ```
+
+##### 5 groups
+
+```{r}
+ccpp_strata %>% 
+  yardstick::conf_mat(hc_group_5, pca_group_5, dnn = c("PCA", "HC")) %>% 
+  autoplot(type = "heatmap") +
+  theme(text = element_text(size = 13))
+```
+
 :::
 
 ```{r}
 # Get kappa statistic
-kap_2 = yardstick::kap(dataset_strata, hc_group_2, pca_group_2)
-kap_3 = yardstick::kap(dataset_strata, hc_group_3, pca_group_3)
-kap_4 = yardstick::kap(dataset_strata, hc_group_4, pca_group_4)
+kap_4 = yardstick::kap(ccpp_strata, hc_group_4, pca_group_4)
+kap_5 = yardstick::kap(ccpp_strata, hc_group_5, pca_group_5)
 ```
 
-From the confusion matrices it is evident a strong agreement between the HC method and the PCA method.The agreement is stronger in the case of 2 clusters (kappa = `r round(kap_2$.estimate, 2)`), followed by the case of 3 clusters (kappa = `r round(kap_3$.estimate, 2)`) and lastly the case of 4 clusters (kappa = `r round(kap_4$.estimate, 2)`).
+From the confusion matrices it is evident a moderate agreement between the HC method and the PCA method. The agreement is stronger with 4 groups (kappa = `r round(kap_4$.estimate, 2)`) than with and 5 (kappa = `r round(kap_5$.estimate, 2)`).
 
-Finally, we opted to work with 4 clusters because this number gives us a greater spatial heterogeneity of populated centers.
-
-## Sampling
-
-Having chosen the number of clusters, we draw a random sample from each of them proportional to their size to obtain a sample size of no less than 10 or 20 population centers.
+In summary, both 4 and 5 groups give very similar results in terms of visual and statistical indicators. However, we ultimately opted to work with 4 clusters to avoid an excessive disaggreation of populated centers.
 
 ```{r}
-# Sample 20 population centers
-set.seed(2022)
-sampling_20 = dataset_strata %>% 
-  group_by(hc_group_4) %>% 
-  slice_sample(prop = 0.43) %>% 
-  ungroup()
+#| echo: false
+#| eval: false
+ccpp_path = fs::path(processed_path, "ccpp-10km-strata.csv")
+ccpp_strata %>% 
+  select(c(ubigeo:malaria_diff, hc_group_4)) %>% 
+  readr::write_csv(ccpp_path)
+```
+
+## Selection of populated centers
+
+Having chosen the number of clusters, we determined the number of population centers we should select from each one of them to obtain a sample of 10 population centers with the same proportion of cases in each cluster.
+
+```{r}
+# Sample size for each cluster
+round(table(ccpp_strata$hc_group_4)/6)
+```
+
+Therefore, we needed to select roughly 3 populated centers from cluster 1 and 2 from each of the other ones.
+
+We did not take a random sample approach since we had the following restraints:
+
+- The Direccion Regional de Salud de Loreto (DIRESA Loreto) selected 5 population centers that are of epidemiological interest.
+- We had previously conducted field work to collect georeferenced points to reconstruct the perimeter of 21 populated centers. This is work that would have to be done for all the communities selected for drone mapping. So, for the sake of convenience, it was better to select from these population centers whose perimeters we already had. 
+
+Consquently, we took these 26 populated centers (5 from DIRESA Loreto, 21 from InnovaLab) as our sample frame. The 5 populated centers from DIRESA Loreto were a must and 4 of them were in cluster 1 and 1 in cluster 2, so from the InnovaLab collection we randomly sample 1 populated center from cluster 2 and 2 from clusters 3 and 4 to have a total sample size of 10.
+
+```{r}
+#| echo: false
+#| eval: false
 
 # Sample 10 population centers
-set.seed(2022)
-sampling_10 = dataset_strata %>% 
-  group_by(hc_group_4) %>% 
-  slice_sample(prop = 0.23) %>% 
-  ungroup()
+# set.seed(2022)
+# n_samples = c(2, 1, 2)
+# sampling_10_innova = dataset_strata %>% 
+#   filter(group == "INNOVALAB", hc_group_4 != "1") %>% 
+#   tidyr::nest(data = -hc_group_4) %>% 
+#   mutate(
+#     sample = purrr::map2(data, n_samples, ~slice_sample(.x, n = .y))
+#   ) %>% 
+#   select(hc_group_4, sample) %>% 
+#   tidyr::unnest(sample) %>% 
+#   relocate(hc_group_4, .after = hc_group_3)
+# 
+# sampling_10_diresa = filter(dataset_strata, group == "DIRESA")
+# 
+# sampling_10 = bind_rows(sampling_10_diresa, sampling_10_innova)
+
+# Sample 15 population centers
+# set.seed(2022)
+# n_samples = c(1, 4, 2, 3)
+# sampling_15_innova = dataset_strata %>% 
+#   filter(group == "INNOVALAB") %>% 
+#   tidyr::nest(data = -hc_group_4) %>% 
+#   mutate(
+#     sample = purrr::map2(data, n_samples, ~slice_sample(.x, n = .y))
+#   ) %>% 
+#   select(hc_group_4, sample) %>% 
+#   tidyr::unnest(sample) %>% 
+#   relocate(hc_group_4, .after = hc_group_3)
+# 
+# sampling_15_diresa = filter(dataset_strata, group == "DIRESA")
+# sampling_15 = bind_rows(sampling_15_diresa, sampling_15_innova)
+# 
+# sampling = bind_rows(sampling_10, sampling_15, .id = "sampling")
+# 
+# sampling_filepath = fs::path(parent_path, "ccpp-10km-sample.csv")
+# readr::write_csv(sampling, sampling_filepath)
+```
+
+```{r}
+# Read the 26 populated centers previously selected
+raw_path = "data/raw/"
+ccpp_previous_path = fs::path(raw_path, "ccpp-perimeters-diresa.csv")
+ccpp_previous_ccpp = readr::read_csv(ccpp_previous_path, col_types = "cccccccd")
+ccpp_previous_strata = filter(
+  ccpp_strata, ubigeocp %in% ccpp_previous_ccpp$UBIGEOCP
+)
+
+# Select from DIRESA Loreto selection
+ccpp_sample_diresa = ccpp_previous_strata %>% 
+  filter(group == "DIRESA")
+
+# Select from InnovaLab collection
+n_samples_innova = c(1, 2, 2)
+set.seed(2023)
+ccpp_sample_innova = ccpp_previous_strata %>% 
+  filter(group == "INNOVALAB", hc_group_4 != "1") %>% 
+  tidyr::nest(data = -hc_group_4) %>% 
+  mutate(
+    sample = purrr::map2(data, n_samples_innova, ~slice_sample(.x, n = .y))
+  ) %>% 
+  select(hc_group_4, sample) %>% 
+  tidyr::unnest(sample) %>% 
+  relocate(hc_group_4, .before =  hc_group_5)
+
+# Final sample
+ccpp_sample = bind_rows(ccpp_sample_innova, ccpp_sample_diresa)
 ```
 
 ```{r}
 #| echo: false
-# sampling_10_filepath = fs::path(parent_path, "data/processed/sample-10.csv")
-# sampling_20_filepath = fs::path(parent_path, "data/processed/sample-20.csv")
-# readr::write_csv(sampling_10, sampling_10_filepath)
-# readr::write_csv(sampling_20, sampling_20_filepath)
+#| eval: false
+# 15
+# set.seed(2022)
+# sample_15_group_1_innova = dataset_old %>% 
+#   filter(group == "INNOVALAB", hc_group_4 == "1") %>% 
+#   slice_sample(n = 1)
+# 
+# sample_15_group_1_diresa = filter(dataset_old, group == "DIRESA", hc_group_4 == "1")
+# sample_15_group_1 = bind_rows(sample_15_group_1_innova, sample_15_group_1_diresa)
+# 
+# sample_15_group_2_strata = dataset_strata %>% 
+#   filter(
+#     hc_group_4 == "2",
+#     nomcp %in% c("SAN CARLOS", "VILLA EL BUEN PASTOR")
+#   ) 
+# 
+# sample_15_group_2_old = filter(dataset_old, hc_group_4 == "2")
+# sample_15_group_2 = bind_rows(sample_15_group_2_strata, sample_15_group_2_old)
+# 
+# set.seed(2022)
+# n_samples_15_old = c(3, 3)
+# sampling_15_group_34_old = dataset_old %>% 
+#   filter(hc_group_4 %in% c("3", "4")) %>% 
+#   tidyr::nest(data = -hc_group_4) %>% 
+#   mutate(
+#     sample = purrr::map2(data, n_samples_15_old, ~slice_sample(.x, n = .y))
+#   ) %>% 
+#   select(hc_group_4, sample) %>% 
+#   tidyr::unnest(sample) %>% 
+#   relocate(hc_group_4, .after = hc_group_3)
+# 
+# sampling_15_old = bind_rows(sample_15_group_1, sample_15_group_2, sampling_15_group_34_old)
 ```
 
-Next, we plot the samples in a map to see their geographical distribution.
+```{r}
+#| echo: false
+#| eval: false
+# sampling_old = bind_rows(sampling_10_old, sampling_15_old, .id = "sampling")
+# 
+# sampling_old_filepath = fs::path(parent_path, "ccpp-10km-sample-old.csv")
+# readr::write_csv(sampling_old, sampling_old_filepath)
+```
 
 ```{r}
-# Coordinates of the full dataset
-full_dataset = dataset_strata %>% 
-  sf::st_as_sf(coords = c("lon", "lat"))
+#| echo: false
+#| eval: false
+ccpp_sample_path = fs::path(processed_path, "ccpp-10km-strata-sample.csv")
+readr::write_csv(ccpp_sample, ccpp_sample_path)
+```
+
+Finally, we plot the samples in a map to see their geographical distribution.
+
+```{r}
+#| warning: false
+#| message: false
+
+# Coordinates of all the population centers
+ccpp_coord = ccpp_strata %>% 
+  sf::st_as_sf(coords = c("lng", "lat"))
 
 # Coordinates of the 10 samples
-sample_10_dataset = sampling_10 %>% 
-  sf::st_as_sf(coords = c("lon", "lat"))
-
-# Coordinates of the 20 samples
-sample_20_dataset = sampling_20 %>% 
-  sf::st_as_sf(coords = c("lon", "lat"))
+ccpp_sample_coord = ccpp_sample %>% 
+  sf::st_as_sf(coords = c("lng", "lat"))
 
 # Function to plot the samples on a map
 sample_map = function(data, palette, group_var) {
@@ -660,10 +720,12 @@ sample_map = function(data, palette, group_var) {
   map = data %>% 
     leaflet() %>% 
     addTiles(group = "OpenStreetMap") %>% 
-    addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>%
-    addProviderTiles(provider = providers$Esri.WorldImagery,group = "Satelital") %>%
+    addProviderTiles(provider = providers$CartoDB, group = "CartoDB") %>%
+    addProviderTiles(
+      provider = providers$Esri.WorldImagery,group = "Satelital"
+    ) %>%
     addCircleMarkers(
-      data = full_dataset, opacity = 1, radius = 0.1, fillOpacity = 0.5, 
+      data = ccpp_coord, opacity = 1, radius = 0.1, fillOpacity = 0.5, 
       color = "lightgray"
       ) %>% 
     addCircleMarkers(
@@ -677,36 +739,15 @@ sample_map = function(data, palette, group_var) {
     )
   map
 }
-```
 
-::: panel-tabset
-### 10 samples
-
-```{r}
-#| warning: false
-#| message: false
-
-# Palette for 10 samples
-palette_10 = colorFactor(
-  palette = "viridis", domain = sample_10_dataset$hc_group_4
+# Palette for the sample
+sample_palette = colorFactor(
+  palette = "viridis", domain = ccpp_sample$hc_group_4
 )
 
-# Map the 10 samples
-sample_map(sample_10_dataset, palette_10, hc_group_4)
+# Map the samples
+sample_map(ccpp_sample, sample_palette, hc_group_4)
 ```
 
-### 20 samples
 
-```{r}
-#| warning: false
-#| message: false
 
-# Palette for 20 samples
-palette_20 = colorFactor(
-  palette = "viridis", domain = sample_20_dataset$hc_group_4
-)
-
-# Map the 20 samples
-sample_map(sample_20_dataset, palette_20, hc_group_4)
-```
-:::
