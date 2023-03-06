@@ -23,8 +23,6 @@ website:
         text: Methodology
       - href: https://healthinnovation.github.io/harmonize-dashboard/
         text: Data audit
-      - href: table.qmd
-        text: Dataset  
       - href: gantt_fieldwork.qmd
         text: Fieldwork Gantt
     right:
