@@ -1,0 +1,18 @@
+body{
+
+    background-repeat:no-repeat;
+    background-position: center;
+    background-image:url("https://raw.githubusercontent.com/healthinnovation/Harmonize-Project/main/img/background.JPG");
+    color:#FFF;
+    font-family:'Roboto Slab', serif;
+    background-size: cover;
+}
+
+.img-fluid {
+    max-width: 50%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
