@@ -638,10 +638,24 @@ ccpp_sample_innova = ccpp_previous_strata %>%
   select(hc_group_4, sample) %>% 
   tidyr::unnest(sample) %>% 
   relocate(hc_group_4, .before =  hc_group_5)
+```
+
+
+
+```{r}
+set.seed(2023)
+group_3_sample = ccpp_previous_strata %>% 
+  filter(hc_group_4 == "3", !(nomcp %in% c("HUAMBE", "23 DE FEBRERO"))) %>% 
+  slice_sample(n = 1)
+
+ccpp_sample_innova_new = filter(ccpp_sample_innova, nomcp != "HUAMBE")
 
 # Final sample
-ccpp_sample = bind_rows(ccpp_sample_innova, ccpp_sample_diresa)
+ccpp_sample = bind_rows(
+  ccpp_sample_innova_new, group_3_sample, ccpp_sample_diresa
+)
 ```
+
 
 ```{r}
 #| echo: false
