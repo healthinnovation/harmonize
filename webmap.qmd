@@ -19,7 +19,7 @@ library(viridis)
 library(sf)
 
 processed_path <- "data/processed/"
-ccpp_filename <- "ccpp-10km-strata.csv"
+ccpp_filename <- "ccpp-10km-strata-sample.csv"
 ccpp_filepath <- fs::path(processed_path, ccpp_filename)
 ccpp <- readr::read_csv(ccpp_filepath) %>% 
   st_as_sf(coords = c("lng","lat"), crs = 4326)
@@ -30,15 +30,20 @@ innovalab <- ccpp %>%
 diresa <- ccpp %>% 
   filter(group == "DIRESA")
 
-raw_path <- "data/raw/"
+raw_path <- "data/processed/"
 areas_filename <- "tracking_area_by_communities.gpkg"
 areas_filepath <- fs::path(raw_path, areas_filename)
 areas <- st_read(areas_filepath, quiet = TRUE)
 
-ccpp_sample_filename <- "ccpp-10km-strata-sample.csv"
-ccpp_sample_path <- fs::path(processed_path, ccpp_sample_filename)
-ccpp_sample <- readr::read_csv(ccpp_sample_path) %>% 
-  st_as_sf(coords = c("lng","lat"), crs = 4326)
+metheoro_filename <- "metheorological_station_location.gpkg"
+metheoro_filepath <- fs::path(raw_path, metheoro_filename)
+metheoro <- st_read(metheoro_filepath, quiet = TRUE)
+
+drone_filename <- "flying_mission.gpkg"
+drone_filepath <- fs::path(raw_path, drone_filename)
+drone <- st_read(drone_filepath, quiet = TRUE) %>% 
+  st_transform(4326)
+
 
 # my_icons <- iconList(
 #   circle <- makeIcon(
@@ -64,19 +69,21 @@ ccpp_sample <- readr::read_csv(ccpp_sample_path) %>%
 
 s10_pal <- colorFactor(
   palette = viridis(n = 4),
-  domain = ccpp_sample$hc_group_4
+  domain = ccpp$hc_group_4
 )
 
 map_layers <- function() {
   #number of groups
   k <- c(
-    "Sampling villages",
-    "DIRESA villages",
+    "Innovalab villages",
+    "Diresa villages",
     "Cluster 1",
     "Cluster 2",
     "Cluster 3",
     "Cluster 4",
-    "Perimeter qfield"
+    "Perimeter qfield",
+    "Metheorological station",
+    "Flying mission with drone"
   )
   #base map
   map <- leaflet() %>% 
@@ -87,7 +94,7 @@ map_layers <- function() {
     setView(lng = -73.44775,lat = -4.08754,zoom = 10)
   #loop through all groups and add a layer one at a time
   for (i in 1:length(k)) {
-    if("Sampling villages" == k[[i]]){
+    if("Innovalab villages" == k[[i]]){
       map <- map %>% 
         addPulseMarkers(
           data = innovalab,
@@ -108,7 +115,7 @@ map_layers <- function() {
             "- 🏙Population: ",round(innovalab$pop_avg,4) 
           ))
     }
-    if("DIRESA villages"==k[[i]]){
+    if("Diresa villages"==k[[i]]){
       map <- map %>% 
         addPulseMarkers(
           data = diresa,
@@ -132,50 +139,50 @@ map_layers <- function() {
     if("Cluster 1" == k[[i]]){
       map <- map %>% 
         addCircleMarkers(
-          data = ccpp_sample %>% filter(hc_group_4 == 1),
+          data = ccpp %>% filter(hc_group_4 == 1),
           group = k[[i]],
           popup = paste0(
-            "<h3>","🏡",ccpp_sample$population_center,"</h3>"),
+            "<h3>","🏡",ccpp$population_center,"</h3>"),
           fillColor = ~s10_pal(hc_group_4),
           stroke = 0,
-          fillOpacity = 0.4
+          fillOpacity = 0.6
         ) 
     }
     if ("Cluster 2" == k[[i]]){
       map <- map %>% 
         addCircleMarkers(
-          data = ccpp_sample %>% filter(hc_group_4 == 2),
+          data = ccpp %>% filter(hc_group_4 == 2),
           group = k[[i]],
           popup = paste0(
-            "<h3>","🏡",ccpp_sample$population_center,"</h3>"),
+            "<h3>","🏡",ccpp$population_center,"</h3>"),
           fillColor = ~s10_pal(hc_group_4),
           stroke = 0,
-          fillOpacity = 0.4
+          fillOpacity = 0.6
         ) 
     }
     if ("Cluster 3" == k[[i]]){
       map <- map %>% 
         addCircleMarkers(
-          data = ccpp_sample %>% filter(hc_group_4 == 3),
+          data = ccpp %>% filter(hc_group_4 == 3),
           group = k[[i]],
           popup = paste0(
-            "<h3>","🏡",ccpp_sample$population_center,"</h3>"),
+            "<h3>","🏡",ccpp$population_center,"</h3>"),
           fillColor = ~s10_pal(hc_group_4),
           stroke = 0,
-          fillOpacity = 0.4
+          fillOpacity = 0.6
         ) 
     }
     
     if ("Cluster 4" == k[[i]]){
       map <- map %>% 
         addCircleMarkers(
-          data = ccpp_sample %>% filter(hc_group_4 == 4),
+          data = ccpp %>% filter(hc_group_4 == 4),
           group = k[[i]],
           popup = paste0(
-            "<h3>","🏡",ccpp_sample$population_center,"</h3>"),
+            "<h3>","🏡",ccpp$population_center,"</h3>"),
           fillColor = ~s10_pal(hc_group_4),
           stroke = 0,
-          fillOpacity = 0.4
+          fillOpacity = 0.6
         ) 
     }
     if("Perimeter qfield" == k[[i]]){
@@ -191,6 +198,32 @@ map_layers <- function() {
             "<h3>","🏡",areas$village,"</h3>","<hr>",
             "- Area-Ha: ",round(areas$area_ha,4),"<br>",
             "- Area-km2: ",round(areas$area_km2,4)),
+          group = k[[i]]
+        )
+    }
+    if("Metheorological station" == k[[i]]){
+      map <- map %>% 
+        addCircleMarkers(
+          data = metheoro,
+          group = k[[i]],
+          popup = paste0(
+            "<h3>","🏡",metheoro$clasificacion,"</h3>"),
+          stroke = 0,
+          fillOpacity = 0.6
+        ) 
+    }
+    if("Flying mission with drone" == k[[i]]){
+       map <- map %>% 
+        addPolygons(
+          data = drone,
+          stroke = 2,
+          fillOpacity = 0,
+          color = "#073b4c",
+          opacity = 1,
+          popup = paste0(
+            "<h3>","<img src='https://user-images.githubusercontent.com/23284899/209403801-c37d62d5-051c-49c5-a935-944f11df9b34.png' width='25px' align='center'> ",drone$village,"</h3>","<hr>",
+            "- Area-Ha: ",round(drone$area_Ha,2),"<br>",
+            "- Area-km2: ",round(drone$area_km2,2)),
           group = k[[i]]
         )
     }

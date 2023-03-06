@@ -26,7 +26,7 @@ body .page-columns {
 }
 
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-    background: #111111cc;
+    background: #333333cc;
     color: #fff;
 }
 

@@ -274,7 +274,6 @@ cluster_plot(tree_4)
 tree_5 = cut_tree(variables_std, 5)
 cluster_plot(tree_5)
 ```
-
 :::
 
 We can see that the fifth group is formed from some populated centers of clusters 2 and 3 in the 4-cluster graph.
@@ -306,7 +305,6 @@ silhouette_plot(tree_4)
 ```{r}
 silhouette_plot(tree_5)
 ```
-
 :::
 
 We see that with 5 clusters we obtain a greater average silhouette width (0.44) than with 4 clusters (0.41). However, with 5 clusters with get greater negative values for some populated centers, indicating that they may be misclustered.
@@ -411,10 +409,9 @@ palette_hc_5 = colorFactor(
 # Plot cluster map
 cluster_map(ccpp_clusters, palette_hc_5, hc_group_5)
 ```
-
 :::
 
-We see that the population centers seem to group, showing a strong spatial component driving the clustering. 
+We see that the population centers seem to group, showing a strong spatial component driving the clustering.
 
 ### Principal components analysis
 
@@ -506,7 +503,6 @@ palette_pca_5 = colorFactor(
 # Plot cluster map
 cluster_map(ccpp_strata, palette_pca_5, pca_group_5)
 ```
-
 :::
 
 Geographically, the PCA groups seem to be distributed very similar to the HC groups.
@@ -535,7 +531,6 @@ ccpp_strata %>%
   autoplot(type = "heatmap") +
   theme(text = element_text(size = 13))
 ```
-
 :::
 
 ```{r}
@@ -570,8 +565,8 @@ Therefore, we needed to select roughly 3 populated centers from cluster 1 and 2 
 
 We did not take a random sample approach since we had the following restraints:
 
-- The Direccion Regional de Salud de Loreto (DIRESA Loreto) selected 5 population centers that are of epidemiological interest.
-- We had previously conducted field work to collect georeferenced points to reconstruct the perimeter of 21 populated centers. This is work that would have to be done for all the communities selected for drone mapping. So, for the sake of convenience, it was better to select from these population centers whose perimeters we already had. 
+-   The Direccion Regional de Salud de Loreto (DIRESA Loreto) selected 5 population centers that are of epidemiological interest.
+-   We had previously conducted field work to collect georeferenced points to reconstruct the perimeter of 21 populated centers. This is work that would have to be done for all the communities selected for drone mapping. So, for the sake of convenience, it was better to select from these population centers whose perimeters we already had.
 
 Consquently, we took these 26 populated centers (5 from DIRESA Loreto, 21 from InnovaLab) as our sample frame. The 5 populated centers from DIRESA Loreto were a must and 4 of them were in cluster 1 and 1 in cluster 2, so from the InnovaLab collection we randomly sample 1 populated center from cluster 2 and 2 from clusters 3 and 4 to have a total sample size of 10.
 
@@ -748,6 +743,3 @@ sample_palette = colorFactor(
 # Map the samples
 sample_map(ccpp_sample, sample_palette, hc_group_4)
 ```
-
-
-
