@@ -45,3 +45,7 @@ vignettes/*.pdf
 # Quarto
 .quarto/
 /.quarto/
+
+# renv
+renv/
+renv.lock
