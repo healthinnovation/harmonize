@@ -55,7 +55,6 @@ We can take a look at the data in the following table:
 ```{r}
 #| warning: false
 #| message: false
-
 # Load necessary packages
 library(dplyr)
 library(factoextra)
@@ -640,8 +639,6 @@ ccpp_sample_innova = ccpp_previous_strata %>%
   relocate(hc_group_4, .before =  hc_group_5)
 ```
 
-
-
 ```{r}
 set.seed(2023)
 group_3_sample = ccpp_previous_strata %>% 
@@ -655,7 +652,6 @@ ccpp_sample = bind_rows(
   ccpp_sample_innova_new, group_3_sample, ccpp_sample_diresa
 )
 ```
-
 
 ```{r}
 #| echo: false

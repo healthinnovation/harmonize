@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="QUISTOCOCHA" id="QUISTOCOCHA">
+	<SimpleField name="id" type="float"></SimpleField>
+	<SimpleField name="area_Ha" type="float"></SimpleField>
+	<SimpleField name="area_km2" type="float"></SimpleField>
+	<SimpleField name="village" type="string"></SimpleField>
+</Schema>
+<Folder><name>QUISTOCOCHA</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#QUISTOCOCHA">
+		<SimpleData name="id">5</SimpleData>
+		<SimpleData name="area_Ha">182.003</SimpleData>
+		<SimpleData name="area_km2">1.82</SimpleData>
+		<SimpleData name="village">QUISTOCOCHA</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.3347480664413,-3.82971954832714 -73.3348092031236,-3.8221507513781 -73.3283142007203,-3.81831317074488 -73.3217580498189,-3.822044313303 -73.3216967993344,-3.82961305890797 -73.3281918135496,-3.8334507133969 -73.3347480664413,-3.82971954832714</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+</Folder>
+</Document></kml>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="SAN_CARLOS" id="SAN_CARLOS">
+	<SimpleField name="id" type="float"></SimpleField>
+	<SimpleField name="area_Ha" type="float"></SimpleField>
+	<SimpleField name="area_km2" type="float"></SimpleField>
+	<SimpleField name="village" type="string"></SimpleField>
+</Schema>
+<Folder><name>SAN_CARLOS</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#SAN_CARLOS">
+		<SimpleData name="id">4</SimpleData>
+		<SimpleData name="area_Ha">213.064</SimpleData>
+		<SimpleData name="area_km2">2.131</SimpleData>
+		<SimpleData name="village">SAN CARLOS</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.3468317009911,-3.95146296640989 -73.3398115897251,-3.95562936772298 -73.3398941934654,-3.96381836198085 -73.3469970485483,-3.96784101202236 -73.3540172777354,-3.96367457893227 -73.3539345339229,-3.95548552770187 -73.3468317009911,-3.95146296640989</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+</Folder>
+</Document></kml>

@@ -11,7 +11,7 @@ css: css/map.css
 #| warning: false
 #| out-height: 100vh
 #| out-width: 100%
-library(dplyr)
+library(tidyverse)
 library(leaflet)
 library(htmltools)
 library(leaflet.extras)
@@ -21,8 +21,8 @@ library(sf)
 processed_path <- "data/processed/"
 ccpp_filename <- "ccpp-10km-strata-sample.csv"
 ccpp_filepath <- fs::path(processed_path, ccpp_filename)
-ccpp <- readr::read_csv(ccpp_filepath) %>% 
-  st_as_sf(coords = c("lng","lat"), crs = 4326)
+ccpp <- read_csv(ccpp_filepath) %>% 
+  st_as_sf(coords = c("lng","lat"), crs = 4326) 
 
 innovalab <- ccpp %>% 
   filter(group != "DIRESA")
@@ -37,7 +37,8 @@ areas <- st_read(areas_filepath, quiet = TRUE)
 
 metheoro_filename <- "metheorological_station_location.gpkg"
 metheoro_filepath <- fs::path(raw_path, metheoro_filename)
-metheoro <- st_read(metheoro_filepath, quiet = TRUE)
+metheoro <- st_read(metheoro_filepath, quiet = TRUE) %>% 
+  st_cast("POINT")
 
 drone_filename <- "flying_mission.gpkg"
 drone_filepath <- fs::path(raw_path, drone_filename)
@@ -70,6 +71,11 @@ drone <- st_read(drone_filepath, quiet = TRUE) %>%
 s10_pal <- colorFactor(
   palette = viridis(n = 4),
   domain = ccpp$hc_group_4
+)
+
+meteo_pal <- colorFactor(
+  palette = c("blue","red"),
+  domain = c("INSTITUCIÓN EDUCATIVA","PUESTOS DE SALUD O POSTAS DE SALUD")
 )
 
 map_layers <- function() {
@@ -209,8 +215,9 @@ map_layers <- function() {
           popup = paste0(
             "<h3>","🏡",metheoro$clasificacion,"</h3>"),
           stroke = 0,
+          fillColor = ~meteo_pal(clasificacion),
           fillOpacity = 0.6
-        ) 
+        )
     }
     if("Flying mission with drone" == k[[i]]){
        map <- map %>% 
@@ -231,13 +238,14 @@ map_layers <- function() {
   }
   
   #create layer control
-  map = map %>% 
+  map <-  map %>% 
     addLayersControl(
       baseGroups = c("CartoDB","CartoDB.DarkMatter","Open.Street.Map","Esri.WorldImagery"),
       overlayGroups = k[c(1:length(k))],
       options = layersControlOptions(collapsed = FALSE)
     ) %>% 
-    hideGroup(as.character(k[c(0:length(k))])) #hide all groups except the 1st one
+    hideGroup(as.character(k[c(0:length(k))]))  #hide all groups except the 1st one
+
   map
 }
 

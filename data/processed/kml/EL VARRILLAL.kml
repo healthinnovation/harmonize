@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="EL_VARRILLAL" id="EL_VARRILLAL">
+	<SimpleField name="id" type="float"></SimpleField>
+	<SimpleField name="area_Ha" type="float"></SimpleField>
+	<SimpleField name="area_km2" type="float"></SimpleField>
+	<SimpleField name="village" type="string"></SimpleField>
+</Schema>
+<Folder><name>EL_VARRILLAL</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#EL_VARRILLAL">
+		<SimpleData name="id">3</SimpleData>
+		<SimpleData name="area_Ha">346.401</SimpleData>
+		<SimpleData name="area_km2">3.464</SimpleData>
+		<SimpleData name="village">EL VARRILLAL</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.3632188407489,-3.89775566938861 -73.3633031904199,-3.88731382942268 -73.3543420665026,-3.88201953887182 -73.3452965672689,-3.88716694707226 -73.3452119971589,-3.89760869078699 -73.3541731467118,-3.90290312280995 -73.3632188407489,-3.89775566938861</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+</Folder>
+</Document></kml>

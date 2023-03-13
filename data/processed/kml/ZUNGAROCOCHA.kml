@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="ZUNGAROCOCHA" id="ZUNGAROCOCHA">
+	<SimpleField name="id" type="float"></SimpleField>
+	<SimpleField name="area_Ha" type="float"></SimpleField>
+	<SimpleField name="area_km2" type="float"></SimpleField>
+	<SimpleField name="village" type="string"></SimpleField>
+</Schema>
+<Folder><name>ZUNGAROCOCHA</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#ZUNGAROCOCHA">
+		<SimpleData name="id">10</SimpleData>
+		<SimpleData name="area_Ha">71.473</SimpleData>
+		<SimpleData name="area_km2">0.715</SimpleData>
+		<SimpleData name="village">ZUNGAROCOCHA</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.3541309289293,-3.82345927079819 -73.3500652312378,-3.82587176576099 -73.3501123527647,-3.83061473549383 -73.3542252174056,-3.83294522933931 -73.3582909538367,-3.83053272435515 -73.3582437868881,-3.82578973557098 -73.3541309289293,-3.82345927079819</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+</Folder>
+</Document></kml>
