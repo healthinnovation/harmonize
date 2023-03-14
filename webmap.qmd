@@ -40,23 +40,10 @@ metheoro_filepath <- fs::path(raw_path, metheoro_filename)
 metheoro <- st_read(metheoro_filepath, quiet = TRUE) %>% 
   st_cast("POINT")
 
-drone_filename <- "flying_mission.gpkg"
-drone_filepath <- fs::path(raw_path, drone_filename)
-drone <- st_read(drone_filepath, quiet = TRUE) %>% 
-  st_transform(4326)
-
 drone_1km_filename <- "flying_mission_1km2.gpkg"
 drone_1km_filepath <- fs::path(raw_path, drone_1km_filename)
 drone_1km <- st_read(drone_1km_filepath, quiet = TRUE) %>% 
   st_transform(4326)
-
-
-drone_3km_filename <- "flying_mission_3km2.gpkg"
-drone_3km_filepath <- fs::path(raw_path, drone_3km_filename)
-drone_3km <- st_read(drone_3km_filepath, quiet = TRUE) %>% 
-  st_transform(4326)
-
-
 
 # my_icons <- iconList(
 #   circle <- makeIcon(
@@ -101,9 +88,7 @@ map_layers <- function() {
     "Cluster 4",
     "Perimeter qfield",
     "Metheorological station",
-    "Flying mission with drone",
-    "Flying mission with a spaced of 1km hv",
-    "Flying mission with a spaced of 3km hv"
+    "Flying mission with a spaced of 1km hv"
   )
   #base map
   map <- leaflet() %>% 
@@ -234,21 +219,7 @@ map_layers <- function() {
         )
     }
     
-    if("Flying mission with drone" == k[[i]]){
-       map <- map %>% 
-        addPolygons(
-          data = drone,
-          stroke = 2,
-          fillOpacity = 0,
-          color = "#073b4c",
-          opacity = 1,
-          popup = paste0(
-            "<h3>","<img src='https://user-images.githubusercontent.com/23284899/209403801-c37d62d5-051c-49c5-a935-944f11df9b34.png' width='25px' align='center'> ",drone$village,"</h3>","<hr>",
-            "- Area-Ha: ",round(drone$area_Ha,2),"<br>",
-            "- Area-km2: ",round(drone$area_km2,2)),
-          group = k[[i]]
-        )
-    }
+
     
     if("Flying mission with a spaced of 1km hv" == k[[i]]){
       map <- map %>% 
@@ -265,23 +236,6 @@ map_layers <- function() {
           group = k[[i]]
         )
     }
-    
-    if("Flying mission with a spaced of 3km hv" == k[[i]]){
-      map <- map %>% 
-        addPolygons(
-          data = drone_3km,
-          stroke = 2,
-          fillOpacity = 0,
-          color = "#073b4c",
-          opacity = 1,
-          popup = paste0(
-            "<h3>","<img src='https://user-images.githubusercontent.com/23284899/209403801-c37d62d5-051c-49c5-a935-944f11df9b34.png' width='25px' align='center'> ",drone_3km$village,"</h3>","<hr>",
-            "- Area-Ha: ",round(drone_3km$area_ha,2),"<br>",
-            "- Area-km2: ",round(drone_3km$area_km2,2)),
-          group = k[[i]]
-        )
-    }
-    
     
   }
   
