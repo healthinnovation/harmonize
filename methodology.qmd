@@ -566,8 +566,19 @@ We did not take a random sample approach since we had the following restraints:
 
 -   The Direccion Regional de Salud de Loreto (DIRESA Loreto) selected 5 population centers that are of epidemiological interest.
 -   We had previously conducted field work to collect georeferenced points to reconstruct the perimeter of 21 populated centers. This is work that would have to be done for all the communities selected for drone mapping. So, for the sake of convenience, it was better to select from these population centers whose perimeters we already had.
+-   We also filtered out those communities that required more than 3 hexagons of 1km2 area for drone flights.
 
-Consquently, we took these 26 populated centers (5 from DIRESA Loreto, 21 from InnovaLab) as our sample frame. The 5 populated centers from DIRESA Loreto were a must and 4 of them were in cluster 1 and 1 in cluster 2, so from the InnovaLab collection we randomly sample 1 populated center from cluster 2 and 2 from clusters 3 and 4 to have a total sample size of 10.
+In the end, we were left with 24 populated centers (5 from DIRESA Loreto, 19 from InnovaLab), and we took these as our sampling frame. The 5 populated centers from DIRESA Loreto were a must and 4 of them were in cluster 1 and 1 in cluster 2, so from the InnovaLab collection we randomly sample 1 populated center from cluster 2 and 2 from clusters 3 and 4 to have a total sample size of 10.
+
+The size and the percentage from the total of the clusters and the final sample are shown in the following table:
+
+| Cluster | Size       | Sample size |
+|---------|------------|-------------|
+| 1       | 18 (30%)   | 4 (40%)     |
+| 2       | 14 (23.3%) | 2 (20%)     |
+| 3       | 14 (23.3%) | 2 (20%)     |
+| 4       | 14 (23.3%) | 2 (20%)     |
+
 
 ```{r}
 #| echo: false

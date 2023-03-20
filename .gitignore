@@ -49,3 +49,5 @@ vignettes/*.pdf
 # renv
 renv/
 renv.lock
+
+.Rprofile
