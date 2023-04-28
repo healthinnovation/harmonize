@@ -152,10 +152,28 @@ checkboxGroupInput(
 
 
 
-<img src='https://www.cayetano.edu.pe/guia-postulante/imagenes/LogoCayetano.svg' width='40%'>
-<br>
-<img src='https://raw.githubusercontent.com/ambarja/sources-innovalab/2e1720a1edbf3cc0db56f1771e085c4b83955bef/logo.svg' width='40%'>
+```{r}
+checkboxGroupInput(
+   inputId = "criadero",
+   choices = c("Climate station","Audiomoth"),
+   label = h5("Others")
+   )
+```
 
+
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<img src='https://raw.githubusercontent.com/healthinnovation/harmonize/main/img/Harmonize_logo.png' width='70%' align='left'>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<img src='https://raw.githubusercontent.com/healthinnovation/harmonize/app/icons/cayetano.svg' width='70%'>
 
 Column {data-height=700}
 ---------------------------------------------
