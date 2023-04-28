@@ -1,0 +1,334 @@
+---
+title: "Disease mapping on the Iquitos-Nauta road 🦟🛣️"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    social: menu
+    theme: lumen
+    logo: https://raw.githubusercontent.com/healthinnovation/innovar/master/man/figures/logo.png
+    navbar:
+        - {icon: "fa-github", href: "https://github.com/healthinnovation", align: right}
+        - {icon: "fa-twitter", href: "https://twitter.com/innovalab_imt", align: right}
+    self_contained: false
+    lib_dir: "lib"
+runtime: shiny
+---
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap');
+
+body{
+    font-family: 'Roboto Slab', serif;
+}
+
+.navbar{
+    padding-left: 28px;
+}
+
+.navbar-logo {
+    margin-top: 3px;
+    width: 45px;
+    position: fixed;
+    left: 0px;
+    margin-bottom: 3px;
+}
+
+.navbar-inverse {
+    background-color: #070807;
+    border-color: #070807;
+}
+.navbar-inverse .navbar-brand {
+    color: #ffffff;
+}
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:hover, .navbar-inverse .navbar-nav>.active>a:focus {
+    color: #ffffff;
+    background-color: #ffffff2e;
+}
+.navbar-inverse .navbar-nav>li>a {
+    color: #ffffff;
+}
+.navbar-inverse .navbar-brand:hover, .navbar-inverse .navbar-brand:focus {
+    color: #ffffff;
+    background-color: #ffffff00;
+}
+
+.leaflet-container {
+    font: 16px/1.5 'Roboto Slab', serif;
+}
+
+.info {
+  padding: 6px 8px;
+  font-family: 'Roboto Slab', serif;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
+  
+}
+.legend{
+ line-height: 6px;
+}
+
+</style>
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(leaflet)
+library(tidyverse)
+library(reactable)
+library(htmltools)
+library(leaflegend)
+library(sf)
+library(viridis)
+library(metathis)
+
+meta() %>%
+  meta_social(
+    title = "Drone surveillance of local environmental composition to predict malaria and dengue outbreaks in the Peruvian Amazon",
+    description = "To develop a proof-of-concept study of a low-cost surveillance system to predict malaria and dengue risk based on environmental factors.",
+    url = "https://github.com/healthinnovation/UCSD",
+    image = "https://raw.githubusercontent.com/healthinnovation/harmonize/main/img/background.JPG",
+    image_alt = "Iquitos",
+    og_type = "app",
+    og_author = c("Antony Barja", "Bryan Fernandez","Gabriel Carrasco")
+  )
+```
+
+```{r echo=FALSE, warning=FALSE,message=FALSE}
+geocode_cases <- read_csv("data/geocoded_cases_2019_2022.csv",locale = locale(encoding = "latin1")) %>% 
+  mutate(village = as_factor(village)) %>% 
+  filter(lat != -264.993073) %>% 
+  mutate(disease = case_when(
+    disease == "DENGE" ~ "DENGUE",
+    TRUE ~ disease
+  ))
+
+db_inventario <- read_csv("data/db_drones_inventario.csv")
+cobertura <-  db_inventario %>% filter(type == "cobertura")
+criadero <- db_inventario %>% filter(type == "criadero")
+drones <- read_csv("data/drones.csv") %>% 
+  mutate(villages = str_to_upper(villages))
+
+pal_cobertura <- colorFactor(palette = mako(n = 4,direction = -1),domain = unique(cobertura$Class))
+pal_criadero <- colorFactor(palette = plasma(n = 2,direction = -1),domain = unique(criadero$Class))
+```
+
+
+{.sidebar}
+-----------------------------------------------
+
+```{r}
+selectInput(
+   inputId = "village",
+   label = h5("Selected community 🔎"), 
+   choices = unique(geocode_cases$village),
+   multiple = FALSE
+   )
+```
+
+
+```{r}
+checkboxGroupInput(
+   inputId = "disease",
+   choices = unique(geocode_cases$disease),
+   label = h5("Check of the disease types"),
+   selected = geocode_cases$disease
+   )
+```
+
+```{r}
+checkboxGroupInput(
+   inputId = "cobertura",
+   choices = unique(cobertura$Class),
+   label = h5("Check the coverage")
+   )
+```
+
+```{r}
+checkboxGroupInput(
+   inputId = "criadero",
+   choices = unique(criadero$Class),
+   label = h5("Check the breeding site")
+   )
+```
+
+
+
+<img src='https://www.cayetano.edu.pe/guia-postulante/imagenes/LogoCayetano.svg' width='40%'>
+<br>
+<img src='https://raw.githubusercontent.com/ambarja/sources-innovalab/2e1720a1edbf3cc0db56f1771e085c4b83955bef/logo.svg' width='40%'>
+
+
+Column {data-height=700}
+---------------------------------------------
+### Maps <i class="fa fa-map" aria-hidden="true"></i> 
+
+```{r out.width='100%'}
+
+output$map <- renderLeaflet({
+  
+  output$map <- renderLeaflet({
+    leaflet() %>% 
+      addTiles(group = "OpenStreetMap") %>%
+      addLegendImage(
+        images = c(
+          "DENGUE"="https://raw.githubusercontent.com/ambarja/sources-innovalab/main/dengue.png",
+          "MALARIA"="https://raw.githubusercontent.com/ambarja/sources-innovalab/main/malaria.png",
+          "LEPTOSPIROSIS"="https://raw.githubusercontent.com/ambarja/sources-innovalab/main/leptospirosis.png"
+          ),
+        labels = c('Dengue', 'Malaria', 'Leptospirosis'),
+        width = 20,
+        height = 20,
+        orientation = 'vertical',
+        title = htmltools::tags$div('Legend',style = 'font-size: 14px; text-align: left;margin-bottom:10px;'),
+        position = 'bottomleft',
+        labelStyle = "font-size: 14px; vertical-align: middle;")
+  })
+  
+  
+
+    leafIcons <- iconList(
+    "DENGUE" = makeIcon(iconUrl = "https://raw.githubusercontent.com/ambarja/sources-innovalab/main/dengue.png",iconWidth = 20,iconHeight = 20),
+    "MALARIA" = makeIcon(iconUrl = "https://raw.githubusercontent.com/ambarja/sources-innovalab/main/malaria.png",iconWidth = 20,iconHeight = 20),
+    "LEPTOSPIROSIS" = makeIcon(iconUrl = "https://raw.githubusercontent.com/ambarja/sources-innovalab/main/leptospirosis.png",iconWidth = 20,iconHeight = 20)
+      )
+
+    bbox <- st_read("data/communities_hexagon.gpkg") %>% 
+      st_transform(crs = 4326) %>% 
+      mutate(name = str_to_upper(name),
+         name = case_when(
+           name == "SAN JOSÉ" ~ "SAN JOSE",
+           name == "UNIÓN PROGRESO" ~ "UNION PROGRESO",
+           name == "PEÑA NEGRA" ~ "PENA NEGRA",
+           name == "DELFINES" ~ "LOS DELFINES",
+           TRUE ~ name
+         )) 
+
+  observe({
+    comunidad <- input$village
+    enfermedad <- input$disease
+    mapping <- geocode_cases %>% filter(village %in% comunidad & disease %in% enfermedad)
+    region <- bbox %>% filter(name %in% comunidad) %>% st_bbox()
+    
+    type_criadero <- input$criadero
+    type_cobertura <- input$cobertura
+    m_criadero <- criadero %>% filter(Class %in% type_criadero & villages %in% comunidad)
+    m_cobertura <- cobertura %>% filter(Class %in% type_cobertura & villages %in% comunidad) 
+    
+    rgb_drone <- drones %>% 
+      filter(villages %in% comunidad) %>% 
+      select(rgb) %>% 
+      pull()
+    
+    thermal_drone <- drones %>% 
+      filter(villages %in% comunidad) %>% 
+      select(thermal) %>% 
+      pull()
+
+    
+    if(comunidad == "QUISTOCOCHA"){
+      lat <- (region[["ymin"]]+region[["ymax"]])/2
+      lon <- (region[["xmin"]] + region[["xmax"]])/2  
+      leafletProxy("map") %>% 
+        clearMarkers() %>% 
+        addTiles() %>% 
+        addTiles(urlTemplate = rgb_drone, group = sprintf("%s-rgb",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
+        addTiles(urlTemplate = thermal_drone, group = sprintf("%s-thermal",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
+        addMarkers(
+          data = mapping,
+          icon = ~leafIcons[disease],
+          lng = mapping$lng,
+          lat = mapping$lat,
+          popup = mapping$disease
+          ) %>% 
+        addCircleMarkers(
+          data = m_criadero,
+          lng = m_criadero$Lon,
+          lat = m_criadero$Lat,
+          fillColor = ~pal_criadero(Class),
+          fillOpacity = 0.7,
+          stroke = 0.5,
+          color = "black",
+          opacity = 1,
+          weight = 0.1,
+          popup = m_criadero$Class
+            ) %>% 
+        addCircleMarkers(
+          data = m_cobertura,
+          lng = m_cobertura$Lon,
+          lat = m_cobertura$Lat,
+          fillColor = ~pal_cobertura(Class),
+          fillOpacity = 0.7,
+          stroke = 0.5,
+          opacity = 1,
+          color = "black",
+          weight = 0.1,
+          popup = m_cobertura$Class
+            ) %>% 
+        setView(lng = lon,lat = lat,zoom = 14) %>% 
+        addLayersControl(
+          baseGroups = c("OpenStreetMap",sprintf("%s-rgb",comunidad),sprintf("%s-thermal",comunidad)),
+          options = layersControlOptions(collapsed = FALSE,title = "TITLE")
+        )
+          
+    } else{
+      leafletProxy("map") %>% 
+        clearMarkers() %>% 
+        addTiles() %>% 
+        addTiles(urlTemplate = rgb_drone, group = sprintf("%s-rgb",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
+        addTiles(urlTemplate = thermal_drone, group = sprintf("%s-thermal",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
+        addMarkers(
+          data = mapping,
+          icon = ~leafIcons[disease],
+          lng = mapping$lng,
+          lat = mapping$lat,
+          popup = mapping$disease
+          ) %>% 
+        addCircleMarkers(
+         data = m_criadero,
+          lng = m_criadero$Lon,
+          lat = m_criadero$Lat,
+          fillColor = ~pal_criadero(Class),
+          fillOpacity = 0.8,
+          stroke = 0.5,
+          color = "black",
+          weight = 0.1,
+          opacity = 0,
+          popup = m_criadero$Class
+            ) %>% 
+        addCircleMarkers(
+          data = m_cobertura,
+          lng = m_cobertura$Lon,
+          lat = m_cobertura$Lat,
+          fillColor = ~pal_cobertura(Class),
+          fillOpacity = 0.8,
+          stroke = 0.5,
+          weight = 0.1,
+          color = "black",
+          opacity = 0, 
+          popup = m_cobertura$Class
+            ) %>% 
+        flyToBounds(
+          lng1 = region[["xmin"]],
+          lat1 = region[["ymin"]],
+          lng2 = region[["xmax"]],
+          lat2 = region[["ymax"]],
+          options = list(zoom = 7)
+          ) %>% 
+      addLayersControl(
+          baseGroups = c("OpenStreetMap",sprintf("%s-rgb",comunidad),sprintf("%s-thermal",comunidad)),
+          options = layersControlOptions(collapsed = FALSE)
+        ) }
+  })
+})
+
+leafletOutput('map')  
+```
+
+
+### Cases table <i class="fa fa-table" aria-hidden="true"></i>
+```{r out.width='100%'}
+output$table <- renderReactable({
+   cases_table <- geocode_cases %>% filter(village %in% input$village)
+   reactable(cases_table)
+ })
+reactableOutput("table")
+```
