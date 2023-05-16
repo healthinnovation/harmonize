@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="flying_mission_1km2" id="flying_mission_1km2">
+	<SimpleField name="fid" type="float"></SimpleField>
+	<SimpleField name="id" type="float"></SimpleField>
+	<SimpleField name="village" type="string"></SimpleField>
+	<SimpleField name="area_ha" type="float"></SimpleField>
+	<SimpleField name="area_km2" type="float"></SimpleField>
+</Schema>
+<Folder><name>flying_mission_1km2</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#flying_mission_1km2">
+		<SimpleData name="fid">1</SimpleData>
+		<SimpleData name="id">10</SimpleData>
+		<SimpleData name="village">23 DE FEBRERO</SimpleData>
+		<SimpleData name="area_ha">86.609</SimpleData>
+		<SimpleData name="area_km2">0.866</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.4547043134324,-4.14731414788239 -73.4547012984748,-4.15253543901369 -73.4592032859886,-4.15514870419136 -73.4637082780013,-4.15254064191534 -73.4637112337832,-4.14731932864092 -73.4592092567284,-4.14470609975338 -73.4547043134324,-4.14731414788239</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#flying_mission_1km2">
+		<SimpleData name="fid">2</SimpleData>
+		<SimpleData name="id">9</SimpleData>
+		<SimpleData name="village">SAN MARTIN II ZONA</SimpleData>
+		<SimpleData name="area_ha">86.607</SimpleData>
+		<SimpleData name="area_km2">0.866</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.4333166259264,-4.17632230958115 -73.4333133984857,-4.1815435438653 -73.4378153991594,-4.18415696534075 -73.4423206168765,-4.18154911587975 -73.4423237847262,-4.17632785914411 -73.43782179445,-4.1737144742887 -73.4333166259264,-4.17632230958115</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#flying_mission_1km2">
+		<SimpleData name="fid">3</SimpleData>
+		<SimpleData name="id">8</SimpleData>
+		<SimpleData name="village">12 DE ABRIL</SimpleData>
+		<SimpleData name="area_ha">86.611</SimpleData>
+		<SimpleData name="area_km2">0.866</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.4777019430985,-4.21767435074776 -73.4776989097401,-4.2228956890265 -73.4822013393143,-4.22550899314918 -73.4867067909988,-4.22290092240707 -73.4867097641687,-4.21767956231618 -73.4822073458429,-4.21506629474727 -73.4777019430985,-4.21767435074776</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#flying_mission_1km2">
+		<SimpleData name="fid">4</SimpleData>
+		<SimpleData name="id">2</SimpleData>
+		<SimpleData name="village">ZUNGAROCOCHA</SimpleData>
+		<SimpleData name="area_ha">86.6</SimpleData>
+		<SimpleData name="area_km2">0.866</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.3497387221086,-3.82581477162572 -73.3497358570884,-3.83103583477468 -73.3542359353173,-3.83364885834731 -73.3587388717094,-3.83104078365297 -73.3587416821759,-3.82581969685075 -73.3542416108043,-3.8232067083639 -73.3497387221086,-3.82581477162572</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#flying_mission_1km2">
+		<SimpleData name="fid">5</SimpleData>
+		<SimpleData name="id">1</SimpleData>
+		<SimpleData name="village">LLANCHAMA</SimpleData>
+		<SimpleData name="area_ha">86.605</SimpleData>
+		<SimpleData name="area_km2">0.866</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.4075248046426,-3.85558526406783 -73.4075222148538,-3.86080647324509 -73.4120227160464,-3.86341932981987 -73.4165257992361,-3.86081094233239 -73.4165283340403,-3.85558971033398 -73.4120278406396,-3.85297688861197 -73.4075248046426,-3.85558526406783</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#flying_mission_1km2">
+		<SimpleData name="fid">6</SimpleData>
+		<SimpleData name="id">3</SimpleData>
+		<SimpleData name="village">QUISTOCOCHA</SimpleData>
+		<SimpleData name="area_ha">86.598</SimpleData>
+		<SimpleData name="area_km2">0.866</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.3252369292155,-3.82744407197051 -73.3252339113737,-3.83266506989507 -73.3297338656494,-3.83527819395999 -73.3342368312047,-3.83267028479693 -73.3342397944712,-3.82744926286625 -73.3297398467578,-3.82483617407254 -73.3252369292155,-3.82744407197051</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#flying_mission_1km2">
+		<SimpleData name="fid">7</SimpleData>
+		<SimpleData name="id">4</SimpleData>
+		<SimpleData name="village">EL VARRILLAL</SimpleData>
+		<SimpleData name="area_ha">86.6</SimpleData>
+		<SimpleData name="area_km2">0.866</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.3454642924805,-3.88557871497275 -73.3453336972298,-3.89079811250976 -73.3497687948973,-3.89352140698066 -73.3543344835332,-3.89102526878261 -73.3544650245986,-3.88580584621986 -73.3500299312168,-3.88308258684874 -73.3454642924805,-3.88557871497275</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#flying_mission_1km2">
+		<SimpleData name="fid">8</SimpleData>
+		<SimpleData name="id">5</SimpleData>
+		<SimpleData name="village">EL VARRILLAL</SimpleData>
+		<SimpleData name="area_ha">86.6</SimpleData>
+		<SimpleData name="area_km2">0.866</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.3587696311055,-3.89374852853803 -73.3543344835332,-3.89102526878266 -73.3497687948973,-3.89352140698066 -73.3495886336974,-3.89871015595246 -73.3540061614135,-3.90146219578591 -73.3585878735568,-3.89899574974523 -73.3587696311055,-3.89374852853803</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#flying_mission_1km2">
+		<SimpleData name="fid">9</SimpleData>
+		<SimpleData name="id">6</SimpleData>
+		<SimpleData name="village">SAN CARLOS</SimpleData>
+		<SimpleData name="area_ha">86.6</SimpleData>
+		<SimpleData name="area_km2">0.866</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.3429360304594,-3.95707931704194 -73.3429327800005,-3.96230034643756 -73.3474333487452,-3.96491368760963 -73.3519371602437,-3.96230596342082 -73.3519403542665,-3.95708491027315 -73.3474397932272,-3.95447160503411 -73.3429360304594,-3.95707931704194</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#flying_mission_1km2">
+		<SimpleData name="fid">10</SimpleData>
+		<SimpleData name="id">7</SimpleData>
+		<SimpleData name="village">EL PAUJIL</SimpleData>
+		<SimpleData name="area_ha">86.607</SimpleData>
+		<SimpleData name="area_km2">0.866</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.4335180653095,-4.03968556369678 -73.4335151779666,-4.04490681588944 -73.4380165810876,-4.04751995146704 -73.4425208621245,-4.044911799033 -73.4425236918391,-4.03969052439262 -73.4380222981453,-4.03707742460176 -73.4335180653095,-4.03968556369678</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#flying_mission_1km2">
+		<SimpleData name="fid">11</SimpleData>
+		<SimpleData name="id">11</SimpleData>
+		<SimpleData name="village">SAN LUCAS</SimpleData>
+		<SimpleData name="area_ha">86.609</SimpleData>
+		<SimpleData name="area_km2">0.866</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.4487091718534,-4.10254877582585 -73.4487062274094,-4.1077700578737 -73.4532079847348,-4.11038325752616 -73.4577126764393,-4.10777513903797 -73.4577155623511,-4.10255383476089 -73.4532138150908,-4.09994067116898 -73.4487091718534,-4.10254877582585</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#flying_mission_1km2">
+		<SimpleData name="fid">12</SimpleData>
+		<SimpleData name="id">4</SimpleData>
+		<SimpleData name="village">EL VARRILLAL</SimpleData>
+		<SimpleData name="area_ha">86.6</SimpleData>
+		<SimpleData name="area_km2">0.866</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.3544650245986,-3.88580584621986 -73.3543344835332,-3.89102526878266 -73.3587696311055,-3.89374852853803 -73.3633353153438,-3.89125233065614 -73.3634658022136,-3.88603288319699 -73.3590306590441,-3.88330965848392 -73.3544650245986,-3.88580584621986</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+</Folder>
+</Document></kml>

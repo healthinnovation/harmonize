@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="zunga" id="zunga">
+	<SimpleField name="fid" type="float"></SimpleField>
+	<SimpleField name="id" type="float"></SimpleField>
+	<SimpleField name="village" type="string"></SimpleField>
+	<SimpleField name="area_ha" type="float"></SimpleField>
+	<SimpleField name="area_km2" type="float"></SimpleField>
+</Schema>
+<Folder><name>zunga</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#zunga">
+		<SimpleData name="fid">4</SimpleData>
+		<SimpleData name="id">2</SimpleData>
+		<SimpleData name="village">ZUNGAROCOCHA</SimpleData>
+		<SimpleData name="area_ha">86.6</SimpleData>
+		<SimpleData name="area_km2">0.866</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-73.349218457359,-3.83041665588922 -73.3492155771652,-3.83563771712274 -73.3537156707205,-3.83825075291248 -73.3582186375863,-3.835642692319 -73.3582214631605,-3.8304216074247 -73.3537213764886,-3.82780860675245 -73.349218457359,-3.83041665588922</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+</Folder>
+</Document></kml>
