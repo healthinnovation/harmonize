@@ -43,8 +43,34 @@ metheoro <- st_read(metheoro_filepath, quiet = TRUE) %>%
 drone_1km_filename <- "flying_mission_1km2.gpkg"
 drone_1km_filepath <- fs::path(raw_path, drone_1km_filename)
 drone_1km <- st_read(drone_1km_filepath, quiet = TRUE) %>% 
-  st_transform(4326)
+  st_transform(4326) %>%
+  filter(!village %in% c("SAN MARTIN II ZONA","ZUNGAROCOCHA"))
 
+zungaro <- st_read("data/processed/kml/zunga.kml",quiet=T) %>%
+  st_as_sf() %>%
+  mutate(
+    id = 1,
+    village = "ZUNGAROCOCHA",
+    area_ha = as.vector(unlist(st_area(geometry))/10000),
+    area_km2 = as.vector(unlist(st_area(geometry)/1000000))
+    ) %>%
+  select(id,village,area_ha,area_km2,geometry)%>%
+  rename(geom = geometry)
+
+
+cahuide <- st_read("data/processed/kml/cahuide.kml",quiet=T) %>%
+  st_as_sf() %>%
+  mutate(
+    id = 1,
+    village = "CAHUIDE",
+    area_ha = as.vector(unlist(st_area(geometry))/10000),
+    area_km2 = as.vector(unlist(st_area(geometry)/1000000))
+    ) %>%
+  select(id,village,area_ha,area_km2,geometry)%>%
+  rename(geom = geometry)
+
+drone_1km <- bind_rows(drone_1km,zungaro,cahuide)
+  
 # my_icons <- iconList(
 #   circle <- makeIcon(
 #     iconUrl = "https://raw.githubusercontent.com/bzdjahna/legend_img/41d55a5a0a304e4faa6b6458a0a319aad72e1586/1circle.svg",
