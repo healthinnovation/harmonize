@@ -25,6 +25,8 @@ website:
         text: Data audit
       - href: gantt_fieldwork.qmd
         text: Fieldwork Gantt
+      - href: https://healthinnovation.github.io/dash-meterological-stations/
+        text: Meteorological stations
     right:
       - icon: github
         href: https://github.com/healthinnovation/harmonize
