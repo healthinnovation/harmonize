@@ -9,7 +9,7 @@ output:
     logo: https://raw.githubusercontent.com/healthinnovation/innovar/master/man/figures/logo.png
     navbar:
         - {icon: "fa-github", href: "https://github.com/healthinnovation", align: right}
-        - {icon: "fa-twitter", href: "https://twitter.com/innovalab_imt", align: right}
+        - { icon: "fa-home", href: "https://healthinnovation.github.io/harmonize", align: left, title: "Return home"}    
     self_contained: false
     lib_dir: "lib"
 runtime: shiny
@@ -180,13 +180,14 @@ output$map <- renderLeaflet({
           lng = criadero$Longitud,
           lat = criadero$Latitud,
           color = "red",
-          group = "criadero"
+          group = "criadero",
+          popup = criadero$class
           ) %>% 
         addHeatmap(
           data = criadero,
           lng = criadero$Longitud,
           lat = criadero$Latitud,
-          radius = 10,
+          radius = 13,
           group = "focus-criadero" 
         ) %>% 
         addCircleMarkers(
@@ -194,13 +195,14 @@ output$map <- renderLeaflet({
           lng = cobertura$Longitud,
           lat = cobertura$Latitud,
           color = "blue",
-          group = "cobertura"
+          group = "cobertura",
+          popup = cobertura$class
           ) %>%
         addHeatmap(
-          data = criadero,
-          lng = criadero$Longitud,
-          lat = criadero$Latitud,
-          radius = 10,
+          data = cobertura,
+          lng = cobertura$Longitud,
+          lat = cobertura$Latitud,
+          radius = 13,
           group = "focus-cobertura" 
         ) %>% 
         setView(lng = lon,lat = lat,zoom = 12) %>% 
@@ -220,28 +222,40 @@ output$map <- renderLeaflet({
           data = criadero,
           lng = criadero$Longitud,
           lat = criadero$Latitud,
-          color = "red",
-          group = "criadero"
+          color = "black",
+          radius = 8,
+          opacity = 1,
+          fillColor = "yellow",
+          fillOpacity = 0.8,
+          weight = 1,
+          group = "criadero",
+          popup = criadero$class
           ) %>%
          addHeatmap(
           data = criadero,
           lng = criadero$Longitud,
           lat = criadero$Latitud,
-          radius = 10,
+          radius = 13,
           group = "focus-criadero" 
         ) %>% 
         addCircleMarkers(
           data = cobertura,
           lng = cobertura$Longitud,
           lat = cobertura$Latitud,
-          color = "blue",
-          group = "cobertura"
+          color = "black",
+          radius = 8,
+          opacity = 1,
+          fillColor = "blue",
+          fillOpacity = 0.8,
+          weight = 1,
+          group = "cobertura",
+          popup = cobertura$class
           ) %>%
         addHeatmap(
-          data = criadero,
-          lng = criadero$Longitud,
-          lat = criadero$Latitud,
-          radius = 10,
+          data = cobertura,
+          lng = cobertura$Longitud,
+          lat = cobertura$Latitud,
+          radius = 13,
           group = "focus-cobertura" 
         ) %>% 
         flyToBounds(
