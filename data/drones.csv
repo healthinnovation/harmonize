@@ -1,10 +1,10 @@
-,villages,rgb
-1,12 ABRIL,https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/5b077d105fcde697cc727248e53f97a5-8fdbb7ab5df733e4a65c953d964312bf/tiles/{z}/{x}/{y}
-2,23 DE FEBRERO,https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/9fab2f5d3b70c03b02526f0a268239ed-822385430e3a026e71122bd23e246aaf/tiles/{z}/{x}/{y}
-3,LLANCHAMA,https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/3955a07f70640c49cda05d22529796d2-ba2f9af33a7b518c4d0bbe362abb4679/tiles/{z}/{x}/{y}
-4,PAUJIL,https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/3b6c11422ad240f7a3077dd94ea1218e-be759af81b10d726ae73094d9d599bd6/tiles/{z}/{x}/{y}
-5,QUISTOCOCHA,https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/abb2b16d82b6c5254416bd7c0d3556a0-9b5b28cd4ef74f254eb01789fc55d074/tiles/{z}/{x}/{y}
-6,SAN CARLOS,https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/d0615b18bb3b8df823081d8ea42d7383-a8d1d2839ffcb975d89949efc601c118/tiles/{z}/{x}/{y}
-7,SAN LUCAS,https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/22a85ea986c85475bc3af9d77c2465b8-17a6f7f1f0ec82d9e8d0038a8f1c0856/tiles/{z}/{x}/{y}
-8,VARILLAL,https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/c432a3a7fb2ba5fd94add1a30c9ca56c-cf1549ec026da639763dc62775731fea/tiles/{z}/{x}/{y}
-9,ZUNGAROCOCHA,https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/e4058dec14d78f77ced77bab3f3d114d-ca52a55480cddfafb04235c4bc3f5dd6/tiles/{z}/{x}/{y}
+"","villages","rgb"
+"1","12 ABRIL","https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/5b077d105fcde697cc727248e53f97a5-6ad85c3b64c3a45cb63f5ac74f34f836/tiles/{z}/{x}/{y}"
+"2","23 DE FEBRERO","https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/9fab2f5d3b70c03b02526f0a268239ed-cc2df9358ddf7e585c99b9cd00dcf4b6/tiles/{z}/{x}/{y}"
+"3","LLANCHAMA","https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/3955a07f70640c49cda05d22529796d2-44c0b3bd2839345306af1acf09c0efe2/tiles/{z}/{x}/{y}"
+"4","PAUJIL","https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/3b6c11422ad240f7a3077dd94ea1218e-293694693daa7d2aa73b3f85395bc539/tiles/{z}/{x}/{y}"
+"5","QUISTOCOCHA","https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/abb2b16d82b6c5254416bd7c0d3556a0-4ca4ef6c24c1696e015cfe5d2fa9817a/tiles/{z}/{x}/{y}"
+"6","SAN CARLOS","https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/d0615b18bb3b8df823081d8ea42d7383-0c98d4b4a29a15a53a910569bb4ca2dd/tiles/{z}/{x}/{y}"
+"7","SAN LUCAS","https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/22a85ea986c85475bc3af9d77c2465b8-1f9e88c974d053a411dce6740bab38aa/tiles/{z}/{x}/{y}"
+"8","VARILLAL","https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/c432a3a7fb2ba5fd94add1a30c9ca56c-420a7a2be1dec74d6323272b4fd2a331/tiles/{z}/{x}/{y}"
+"9","ZUNGAROCOCHA","https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/e4058dec14d78f77ced77bab3f3d114d-88564c59074709791cc81d29062610d7/tiles/{z}/{x}/{y}"

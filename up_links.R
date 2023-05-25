@@ -32,7 +32,6 @@ piloto <- ee$ImageCollection(
   ))
 
 rgb <- Map$addLayers(piloto)
-
 new_links <- tibble(
   villages = rgb$rgee$name,
   rgb = rgb$rgee$tokens
