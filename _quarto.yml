@@ -25,7 +25,7 @@ website:
         text: Data audit
       - href: https://antonybarja.shinyapps.io/harmonize/
         text: Orthomosaics 
-      - href: https://healthinnovation.github.io/dash-meterological-stations/
+      - href: https://antonybarja.shinyapps.io/dash-meterological-stations/
         text: Meteorological stations
     right:
       - icon: github
