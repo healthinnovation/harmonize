@@ -98,10 +98,10 @@ s10_pal <- colorFactor(
   domain = ccpp$hc_group_4
 )
 
-meteo_pal <- colorFactor(
-  palette = c("blue","red"),
-  domain = c("INSTITUCIÓN EDUCATIVA","PUESTOS DE SALUD O POSTAS DE SALUD")
-)
+# meteo_pal <- colorFactor(
+#   palette = c("blue","red"),
+#   domain = c("INSTITUCIÓN EDUCATIVA","PUESTOS DE SALUD O POSTAS DE SALUD")
+# )
 
 map_layers <- function() {
   #number of groups
@@ -127,10 +127,13 @@ map_layers <- function() {
   for (i in 1:length(k)) {
     if("Innovalab villages" == k[[i]]){
       map <- map %>% 
-        addPulseMarkers(
+        addCircleMarkers(
           data = innovalab,
-          icon = makePulseIcon(heartbeat = 0.5),
           group = k[[i]],
+          stroke = 0,
+          color = "purple",
+          radius = 5,
+          fillOpacity = 0.6,
           popup = ~paste0(
             "<center><h3> 🏕️",innovalab$nomcp,"</h3></center>","<hr>",
             "- ⛈️Precipitation: ",round(innovalab$pr_avg,4),"<br>",
@@ -144,28 +147,71 @@ map_layers <- function() {
             "- 🛣️Global Superficie Human: ",round(innovalab$ghsl_avg,4),"<br>",
             "- ✨Nigth lights: ", round(innovalab$ln_avg,4),"<br>",
             "- 🏙Population: ",round(innovalab$pop_avg,4) 
-          ))
+          )
+        )
+      
+        # addPulseMarkers(
+        #   data = innovalab,
+        #   icon = makePulseIcon(heartbeat = 0.5),
+        #   group = k[[i]],
+        #   popup = ~paste0(
+        #     "<center><h3> 🏕️",innovalab$nomcp,"</h3></center>","<hr>",
+        #     "- ⛈️Precipitation: ",round(innovalab$pr_avg,4),"<br>",
+        #     "- 💧Runoff: ",round(innovalab$ro_avg,4),"<br>",
+        #     "- ♒Soil mousture: ", round(innovalab$soil_avg,4),"<br>",
+        #     "- 🌡️Maximum temperature: ",round(innovalab$tmmx_avg,4),"<br>",
+        #     "- 🧊Minimum temperature: ",round(innovalab$tmmn_avg,4),"<br>",
+        #     "- 💦Evapotranspiration: ", round(innovalab$etp_avg,4),"<br>",
+        #     "- ☁️Humidity: ", round(innovalab$humidity_avg,4),"<br>",
+        #     "- 🌳🪓Deforestation: ", round(innovalab$def_avg,4),"<br>",
+        #     "- 🛣️Global Superficie Human: ",round(innovalab$ghsl_avg,4),"<br>",
+        #     "- ✨Nigth lights: ", round(innovalab$ln_avg,4),"<br>",
+        #     "- 🏙Population: ",round(innovalab$pop_avg,4) 
+        #   ))
     }
     if("Diresa villages"==k[[i]]){
       map <- map %>% 
-        addPulseMarkers(
+        addCircleMarkers(
           data = diresa,
-          icon = makePulseIcon(heartbeat = 0.5),
           group = k[[i]],
+          stroke = 0,
+          color = "blue",
+          radius = 5,
+          fillOpacity = 0.6,
           popup = ~paste0(
-            "<center><h3> 🏕️",diresa$nomcp,"</h3></center>","<hr>",
-            "- ⛈️Precipitation: ",round(diresa$pr_avg,4),"<br>",
-            "- 💧Runoff: ",round(diresa$ro_avg,4),"<br>",
-            "- ♒Soil mousture: ", round(diresa$soil_avg,4),"<br>",
-            "- 🌡️Maximum temperature: ",round(diresa$tmmx_avg,4),"<br>",
-            "- 🧊Minimum temperature: ",round(diresa$tmmn_avg,4),"<br>",
-            "- 💦Evapotranspiration: ", round(diresa$etp_avg,4),"<br>",
-            "- ☁️Humidity: ", round(diresa$humidity_avg,4),"<br>",
-            "- 🌳🪓Deforestation: ", round(diresa$def_avg,4),"<br>",
-            "- 🛣️Global Superficie Human: ",round(diresa$ghsl_avg,4),"<br>",
-            "- ✨Nigth lights: ", round(diresa$ln_avg,4),"<br>",
-            "- 🏙Population: ",round(diresa$pop_avg,4) 
-          ))
+            "<center><h3> 🏕️",innovalab$nomcp,"</h3></center>","<hr>",
+            "- ⛈️Precipitation: ",round(innovalab$pr_avg,4),"<br>",
+            "- 💧Runoff: ",round(innovalab$ro_avg,4),"<br>",
+            "- ♒Soil mousture: ", round(innovalab$soil_avg,4),"<br>",
+            "- 🌡️Maximum temperature: ",round(innovalab$tmmx_avg,4),"<br>",
+            "- 🧊Minimum temperature: ",round(innovalab$tmmn_avg,4),"<br>",
+            "- 💦Evapotranspiration: ", round(innovalab$etp_avg,4),"<br>",
+            "- ☁️Humidity: ", round(innovalab$humidity_avg,4),"<br>",
+            "- 🌳🪓Deforestation: ", round(innovalab$def_avg,4),"<br>",
+            "- 🛣️Global Superficie Human: ",round(innovalab$ghsl_avg,4),"<br>",
+            "- ✨Nigth lights: ", round(innovalab$ln_avg,4),"<br>",
+            "- 🏙Population: ",round(innovalab$pop_avg,4) 
+          )
+        )
+      
+        # addPulseMarkers(
+        #   data = diresa,
+        #   icon = makePulseIcon(heartbeat = 0.5),
+        #   group = k[[i]],
+        #   popup = ~paste0(
+        #     "<center><h3> 🏕️",diresa$nomcp,"</h3></center>","<hr>",
+        #     "- ⛈️Precipitation: ",round(diresa$pr_avg,4),"<br>",
+        #     "- 💧Runoff: ",round(diresa$ro_avg,4),"<br>",
+        #     "- ♒Soil mousture: ", round(diresa$soil_avg,4),"<br>",
+        #     "- 🌡️Maximum temperature: ",round(diresa$tmmx_avg,4),"<br>",
+        #     "- 🧊Minimum temperature: ",round(diresa$tmmn_avg,4),"<br>",
+        #     "- 💦Evapotranspiration: ", round(diresa$etp_avg,4),"<br>",
+        #     "- ☁️Humidity: ", round(diresa$humidity_avg,4),"<br>",
+        #     "- 🌳🪓Deforestation: ", round(diresa$def_avg,4),"<br>",
+        #     "- 🛣️Global Superficie Human: ",round(diresa$ghsl_avg,4),"<br>",
+        #     "- ✨Nigth lights: ", round(diresa$ln_avg,4),"<br>",
+        #     "- 🏙Population: ",round(diresa$pop_avg,4) 
+        #   ))
     }
     if("Cluster 1" == k[[i]]){
       map <- map %>% 
@@ -237,15 +283,13 @@ map_layers <- function() {
         addCircleMarkers(
           data = metheoro,
           group = k[[i]],
-          popup = paste0(
-            "<h3>","🏡",metheoro$clasificacion,"</h3>"),
-          stroke = 0,
-          fillColor = ~meteo_pal(clasificacion),
-          fillOpacity = 0.6
+          color = "red",
+          weight = 1.5, 
+          radius = 8.5,
+          fillOpacity = 0,
+          opacity = 1 
         )
     }
-    
-
     
     if("Flying mission with a spaced of 1km hv" == k[[i]]){
       map <- map %>% 
@@ -281,3 +325,5 @@ map_layers <- function() {
 #plot the map
 map_layers()
 ```
+
+
