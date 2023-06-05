@@ -23,9 +23,9 @@ website:
         text: Methodology
       - href: https://healthinnovation.github.io/harmonize-dashboard/
         text: Data audit
-      - href: https://antonybarja.shinyapps.io/harmonize/
+      - href: https://innovalab-upch.shinyapps.io/droneapp/
         text: Orthomosaics 
-      - href: https://antonybarja.shinyapps.io/dash-meterological-stations/
+      - href: https://innovalab-upch.shinyapps.io/meteoroapp/
         text: Meteorological stations
     right:
       - icon: github
