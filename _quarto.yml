@@ -25,7 +25,7 @@ website:
         text: Data audit
       - href: https://innovalab-upch.shinyapps.io/droneapp/
         text: Orthomosaics 
-      - href: https://innovalab-upch.shinyapps.io/meteoroapp/
+      - href: https://innovalab-upch.shinyapps.io/dashboard/
         text: Meteorological stations
     right:
       - icon: github
