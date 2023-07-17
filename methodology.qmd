@@ -579,7 +579,6 @@ The size and the percentage from the total of the clusters and the final sample 
 | 3       | 14 (23.3%) | 2 (20%)     |
 | 4       | 14 (23.3%) | 2 (20%)     |
 
-
 ```{r}
 #| echo: false
 #| eval: false
