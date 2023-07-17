@@ -24,12 +24,6 @@ ccpp_filepath <- fs::path(processed_path, ccpp_filename)
 ccpp <- read_csv(ccpp_filepath) %>% 
   st_as_sf(coords = c("lng","lat"), crs = 4326) 
 
-innovalab <- ccpp %>% 
-  filter(group != "DIRESA")
-
-diresa <- ccpp %>% 
-  filter(group == "DIRESA")
-
 raw_path <- "data/processed/"
 areas_filename <- "tracking_area_by_communities.gpkg"
 areas_filepath <- fs::path(raw_path, areas_filename)
@@ -106,14 +100,8 @@ s10_pal <- colorFactor(
 map_layers <- function() {
   #number of groups
   k <- c(
-    "Innovalab villages",
-    "Diresa villages",
-    "Cluster 1",
-    "Cluster 2",
-    "Cluster 3",
-    "Cluster 4",
     "Perimeter qfield",
-    "Metheorological station",
+    "Meteorological station",
     "Flying mission with a spaced of 1km hv"
   )
   #base map
@@ -122,146 +110,30 @@ map_layers <- function() {
     addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>% 
     addProviderTiles(provider = providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>% 
     addProviderTiles(provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>% 
-    setView(lng = -73.44775,lat = -4.08754,zoom = 10)
-  #loop through all groups and add a layer one at a time
-  for (i in 1:length(k)) {
-    if("Innovalab villages" == k[[i]]){
-      map <- map %>% 
-        addCircleMarkers(
-          data = innovalab,
-          group = k[[i]],
+    setView(lng = -73.44775,lat = -4.08754,zoom = 10) %>%
+    addCircleMarkers(
+          data = ccpp,
           stroke = 0,
           color = "purple",
           radius = 5,
           fillOpacity = 0.6,
           popup = ~paste0(
-            "<center><h3> 🏕️",innovalab$nomcp,"</h3></center>","<hr>",
-            "- ⛈️Precipitation: ",round(innovalab$pr_avg,4),"<br>",
-            "- 💧Runoff: ",round(innovalab$ro_avg,4),"<br>",
-            "- ♒Soil mousture: ", round(innovalab$soil_avg,4),"<br>",
-            "- 🌡️Maximum temperature: ",round(innovalab$tmmx_avg,4),"<br>",
-            "- 🧊Minimum temperature: ",round(innovalab$tmmn_avg,4),"<br>",
-            "- 💦Evapotranspiration: ", round(innovalab$etp_avg,4),"<br>",
-            "- ☁️Humidity: ", round(innovalab$humidity_avg,4),"<br>",
-            "- 🌳🪓Deforestation: ", round(innovalab$def_avg,4),"<br>",
-            "- 🛣️Global Superficie Human: ",round(innovalab$ghsl_avg,4),"<br>",
-            "- ✨Nigth lights: ", round(innovalab$ln_avg,4),"<br>",
-            "- 🏙Population: ",round(innovalab$pop_avg,4) 
+            "<center><h3> 🏕️",ccpp$nomcp,"</h3></center>","<hr>",
+            "- ⛈️Precipitation: ",round(ccpp$pr_avg,4),"<br>",
+            "- 💧Runoff: ",round(ccpp$ro_avg,4),"<br>",
+            "- ♒Soil mousture: ", round(ccpp$soil_avg,4),"<br>",
+            "- 🌡️Maximum temperature: ",round(ccpp$tmmx_avg,4),"<br>",
+            "- 🧊Minimum temperature: ",round(ccpp$tmmn_avg,4),"<br>",
+            "- 💦Evapotranspiration: ", round(ccpp$etp_avg,4),"<br>",
+            "- ☁️Humidity: ", round(ccpp$humidity_avg,4),"<br>",
+            "- 🌳🪓Deforestation: ", round(ccpp$def_avg,4),"<br>",
+            "- 🛣️Global Superficie Human: ",round(ccpp$ghsl_avg,4),"<br>",
+            "- ✨Nigth lights: ", round(ccpp$ln_avg,4),"<br>",
+            "- 🏙Population: ",round(ccpp$pop_avg,4) 
           )
         )
-      
-        # addPulseMarkers(
-        #   data = innovalab,
-        #   icon = makePulseIcon(heartbeat = 0.5),
-        #   group = k[[i]],
-        #   popup = ~paste0(
-        #     "<center><h3> 🏕️",innovalab$nomcp,"</h3></center>","<hr>",
-        #     "- ⛈️Precipitation: ",round(innovalab$pr_avg,4),"<br>",
-        #     "- 💧Runoff: ",round(innovalab$ro_avg,4),"<br>",
-        #     "- ♒Soil mousture: ", round(innovalab$soil_avg,4),"<br>",
-        #     "- 🌡️Maximum temperature: ",round(innovalab$tmmx_avg,4),"<br>",
-        #     "- 🧊Minimum temperature: ",round(innovalab$tmmn_avg,4),"<br>",
-        #     "- 💦Evapotranspiration: ", round(innovalab$etp_avg,4),"<br>",
-        #     "- ☁️Humidity: ", round(innovalab$humidity_avg,4),"<br>",
-        #     "- 🌳🪓Deforestation: ", round(innovalab$def_avg,4),"<br>",
-        #     "- 🛣️Global Superficie Human: ",round(innovalab$ghsl_avg,4),"<br>",
-        #     "- ✨Nigth lights: ", round(innovalab$ln_avg,4),"<br>",
-        #     "- 🏙Population: ",round(innovalab$pop_avg,4) 
-        #   ))
-    }
-    if("Diresa villages"==k[[i]]){
-      map <- map %>% 
-        addCircleMarkers(
-          data = diresa,
-          group = k[[i]],
-          stroke = 0,
-          color = "blue",
-          radius = 5,
-          fillOpacity = 0.6,
-          popup = ~paste0(
-            "<center><h3> 🏕️",innovalab$nomcp,"</h3></center>","<hr>",
-            "- ⛈️Precipitation: ",round(innovalab$pr_avg,4),"<br>",
-            "- 💧Runoff: ",round(innovalab$ro_avg,4),"<br>",
-            "- ♒Soil mousture: ", round(innovalab$soil_avg,4),"<br>",
-            "- 🌡️Maximum temperature: ",round(innovalab$tmmx_avg,4),"<br>",
-            "- 🧊Minimum temperature: ",round(innovalab$tmmn_avg,4),"<br>",
-            "- 💦Evapotranspiration: ", round(innovalab$etp_avg,4),"<br>",
-            "- ☁️Humidity: ", round(innovalab$humidity_avg,4),"<br>",
-            "- 🌳🪓Deforestation: ", round(innovalab$def_avg,4),"<br>",
-            "- 🛣️Global Superficie Human: ",round(innovalab$ghsl_avg,4),"<br>",
-            "- ✨Nigth lights: ", round(innovalab$ln_avg,4),"<br>",
-            "- 🏙Population: ",round(innovalab$pop_avg,4) 
-          )
-        )
-      
-        # addPulseMarkers(
-        #   data = diresa,
-        #   icon = makePulseIcon(heartbeat = 0.5),
-        #   group = k[[i]],
-        #   popup = ~paste0(
-        #     "<center><h3> 🏕️",diresa$nomcp,"</h3></center>","<hr>",
-        #     "- ⛈️Precipitation: ",round(diresa$pr_avg,4),"<br>",
-        #     "- 💧Runoff: ",round(diresa$ro_avg,4),"<br>",
-        #     "- ♒Soil mousture: ", round(diresa$soil_avg,4),"<br>",
-        #     "- 🌡️Maximum temperature: ",round(diresa$tmmx_avg,4),"<br>",
-        #     "- 🧊Minimum temperature: ",round(diresa$tmmn_avg,4),"<br>",
-        #     "- 💦Evapotranspiration: ", round(diresa$etp_avg,4),"<br>",
-        #     "- ☁️Humidity: ", round(diresa$humidity_avg,4),"<br>",
-        #     "- 🌳🪓Deforestation: ", round(diresa$def_avg,4),"<br>",
-        #     "- 🛣️Global Superficie Human: ",round(diresa$ghsl_avg,4),"<br>",
-        #     "- ✨Nigth lights: ", round(diresa$ln_avg,4),"<br>",
-        #     "- 🏙Population: ",round(diresa$pop_avg,4) 
-        #   ))
-    }
-    if("Cluster 1" == k[[i]]){
-      map <- map %>% 
-        addCircleMarkers(
-          data = ccpp %>% filter(hc_group_4 == 1),
-          group = k[[i]],
-          popup = paste0(
-            "<h3>","🏡",ccpp$population_center,"</h3>"),
-          fillColor = ~s10_pal(hc_group_4),
-          stroke = 0,
-          fillOpacity = 0.6
-        ) 
-    }
-    if ("Cluster 2" == k[[i]]){
-      map <- map %>% 
-        addCircleMarkers(
-          data = ccpp %>% filter(hc_group_4 == 2),
-          group = k[[i]],
-          popup = paste0(
-            "<h3>","🏡",ccpp$population_center,"</h3>"),
-          fillColor = ~s10_pal(hc_group_4),
-          stroke = 0,
-          fillOpacity = 0.6
-        ) 
-    }
-    if ("Cluster 3" == k[[i]]){
-      map <- map %>% 
-        addCircleMarkers(
-          data = ccpp %>% filter(hc_group_4 == 3),
-          group = k[[i]],
-          popup = paste0(
-            "<h3>","🏡",ccpp$population_center,"</h3>"),
-          fillColor = ~s10_pal(hc_group_4),
-          stroke = 0,
-          fillOpacity = 0.6
-        ) 
-    }
-    
-    if ("Cluster 4" == k[[i]]){
-      map <- map %>% 
-        addCircleMarkers(
-          data = ccpp %>% filter(hc_group_4 == 4),
-          group = k[[i]],
-          popup = paste0(
-            "<h3>","🏡",ccpp$population_center,"</h3>"),
-          fillColor = ~s10_pal(hc_group_4),
-          stroke = 0,
-          fillOpacity = 0.6
-        ) 
-    }
+  #loop through all groups and add a layer one at a time
+  for (i in 1:length(k)) {
     if("Perimeter qfield" == k[[i]]){
       map <- map %>% 
         addPolygons(
@@ -278,17 +150,27 @@ map_layers <- function() {
           group = k[[i]]
         )
     }
-    if("Metheorological station" == k[[i]]){
+    if("Meteorological station" == k[[i]]){
       map <- map %>% 
+        addCircleMarkers(
+          data = metheoro,
+          group = k[[i]],
+          color = "black",
+          weight = 1.5, 
+          radius = 8.5,
+          fillOpacity = 0,
+          opacity = 0.8 
+        ) %>%
         addCircleMarkers(
           data = metheoro,
           group = k[[i]],
           color = "red",
           weight = 1.5, 
-          radius = 8.5,
-          fillOpacity = 0,
-          opacity = 1 
+          radius = 3.5,
+          fillOpacity = 0.5,
+          opacity = 0 
         )
+        
     }
     
     if("Flying mission with a spaced of 1km hv" == k[[i]]){
@@ -325,5 +207,3 @@ map_layers <- function() {
 #plot the map
 map_layers()
 ```
-
-
