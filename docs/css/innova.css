@@ -50,5 +50,10 @@ h5, .h5 {
 }
 
 
-
+.navbar #quarto-search.type-overlay .aa-Autocomplete svg.aa-SubmitIcon {
+    width: 23px;
+    height: 23px;
+    color: #ffffff;
+    opacity: 1;
+}
 
