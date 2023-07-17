@@ -47,5 +47,3 @@ new_links <- tibble(
   ))
 
 write.csv(new_links,"data/drones.csv")
-
-
