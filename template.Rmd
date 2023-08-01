@@ -10,6 +10,8 @@ output:
         - { icon: "fa-home", href: "https://healthinnovation.github.io/harmonize", align: right, title: "Return home"}
 runtime: shiny
 ---
+
+```{=html}
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap');
 body{
@@ -51,6 +53,7 @@ body{
     background-color: rgb(255 255 255);
 }
 </style>
+```
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
@@ -61,6 +64,9 @@ library(tidyverse)
 library(pixture)
 library(plotly)
 library(lubridate)
+```
+
+```{r}
 sp <- read_sf("https://github.com/healthinnovation/harmonize/raw/main/data/processed/tracking_area_by_communities.gpkg") %>% filter(village %in% c("12 DE ABRIL","SAN LUCAS", "EL PAUJIL", "EL VARRILLAL","QUISTOCOCHA")) %>%
   st_cast('POLYGON') %>%
   mutate(village = case_when(
@@ -86,8 +92,8 @@ weather_sations_df_long <- read_csv("resources/weather_stations_long.csv") %>%
 pm2_total_long <- read_csv("resources/pm2_total_long.csv")
 ```
 
-Sidebar {.sidebar}
------------------------------------------------------------------------
+## Sidebar {.sidebar}
+
 ```{r, out.width=100}
 selectInput(
    inputId = "village",
@@ -97,23 +103,13 @@ selectInput(
    )
 ```
 
-<p>A web interface that showcases the distribution and data from weather stations and air quality monitors along the Iquitos - Nauta highway axis. The equipment has been installed in 5 communities and collects various data including humidity, temperature, precipitation, as well as PM2.5 and PM10 particles.
-</p>
-<br/>
-<img src='https://raw.githubusercontent.com/healthinnovation/harmonize/main/img/Harmonize_logo.png' width='70%' align='left'>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<img src='https://raw.githubusercontent.com/healthinnovation/harmonize/app/icons/cayetano.svg' width='70%'>
+<p>A web interface that showcases the distribution and data from weather stations and air quality monitors along the Iquitos - Nauta highway axis. The equipment has been installed in 5 communities and collects various data including humidity, temperature, precipitation, as well as PM2.5 and PM10 particles.</p>
 
+<br/> <img src="https://raw.githubusercontent.com/healthinnovation/harmonize/main/img/Harmonize_logo.png" width="70%" align="left"/> <br/> <br/> <br/> <br/> <br/> <img src="https://raw.githubusercontent.com/healthinnovation/harmonize/app/icons/cayetano.svg" width="70%"/>
 
+## Column
 
-Column
------------------------------------------------------------------------
-
-### {data-width=1750}
+###  {data-width="1750"}
 
 ```{r}
 output$map <- renderLeaflet({
@@ -165,7 +161,6 @@ leafletOutput('map')
 
 ```
 
-
 ### 
 
 ```{r out.width="100%"}
@@ -197,10 +192,7 @@ renderUI({
 })
 ```
 
-
-
-Column {data-width=350}
------------------------------------------------------------------------
+## Column {data-width="350"}
 
 ### 
 
@@ -266,7 +258,6 @@ renderUI({
 })
 ```
 
-
 ### 
 
 ```{r}
@@ -323,4 +314,3 @@ renderUI({
 })
 
 ```
-

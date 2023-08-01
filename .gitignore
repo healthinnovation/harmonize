@@ -6,3 +6,14 @@
 *.jpg
 *.svg
 *.gpkg
+
+# renv
+renv.lock
+renv/
+.Rprofile
+
+# quarto
+.quarto/
+
+# data
+data/
