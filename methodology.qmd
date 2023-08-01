@@ -347,37 +347,6 @@ cluster_map = function(data, palette, group_var) {
 }
 ```
 
-```{r echo=FALSE, eval=FALSE}
-#| echo: false
-#| eval: false
-# dataset_full = readr::read_csv(
-#   "data/methodology/data/processed/db_variables.csv",
-#   col_types = "cccccccd"
-# )
-# 
-# dataset_mod = dataset_clustering %>%
-#   mutate(
-#     population_center = case_when(
-#       population_center == "ZUNGARO COCHA" ~ "ZUNGAROCOCHA",
-#       population_center == "PAUJIL I ZONA" ~ "EL PAUJIL",
-#       population_center == "VARILLAL" ~ "EL VARILLAL",
-#       population_center == "VILLA CRUZ" ~ "VILLA PUERTO CRUZ",
-#       population_center == "HUAMBE" ~ "EL HUAMBE",
-#       TRUE ~ population_center
-#     )
-#   ) %>% 
-#   select(ubigeo, population_center, hc_group_4)
-# 
-# dataset_visor = dataset_full %>% 
-#   left_join(
-#     dataset_mod, by = c("NOMCP" = "population_center")
-#   )
-# 
-# clusters_path = fs::path(parent_path, "data/processed/db_variables_clusters.csv")
-# 
-# readr::write_csv(dataset_visor, clusters_path, na = "")
-```
-
 ::: panel-tabset
 ##### 4 clusters
 
@@ -580,49 +549,6 @@ The size and the percentage from the total of the clusters and the final sample 
 | 4       | 14 (23.3%) | 2 (20%)     |
 
 ```{r}
-#| echo: false
-#| eval: false
-
-# Sample 10 population centers
-# set.seed(2022)
-# n_samples = c(2, 1, 2)
-# sampling_10_innova = dataset_strata %>% 
-#   filter(group == "INNOVALAB", hc_group_4 != "1") %>% 
-#   tidyr::nest(data = -hc_group_4) %>% 
-#   mutate(
-#     sample = purrr::map2(data, n_samples, ~slice_sample(.x, n = .y))
-#   ) %>% 
-#   select(hc_group_4, sample) %>% 
-#   tidyr::unnest(sample) %>% 
-#   relocate(hc_group_4, .after = hc_group_3)
-# 
-# sampling_10_diresa = filter(dataset_strata, group == "DIRESA")
-# 
-# sampling_10 = bind_rows(sampling_10_diresa, sampling_10_innova)
-
-# Sample 15 population centers
-# set.seed(2022)
-# n_samples = c(1, 4, 2, 3)
-# sampling_15_innova = dataset_strata %>% 
-#   filter(group == "INNOVALAB") %>% 
-#   tidyr::nest(data = -hc_group_4) %>% 
-#   mutate(
-#     sample = purrr::map2(data, n_samples, ~slice_sample(.x, n = .y))
-#   ) %>% 
-#   select(hc_group_4, sample) %>% 
-#   tidyr::unnest(sample) %>% 
-#   relocate(hc_group_4, .after = hc_group_3)
-# 
-# sampling_15_diresa = filter(dataset_strata, group == "DIRESA")
-# sampling_15 = bind_rows(sampling_15_diresa, sampling_15_innova)
-# 
-# sampling = bind_rows(sampling_10, sampling_15, .id = "sampling")
-# 
-# sampling_filepath = fs::path(parent_path, "ccpp-10km-sample.csv")
-# readr::write_csv(sampling, sampling_filepath)
-```
-
-```{r}
 # Read the 26 populated centers previously selected
 raw_path = "data/raw/"
 ccpp_previous_path = fs::path(raw_path, "ccpp-perimeters-diresa.csv")
@@ -661,51 +587,6 @@ ccpp_sample_innova_new = filter(ccpp_sample_innova, nomcp != "HUAMBE")
 ccpp_sample = bind_rows(
   ccpp_sample_innova_new, group_3_sample, ccpp_sample_diresa
 )
-```
-
-```{r}
-#| echo: false
-#| eval: false
-# 15
-# set.seed(2022)
-# sample_15_group_1_innova = dataset_old %>% 
-#   filter(group == "INNOVALAB", hc_group_4 == "1") %>% 
-#   slice_sample(n = 1)
-# 
-# sample_15_group_1_diresa = filter(dataset_old, group == "DIRESA", hc_group_4 == "1")
-# sample_15_group_1 = bind_rows(sample_15_group_1_innova, sample_15_group_1_diresa)
-# 
-# sample_15_group_2_strata = dataset_strata %>% 
-#   filter(
-#     hc_group_4 == "2",
-#     nomcp %in% c("SAN CARLOS", "VILLA EL BUEN PASTOR")
-#   ) 
-# 
-# sample_15_group_2_old = filter(dataset_old, hc_group_4 == "2")
-# sample_15_group_2 = bind_rows(sample_15_group_2_strata, sample_15_group_2_old)
-# 
-# set.seed(2022)
-# n_samples_15_old = c(3, 3)
-# sampling_15_group_34_old = dataset_old %>% 
-#   filter(hc_group_4 %in% c("3", "4")) %>% 
-#   tidyr::nest(data = -hc_group_4) %>% 
-#   mutate(
-#     sample = purrr::map2(data, n_samples_15_old, ~slice_sample(.x, n = .y))
-#   ) %>% 
-#   select(hc_group_4, sample) %>% 
-#   tidyr::unnest(sample) %>% 
-#   relocate(hc_group_4, .after = hc_group_3)
-# 
-# sampling_15_old = bind_rows(sample_15_group_1, sample_15_group_2, sampling_15_group_34_old)
-```
-
-```{r}
-#| echo: false
-#| eval: false
-# sampling_old = bind_rows(sampling_10_old, sampling_15_old, .id = "sampling")
-# 
-# sampling_old_filepath = fs::path(parent_path, "ccpp-10km-sample-old.csv")
-# readr::write_csv(sampling_old, sampling_old_filepath)
 ```
 
 ```{r}
