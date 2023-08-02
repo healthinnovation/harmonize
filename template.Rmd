@@ -69,12 +69,12 @@ library(lubridate)
 ```{r}
 weather <- read_csv(
   "data/shiny/weather-stations.csv", 
-  col_types = "DTddddddcddcddddddddddddddddddccDcc"
+  col_types = "DTddddddcddcddddddddddddddddddccDiii"
 )
 
 quality <- read_csv(
   "data/shiny/quality-stations.csv",
-  col_types = paste(c("DTccc", rep("d", 37), "ccDcc"), collapse = "")
+  col_types = paste(c("DTccc", rep("d", 37), "ccDiii"), collapse = "")
 )
 ```
 
@@ -207,47 +207,45 @@ elpaujil_url <- "https://user-images.githubusercontent.com/23284899/241096092-c7
 
 ```{r}
 plot_line <- function(data, x, y = value, color, title) {
-  line_plot = data |> 
-      ggplot(aes({{x}}, {{y}})) +
-      geom_line(color = color) +
-      labs(y = "", x = "", title = title) +
-      theme_bw()
-    line_plot |> 
-      ggplotly() |> 
-      config(displayModeBar = FALSE)
+  line_plot <- data |> 
+    ggplot(aes(x = {{x}}, y = {{y}})) +
+    geom_line(color = color) +
+    labs(y = "", x = "", title = title) +
+    theme_bw()
+  ggplotly(p = line_plot) |> 
+    config(displayModeBar = FALSE)
 }
 ```
 
 ```{r}
-plot_unit <- function(data, variable, ccpp, unit = "Hour", color, title) {
+plot_unit <- function(data, vars, ccpp, unit, color, title) {
   data_filter <- data |> 
-    filter(variable == variable, ccpp == ccpp)
+    dplyr::filter(variable == vars, ccpp_name == ccpp)
   if (unit == "Hour") {
-    plot_line(data_filter, x = dttm, color = color, title = title)
-  }
+    plot_line(data = data_filter, x = dttm, y = value, color = color, title = title)
+  } else
   if (unit == "Day") {
     data_plot <- data_filter |> 
       group_by(day) |> 
-      summarise(value = mean(value, na.rm = TRUE))
-    plot_line(data_filter, x = day, color = color, title = title)
-  }
+      summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
+    plot_line(data = data_plot, x = day, y = value, color = color, title = title)
+  } else
   if (unit == "Week") {
     data_plot <- data_filter |> 
       group_by(week) |> 
-      summarise(value = mean(value, na.rm = TRUE))
-    plot_line(data_filter, x = week, color = color, title = title)
-  }
+      summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
+    plot_line(data = data_plot, x = week, y = value, color = color, title = title)
+  } else
   if (unit == "Month") {
     data_plot <- data_filter |> 
       group_by(month) |> 
-      summarise(value = mean(value, na.rm = TRUE))
-    plot_line(data_filter, x = month, color = color, title = title)
-  }
-  if (unit == "Year") {
+      summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
+    plot_line(data = data_plot, x = month, y = value, color = color, title = title)
+  } else {
     data_plot <- data_filter |> 
       group_by(year) |> 
-      summarise(value = mean(value, na.rm = TRUE))
-    plot_line(data_filter, x = year, color = color, title = title)
+      summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
+    plot_line(data = data_plot, x = year, y = value, color = color, title = title)
   }
 }
 ```
@@ -263,7 +261,7 @@ renderUI({
     })
   } else {
     plot_unit(
-      weather_long, variable = "Temp_out", ccpp = comunidad, unit = unit, 
+      weather_long, vars = "temp_out", ccpp = comunidad, unit = unit, 
       color = "#FF3030", title = "Temperature (˚C)"
     )
   }
@@ -285,7 +283,7 @@ renderUI({
     })
   } else {
     plot_unit(
-      weather_long, variable = "Rain", ccpp = comunidad, unit = unit, 
+      weather_long, vars = "rain", ccpp = comunidad, unit = unit, 
       color = "#1E90FF", title = "Rain (mm)"
     )
   }
@@ -306,7 +304,7 @@ renderUI({
     })
   } else {
     plot_unit(
-      weather_long, variable = "Out_Humm", ccpp = comunidad, unit = unit, 
+      weather_long, vars = "out_humm", ccpp = comunidad, unit = unit, 
       color = "#87CEEB", title = "Humidity"
     )
   }
@@ -326,7 +324,7 @@ renderUI({
     })
   } else {
     plot_unit(
-      quality_long, variable = "p_2_5_um", ccpp = comunidad, unit = unit, 
+      quality_long, vars = "p_2_5_um", ccpp = comunidad, unit = unit, 
       color = "#FF8247", title = "PM2.5"
     )
   }
@@ -346,7 +344,7 @@ renderUI({
     })
   } else {
     plot_unit(
-      quality_long, variable = "p_10_0_um", ccpp = comunidad, unit = unit, 
+      quality_long, vars = "p_10_0_um", ccpp = comunidad, unit = unit, 
       color = "#3CB371", title = "PM10"
     )
   }
