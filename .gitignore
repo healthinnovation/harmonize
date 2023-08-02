@@ -17,3 +17,6 @@ renv/
 
 # data
 data/
+
+# scripts
+scripts/
