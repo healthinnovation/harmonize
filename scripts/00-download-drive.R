@@ -34,7 +34,7 @@ for (i in 1:nrow(quality_folders)) {
   subfolders = drive_ls(as_id(folder_id))
   for (j in 1:nrow(subfolders)) {
     subfolder_name = stringr::str_replace_all(subfolders$name[j], "_", "-")
-    subfolder_id = subfolders$id[i]
+    subfolder_id = subfolders$id[j]
     subfolder_path = fs::path(folder_path, subfolder_name)
     if (!dir.exists(subfolder_path)) dir.create(subfolder_path, recursive = TRUE)
     files = drive_ls(as_id(subfolder_id), pattern = "*.csv")
