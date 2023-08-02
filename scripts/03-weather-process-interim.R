@@ -12,7 +12,9 @@ for (i in seq_along(in_directories)) {
     \(x) readr::read_csv(x, col_types = "Tddddddcddcdddddddddddddddddddc")
   )
   names(datasets) = fs::path_ext_remove(fs::path_file(names(datasets)))
-  dataset = dplyr::bind_rows(datasets, .id = "cutoff_date")
+  dataset = datasets |> 
+    dplyr::bind_rows(.id = "cutoff_date") |> 
+    dplyr::distinct()
   ccpp = stringr::str_split(in_directories[i], "[/]")[[1]][4]
   type = stringr::str_split(in_directories[i], "[/]")[[1]][3]
   out_filepath = fs::path(out_path, type, paste(ccpp, "csv", sep = "."))

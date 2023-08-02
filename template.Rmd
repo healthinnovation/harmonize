@@ -67,40 +67,74 @@ library(lubridate)
 ```
 
 ```{r}
-sp <- read_sf("https://github.com/healthinnovation/harmonize/raw/main/data/processed/tracking_area_by_communities.gpkg") %>% filter(village %in% c("12 DE ABRIL","SAN LUCAS", "EL PAUJIL", "EL VARRILLAL","QUISTOCOCHA")) %>%
-  st_cast('POLYGON') %>%
+weather <- read_csv(
+  "data/shiny/weather-stations.csv", 
+  col_types = "DTddddddcddcddddddddddddddddddccDcc"
+)
+
+quality <- read_csv(
+  "data/shiny/quality-stations.csv",
+  col_types = paste(c("DTccc", rep("d", 37), "ccDcc"), collapse = "")
+)
+```
+
+```{r}
+weather_long <- weather |> 
+  pivot_longer(
+    -c(
+      cutoff_date, dttm, ccpp_ubigeo, ccpp_name, day, week, month, year,
+      where(is.character)
+    ),
+    names_to = "variable",
+    values_to = "value"
+  )
+
+quality_long <- quality |> 
+  pivot_longer(
+    -c(
+      cutoff_date, dttm, ccpp_ubigeo, ccpp_name, day, week, month, year,
+      where(is.character)
+    ),
+    names_to = "variable",
+    values_to = "value"
+  )
+```
+
+```{r}
+sp <- read_sf("https://github.com/healthinnovation/harmonize/raw/main/data/processed/tracking_area_by_communities.gpkg") |> filter(village %in% c("12 DE ABRIL","SAN LUCAS", "EL PAUJIL", "EL VARRILLAL", "QUISTOCOCHA")) |>
+  st_cast('POLYGON') |>
   mutate(village = case_when(
     village == "EL VARRILLAL" ~ "EL VARILLAL",
     TRUE ~village
   ))
 
-pto <- read_sf("resources/metheorological_station_location.gpkg") %>%
-  st_cast('POINT') %>%
+pto <- read_sf("data/metheorological_station_location.gpkg") |>
+  st_cast('POINT') |>
   mutate(nombre = case_when(
     nombre == "VARRILLAL" ~ "EL VARILLAL",
     TRUE~nombre
   ))
-  
-weather_sations_df_long <- read_csv("resources/weather_stations_long.csv") %>%
-  mutate(Community = str_to_upper(Community)) %>%
-    mutate(Community = case_when(
-    Community == "PAUJIL" ~ "EL PAUJIL",
-    Community == "VARILLAL" ~ "EL VARILLAL",
-    TRUE~Community
-  ))
-
-pm2_total_long <- read_csv("resources/pm2_total_long.csv")
 ```
 
 ## Sidebar {.sidebar}
 
 ```{r, out.width=100}
 selectInput(
-   inputId = "village",
-   label = "Selected community 🔎", 
-   choices = c("ALL","QUISTOCOCHA","12 DE ABRIL","EL PAUJIL","SAN LUCAS", "EL VARILLAL"),
+   inputId = "village", label = "Select community 🔎", 
+   choices = c(
+       "Choose one" = "", "Quistococha", "12 de Abril", "El Paujil", "San Lucas", 
+     "El Varillal"
+   ),
    multiple = FALSE
-   )
+)
+```
+
+```{r, out.width=100}
+selectInput(
+  inputId = "unit", label = "Unit of time ⌚",
+  choices = c("Hour","Day", "Week", "Month", "Year"),
+  multiple = FALSE
+)
 ```
 
 <p>A web interface that showcases the distribution and data from weather stations and air quality monitors along the Iquitos - Nauta highway axis. The equipment has been installed in 5 communities and collects various data including humidity, temperature, precipitation, as well as PM2.5 and PM10 particles.</p>
@@ -115,42 +149,42 @@ selectInput(
 output$map <- renderLeaflet({
   
   output$map <- renderLeaflet({
-    leaflet() %>%
+    leaflet() |>
       addProviderTiles(provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery") 
   })
 
   observe({
-    comunidad <- input$village
-    if (comunidad == "ALL"){
+    comunidad <- toupper(input$village)
+    if (comunidad == ""){
       region <- sp
-      leafletProxy("map") %>%
-        clearShapes() %>%
+      leafletProxy("map") |>
+        clearShapes() |>
         addPolygons(
           data = region,
           color = "yellow",
           fill = NA,
           weight = 3,
           opacity = 1
-          ) %>%
-        addMarkers(data = pto,icon = iconList("Meteorological station" = makeIcon("https://raw.githubusercontent.com/ambarja/utilsUPCH/37eaf7c2fd380449b038a5804955e98cfd1fd7bc/estacion_meteorologica_v2.svg",iconWidth = 20,iconHeight = 20)),popup = pto$clasificacion) %>%
+          ) |>
+        addMarkers(data = pto,icon = iconList("Meteorological station" = makeIcon("https://raw.githubusercontent.com/ambarja/utilsUPCH/37eaf7c2fd380449b038a5804955e98cfd1fd7bc/estacion_meteorologica_v2.svg",iconWidth = 20,iconHeight = 20)),popup = pto$clasificacion) |>
 
         setView(lng = -73.39127,lat =-4.03404 ,zoom = 9)
     }else{
-      estacion <- pto %>% filter(nombre %in% comunidad)
-      region <- sp %>% filter(village %in% comunidad)
-      bbox <- region %>% st_bbox()
+      estacion <- pto |> filter(nombre %in% comunidad)
+      region <- sp |> filter(village %in% comunidad)
+      bbox <- region |> st_bbox()
       lng <- (bbox[["xmin"]] + bbox[["xmax"]])/2 
       lat <- (bbox[["ymin"]] + bbox[["ymax"]])/2
-      leafletProxy("map") %>%
-        clearShapes() %>%
-        clearMarkers() %>%
+      leafletProxy("map") |>
+        clearShapes() |>
+        clearMarkers() |>
         addPolygons(
           data = region,
           color = "yellow",
           fill = NA,
           weight = 2,
-          opacity = 1) %>%
-        addMarkers(data = estacion,icon = iconList("Meteorological station" = makeIcon("https://raw.githubusercontent.com/ambarja/utilsUPCH/main/estacion_meteorologica.svg",iconWidth = 20,iconHeight = 20)),popup = estacion$clasificacion) %>%
+          opacity = 1) |>
+        addMarkers(data = estacion,icon = iconList("Meteorological station" = makeIcon("https://raw.githubusercontent.com/ambarja/utilsUPCH/main/estacion_meteorologica.svg",iconWidth = 20,iconHeight = 20)),popup = estacion$clasificacion) |>
         
         flyTo(lng = lng,lat = lat,zoom = 15)
     }
@@ -158,37 +192,81 @@ output$map <- renderLeaflet({
   })
 })
 leafletOutput('map')
-
 ```
 
 ### 
 
+```{r}
+quistococha_url <- "https://user-images.githubusercontent.com/23284899/241096084-d2265c39-bdb4-40ca-8eaf-e15a730483b1.jpg"
+sanlucas_url <- "https://user-images.githubusercontent.com/23284899/241096089-e6c0df8a-aab0-44fa-9ef9-4e904385c58e.jpg"
+docedeabril_url <- "https://user-images.githubusercontent.com/23284899/241096093-cc752bb7-9477-4ecc-ba6b-a2823b9bb73a.jpg"
+elvarillal_url <- "https://user-images.githubusercontent.com/23284899/241096098-f3be7565-324c-4114-82e5-cf18075b9305.jpg"
+elpaujil_url <- "https://user-images.githubusercontent.com/23284899/241096092-c70968d2-6b0f-4700-8157-3d59487cd04c.jpg"
+      
+```
+
+```{r}
+plot_line <- function(data, x, y = value, color, title) {
+  line_plot = data |> 
+      ggplot(aes({{x}}, {{y}})) +
+      geom_line(color = color) +
+      labs(y = "", x = "", title = title) +
+      theme_bw()
+    line_plot |> 
+      ggplotly() |> 
+      config(displayModeBar = FALSE)
+}
+```
+
+```{r}
+plot_unit <- function(data, variable, ccpp, unit = "Hour", color, title) {
+  data_filter <- data |> 
+    filter(variable == variable, ccpp == ccpp)
+  if (unit == "Hour") {
+    plot_line(data_filter, x = dttm, color = color, title = title)
+  }
+  if (unit == "Day") {
+    data_plot <- data_filter |> 
+      group_by(day) |> 
+      summarise(value = mean(value, na.rm = TRUE))
+    plot_line(data_filter, x = day, color = color, title = title)
+  }
+  if (unit == "Week") {
+    data_plot <- data_filter |> 
+      group_by(week) |> 
+      summarise(value = mean(value, na.rm = TRUE))
+    plot_line(data_filter, x = week, color = color, title = title)
+  }
+  if (unit == "Month") {
+    data_plot <- data_filter |> 
+      group_by(month) |> 
+      summarise(value = mean(value, na.rm = TRUE))
+    plot_line(data_filter, x = month, color = color, title = title)
+  }
+  if (unit == "Year") {
+    data_plot <- data_filter |> 
+      group_by(year) |> 
+      summarise(value = mean(value, na.rm = TRUE))
+    plot_line(data_filter, x = year, color = color, title = title)
+  }
+}
+```
+
 ```{r out.width="100%"}
-### Temperature
+# Temperature
 renderUI({
-  
-  comunidad <- input$village
-  if(comunidad == "ALL"){
+  comunidad <- toupper(input$village)
+  unit <- input$unit
+  if(comunidad == ""){
     renderPixfigure({
-      paths <- "https://user-images.githubusercontent.com/23284899/241096084-d2265c39-bdb4-40ca-8eaf-e15a730483b1.jpg"
-      pixfigure(paths)
+      pixfigure(quistococha_url)
     })
   } else {
-    ggplotly(
-    weather_sations_df_long %>% 
-      filter(variables %in% c("Temp_out"),Community == comunidad) %>% 
-      mutate(
-        fecha = ymd_hms(paste(Date, Time))
-        ) %>% 
-      ggplot(aes(x = fecha, y = value)) + 
-      geom_line(col = "#FF3030") +
-      labs(
-        y = "", 
-        x = "", 
-        title = "Temperature ˚C"
-        ) +
-      theme_bw()) %>% config(displayModeBar = FALSE)
-    }
+    plot_unit(
+      weather_long, variable = "Temp_out", ccpp = comunidad, unit = unit, 
+      color = "#FF3030", title = "Temperature (˚C)"
+    )
+  }
 })
 ```
 
@@ -197,32 +275,20 @@ renderUI({
 ### 
 
 ```{r out.width="100%"}
+# Rain
 renderUI({
-  
-  comunidad <- input$village
-  
-  if(comunidad == "ALL"){
+  comunidad <- toupper(input$village)
+  unit <- input$unit
+  if(comunidad == ""){
     renderPixfigure({
-      paths <- "https://user-images.githubusercontent.com/23284899/241096089-e6c0df8a-aab0-44fa-9ef9-4e904385c58e.jpg"
-      pixfigure(paths)
+      pixfigure(sanlucas_url)
     })
-  } else{
-      ggplotly(
-          weather_sations_df_long %>% 
-            filter(variables %in% c("Rain"),Community == comunidad) %>% 
-            mutate(
-              fecha = ymd_hms(paste(Date, Time))
-              ) %>% 
-            ggplot(aes(x = fecha, y = value)) + 
-            geom_line(col = "#1E90FF") +
-            labs(
-              y = "", 
-              x = "", 
-              title = "Rain (mm)"
-              ) +
-            theme_bw()) %>% 
-          config(displayModeBar = FALSE)
-        }
+  } else {
+    plot_unit(
+      weather_long, variable = "Rain", ccpp = comunidad, unit = unit, 
+      color = "#1E90FF", title = "Rain (mm)"
+    )
+  }
 })
 
 ```
@@ -230,87 +296,60 @@ renderUI({
 ### 
 
 ```{r}
+# Humidity
 renderUI({
-  
-  comunidad <- input$village
-  if(comunidad == "ALL"){
+  comunidad <- toupper(input$village)
+  unit <- input$unit
+  if(comunidad == ""){
     renderPixfigure({
-      paths <- "https://user-images.githubusercontent.com/23284899/241096093-cc752bb7-9477-4ecc-ba6b-a2823b9bb73a.jpg"
-      pixfigure(paths)
+      pixfigure(docedeabril_url)
     })
   } else {
-    ggplotly(
-    weather_sations_df_long %>% 
-      filter(variables %in% c("Out_Humm"),Community == comunidad) %>% 
-      mutate(
-        fecha = ymd_hms(paste(Date, Time))
-        ) %>% 
-      ggplot(aes(x = fecha, y = value)) + 
-      geom_line(col = "#87CEEB") +
-      labs(
-        y = "", 
-        x = "", 
-        title = "Humidity"
-        ) +
-      theme_bw()) %>% 
-      config(displayModeBar = FALSE)
-    }
+    plot_unit(
+      weather_long, variable = "Out_Humm", ccpp = comunidad, unit = unit, 
+      color = "#87CEEB", title = "Humidity"
+    )
+  }
 })
 ```
 
 ### 
 
 ```{r}
-## Pm 2.5
+# PM2.5
 renderUI({
-  
-  comunidad <- input$village
-  if(comunidad == "ALL"){
+  comunidad <- toupper(input$village)
+  unit <- input$unit
+  if(comunidad == ""){
     renderPixfigure({
-      paths <- "https://user-images.githubusercontent.com/23284899/241096098-f3be7565-324c-4114-82e5-cf18075b9305.jpg"
-      pixfigure(paths)
+      pixfigure(elvarillal_url)
     })
   } else {
-    ggplotly(
-    pm2_total_long  %>% 
-      filter(variables %in% c("p_2_5_um"),Community == comunidad) %>% 
-      ggplot(aes(x = UTCDateTime, y = value)) + 
-      geom_line(col = "#FF8247") +
-      labs(
-        y = "", 
-        x = "", 
-        title = "Pm2.5"
-        ) +
-      theme_bw()) %>% config(displayModeBar = FALSE)
-    }
+    plot_unit(
+      quality_long, variable = "p_2_5_um", ccpp = comunidad, unit = unit, 
+      color = "#FF8247", title = "PM2.5"
+    )
+  }
 })
 ```
 
 ### 
 
 ```{r}
-## Pm10
+# PM10
 renderUI({
-  
-  comunidad <- input$village
-  if(comunidad == "ALL"){
+  comunidad <- toupper(input$village)
+  unit <- input$unit
+  if(comunidad == ""){
     renderPixfigure({
-      paths <- "https://user-images.githubusercontent.com/23284899/241096092-c70968d2-6b0f-4700-8157-3d59487cd04c.jpg"
-      pixfigure(paths)
+      pixfigure(elpaujil_url)
     })
   } else {
-    ggplotly(
-    pm2_total_long %>% 
-      filter(variables %in% c("p_10_0_um"),Community == comunidad) %>% 
-      ggplot(aes(x = UTCDateTime, y = value)) + 
-      geom_line(col = "#3CB371") +
-      labs(
-        y = "", 
-        x = "", 
-        title = "Pm10"
-        ) +
-      theme_bw()) %>% config(displayModeBar = FALSE)
-    }
+    plot_unit(
+      quality_long, variable = "p_10_0_um", ccpp = comunidad, unit = unit, 
+      color = "#3CB371", title = "PM10"
+    )
+  }
 })
 
 ```
