@@ -139,7 +139,8 @@ output$map <- renderLeaflet({
   
   output$map <- renderLeaflet({
     leaflet() %>% 
-      addTiles(group = "OpenStreetMap") 
+      addTiles(group = "OpenStreetMap") %>%
+      setView(lng =-73.32608,lat = -3.82371,zoom = 15)
   })
   
 
@@ -205,7 +206,7 @@ output$map <- renderLeaflet({
           radius = 13,
           group = "focus-cobertura" 
         ) %>% 
-        setView(lng = lon,lat = lat,zoom = 12) %>% 
+        setView(lng = lon,lat = lat,zoom = 10) %>%
         addLayersControl(
           overlayGroups = c("criadero","cobertura", "focus-criadero","focus-cobertura"),
           baseGroups = c("OpenStreetMap",sprintf("%s-rgb",comunidad)),
