@@ -18,5 +18,5 @@ renv/
 # data
 data/
 
-# scripts
-scripts/
+# rsconnect
+rsconnect/
