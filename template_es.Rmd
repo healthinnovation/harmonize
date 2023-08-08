@@ -68,12 +68,12 @@ library(lubridate)
 
 ```{r}
 weather <- read_csv(
-  "data/shiny/weather-stations.csv", 
+  "data/app/weather-stations.csv", 
   col_types = "DTddddddcddcddddddddddddddddddccDiii"
 )
 
 quality <- read_csv(
-  "data/shiny/quality-stations.csv",
+  "data/app/quality-stations.csv",
   col_types = paste(c("DTccc", rep("d", 37), "ccDiii"), collapse = "")
 )
 ```
@@ -102,7 +102,7 @@ quality_long <- quality |>
 ```
 
 ```{r}
-sp <- read_sf("data/tracking_area_by_communities.gpkg") |> 
+sp <- read_sf("data/app/tracking_area_by_communities.gpkg") |> 
   filter(
     village %in% c(
       "12 DE ABRIL","SAN LUCAS", "EL PAUJIL", "EL VARRILLAL", "QUISTOCOCHA"
@@ -113,7 +113,7 @@ sp <- read_sf("data/tracking_area_by_communities.gpkg") |>
     village = case_when(village == "EL VARRILLAL" ~ "EL VARILLAL", TRUE~village)
   )
 
-pto <- read_sf("data/metheorological_station_location.gpkg") |>
+pto <- read_sf("data/app/metheorological_station_location.gpkg") |>
   st_cast('POINT') |>
   mutate(
     nombre = case_when(nombre == "VARRILLAL" ~ "EL VARILLAL", TRUE~nombre)

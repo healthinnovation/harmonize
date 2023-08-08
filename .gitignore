@@ -16,7 +16,10 @@ renv/
 .quarto/
 
 # data
-data/
+data/diagnostics/
+data/interim/
+data/processed/
+data/raw/
 
 # rsconnect
 rsconnect/
