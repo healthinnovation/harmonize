@@ -2,10 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-*.csv
-*.jpg
-*.svg
-*.gpkg
 
 # renv
 renv.lock
@@ -16,10 +12,11 @@ renv/
 .quarto/
 
 # data
-data/diagnostics/
-data/interim/
-data/processed/
-data/raw/
+data/diagnostics/*/*.csv
+data/interim/*/*/*.csv
+data/processed/*/*.csv
+data/raw/*/*/*/*.csv
+data/raw/*/*/*.xlsx
 
 # rsconnect
 rsconnect/
