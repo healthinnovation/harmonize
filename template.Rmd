@@ -1,5 +1,5 @@
 ---
-title: "Meteorological station in the Iquitos - Nauta road 🎏"
+title: "Estación meteorológica en la carretera Iquitos - Nauta 🎏"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -7,7 +7,7 @@ output:
     logo: https://user-images.githubusercontent.com/39299104/207467842-d92416da-c312-4a9c-9cbf-a23a93da6465.png
     favicon: https://raw.githubusercontent.com/healthinnovation/innovar/gh-pages/favicon.ico
     navbar:
-        - { icon: "fa-home", href: "https://healthinnovation.github.io/harmonize", align: right, title: "Return home"}
+        - { icon: "fa-home", href: "https://healthinnovation.github.io/harmonize", align: right, title: "Volver a inicio"}
 runtime: shiny
 ---
 
@@ -64,6 +64,8 @@ library(tidyverse)
 library(pixture)
 library(plotly)
 library(lubridate)
+library(leaflet.extras)
+library(ggthemr)
 ```
 
 ```{r}
@@ -123,9 +125,9 @@ pto <- read_sf("data/app/metheorological_station_location.gpkg") |>
 
 ```{r out.width=100}
 selectInput(
-   inputId = "village", label = "Select community 🔎", 
+   inputId = "village", label = "Seleccione una comunidad 🔎", 
    choices = c(
-       "Choose one" = "", "Quistococha", "12 de Abril", "El Paujil", "San Lucas", 
+       "Elige uno" = "", "Quistococha", "12 de Abril", "El Paujil", "San Lucas", 
      "El Varillal"
    ),
    multiple = FALSE
@@ -134,15 +136,15 @@ selectInput(
 
 ```{r out.width=100}
 selectInput(
-  inputId = "unit", label = "Unit of time ⌚",
-  choices = c("Hour", "Day", "Week", "Month", "Year"),
+  inputId = "unit", label = "Unidad de tiempo⌚",
+  choices = c("Hora"="Hour", "Día"="Day", "Semana"="Week","Mes"="Month", "Año"="Year"),
   multiple = FALSE
 )
 ```
 
 ```{r out.width=100}
 sliderInput(
-  inputId = "slider_date", label = "Date range 📆",
+  inputId = "slider_date", label = "Rango de fecha📆",
   min = min(c(min(weather$dttm), min(quality$dttm))),
   max = max(c(max(weather$dttm), max(quality$dttm))),
   value = c(
@@ -151,6 +153,8 @@ sliderInput(
   ), step = 3600, ticks = FALSE
 )
 ```
+
+
 
 ```{r}
 observeEvent(
@@ -195,9 +199,21 @@ observeEvent(
 )
 ```
 
-<p>A web interface that showcases the distribution and data from weather stations and air quality monitors along the Iquitos - Nauta highway axis. The equipment has been installed in 5 communities and collects various data including humidity, temperature, precipitation, as well as PM2.5 and PM10 particles.</p>
-
+<br>
+<p>Una interfaz web que muestra la distribución y los datos de las estaciones meteorológicas y los monitores de calidad del aire a lo largo del eje carretero Iquitos - Nauta. Los equipos se han instalado en 5 comunidades y recogen diversos datos como humedad, temperatura, precipitaciones, así como partículas PM2,5 y PM10.
+</p>
 <br/> <img src="https://raw.githubusercontent.com/healthinnovation/harmonize/main/img/Harmonize_logo.png" width="70%" align="left"/> <br/> <br/> <br/> <br/> <br/> <img src="https://raw.githubusercontent.com/healthinnovation/harmonize/app/icons/cayetano.svg" width="70%"/>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<center>
+<button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"><a href="#" style='color:white;'>Último registro: 27-07-2023</a>
+</button>
+</center>
 
 ## Column
 
@@ -212,9 +228,7 @@ icon_station_v2 = "https://raw.githubusercontent.com/ambarja/utilsUPCH/37eaf7c2f
 output$map <- renderLeaflet({
   output$map <- renderLeaflet({
     leaflet() |>
-      addProviderTiles(
-        provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery"
-      ) 
+      addTiles()
   })
   observe({
     comunidad <- toupper(input$village)
@@ -222,19 +236,17 @@ output$map <- renderLeaflet({
       region <- sp
       leafletProxy("map") |>
         clearShapes() |>
-        addPolygons(
-          data = region, color = "yellow", fill = NA, weight = 3, opacity = 1
-        ) |>
-        addMarkers(
-          data = pto, 
-          icon = iconList(
-            "Meteorological station" = makeIcon(
-              icon_station_v2, iconWidth = 20, iconHeight = 20
-            )
-          ),
-          popup = pto$clasificacion
-        ) |>
-        setView(lng = -73.39127,lat =-4.03404 ,zoom = 9)
+        addPulseMarkers(data = pto,popup = pto$clasificacion,icon = makePulseIcon(heartbeat = 1,color ='#ff1101')) |> 
+        # addMarkers(
+        #   data = pto, 
+        #   icon = iconList(
+        #     "Meteorological station" = makeIcon(
+        #       icon_station_v2, iconWidth = 20, iconHeight = 20
+        #     )
+        #   ),
+        #   popup = pto$clasificacion
+        # ) |>
+        setView(lng = -73.39127,lat =-4.03404 ,zoom = 10)
     } else {
       estacion <- pto |> filter(nombre %in% comunidad)
       region <- sp |> filter(village %in% comunidad)
@@ -246,18 +258,19 @@ output$map <- renderLeaflet({
         clearMarkers() |>
         addPolygons(
           data = region,
-          color = "yellow",
+          color = "black",
           fill = NA,
           weight = 2,
           opacity = 1) |>
-        addMarkers(
-          data = estacion, icon = iconList(
-            "Meteorological station" = makeIcon(
-              icon_station,iconWidth = 20, iconHeight = 20
-            )
-          ),
-          popup = estacion$clasificacion
-        ) |>
+        addPulseMarkers(data = pto,popup = pto$clasificacion,icon = makePulseIcon(heartbeat = 1,color ='#ff1101')) |> 
+        # addMarkers(
+        #   data = estacion, icon = iconList(
+        #     "Meteorological station" = makeIcon(
+        #       icon_station,iconWidth = 20, iconHeight = 20
+        #     )
+        #   ),
+        #   popup = estacion$clasificacion
+        # ) |>
         flyTo(lng = lng,lat = lat,zoom = 15)
     }
   })
@@ -269,11 +282,12 @@ leafletOutput("map")
 
 ```{r}
 plot_line <- function(data, x, y = value, color, title) {
+  ggthemr("dust")
   line_plot <- data |> 
     ggplot(aes(x = {{x}}, y = {{y}})) +
     geom_line(color = color) +
-    labs(y = "", x = "", title = title) +
-    theme_bw()
+    labs(y = "", x = "", title = title) #+
+    #theme_classic()
   ggplotly(p = line_plot) |> 
     config(displayModeBar = FALSE)
 }
@@ -336,7 +350,7 @@ renderUI({
   } else {
     plot_unit(
       weather_long, vars = "temp_out", ccpp = toupper(input$village), 
-      unit = input$unit, color = "#FF3030", title = "Temperature (˚C)", 
+      unit = input$unit, color = "#ACD1C5", title = "Temperatura (˚C)", 
       lower = input$slider_date[1], upper = input$slider_date[2] 
     )
   }
@@ -357,7 +371,7 @@ renderUI({
   } else {
     plot_unit(
       weather_long, vars = "rain", ccpp = toupper(input$village), 
-      unit = input$unit, color = "#1E90FF", title = "Rain (mm)", 
+      unit = input$unit, color = "#005378", title = "Lluvia (mm)", 
       lower = input$slider_date[1], upper = input$slider_date[2]
     )
   }
@@ -377,7 +391,7 @@ renderUI({
   } else {
     plot_unit(
       weather_long, vars = "out_humm", ccpp = toupper(input$village), 
-      unit = input$unit, color = "#87CEEB", title = "Humidity", 
+      unit = input$unit, color = "#006998", title = "Humedad (%)", 
       lower = input$slider_date[1], upper = input$slider_date[2]
     )
   }
@@ -396,7 +410,7 @@ renderUI({
   } else {
     plot_unit(
       quality_long, vars = "p_2_5_um", ccpp = toupper(input$village), 
-      unit = input$unit, color = "#FF8247", title = "PM2.5", 
+      unit = input$unit, color = "#3788AB", title = "PM2.5 (um3) ", 
       lower = input$slider_date[1], upper = input$slider_date[2]
     )
   }
@@ -415,7 +429,7 @@ renderUI({
   } else {
     plot_unit(
       quality_long, vars = "p_10_0_um", ccpp = toupper(input$village), 
-      unit = input$unit, color = "#3CB371", title = "PM10", 
+      unit = input$unit, color = "#75AEBB", title = "PM10 (um3)", 
       lower = input$slider_date[1], upper = input$slider_date[2]
     )
   }
