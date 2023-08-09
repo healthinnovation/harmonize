@@ -66,7 +66,7 @@ cahuide <- st_read("data/processed/kml/cahuide.kml",quiet=T) %>%
 drone_1km <- bind_rows(drone_1km,zungaro,cahuide)
 
 s10_pal <- colorFactor(
-  palette = c("#070510","#942A7F","#F5E6B2","#6BB4F8"),
+  palette = c("#005378","#1E7DA6","#85BDC1","#F2DDBD"),
   domain = areas$hc_group_4
 )
 
@@ -86,7 +86,7 @@ map_layers <- function() {
     setView(lng = -73.44775,lat = -4.08754,zoom = 10) %>%
     addPulseMarkers(
       data = ccpp,
-      icon = makePulseIcon(color= "#264653", heartbeat = 0.5),
+      icon = makePulseIcon(color=~s10_pal(hc_group_4), heartbeat = 0.5),
       popup = ~paste0(
         "<center><h3> 🏕️",ccpp$nomcp,"</h3></center>","<hr>",
         "- ⛈️Precipitation: ",round(ccpp$pr_avg,4),"<br>",

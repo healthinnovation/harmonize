@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.433">
+<meta name="generator" content="quarto-1.3.353">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -109,8 +109,7 @@ div.csl-indent {
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit",
-    "search-label": "Search"
+    "search-submit-button-title": "Submit"
   }
 }</script>
 
@@ -295,7 +294,7 @@ div.csl-indent {
 <p>We can take a look at the data in the following table:</p>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary packages</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(factoextra)</span>
@@ -339,7 +338,7 @@ div.csl-indent {
 <p>For each combination, we run the agglomerative nesting algorithm and calculated the <em>agglomerative coefficient</em> (AC) which is a measure of the strength of the HC structure <span class="citation" data-cites="boehmke2019hands">(<a href="#ref-boehmke2019hands" role="doc-biblioref">Boehmke and Greenwell 2019, 421–22</a>)</span>. For the 3 combinations of methods with larger AC, we also examined the resulting dendograms.</p>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select variables for analysis</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>variables <span class="ot">=</span> <span class="fu">select</span>(ccpp, dengue<span class="sc">:</span>malaria_diff)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -378,7 +377,7 @@ div.csl-indent {
 <p>The best 3 HC structures according to the AC were the following:</p>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the best 3 structures </span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>agglomerative_coeff <span class="sc">%&gt;%</span> </span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span> </span>
@@ -400,7 +399,7 @@ div.csl-indent {
 <p>The difference of the first 3 AC values are almost negligible. Consequently, we examined the dendograms:</p>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to plot a dendogram</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>dendogram <span class="ot">=</span> <span class="cf">function</span>(row, title) {</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  dendogram <span class="ot">&lt;-</span> <span class="fu">fviz_dend</span>(agglomerative_coeff<span class="sc">$</span>tree[[row]], <span class="at">main =</span> title) <span class="sc">+</span> </span>
@@ -416,7 +415,7 @@ div.csl-indent {
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dendogram</span>(<span class="dv">1</span>, <span class="st">"Normalization, Pearson correlation, Ward linkage"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -427,7 +426,7 @@ div.csl-indent {
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dendogram</span>(<span class="dv">2</span>, <span class="st">"Standardization, Spearman correlation, Ward linkage"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -438,7 +437,7 @@ div.csl-indent {
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dendogram</span>(<span class="dv">3</span>, <span class="st">"Standardization, Pearson correlation, Ward linkage"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -458,7 +457,7 @@ div.csl-indent {
 <h4 data-number="3.2.1" class="anchored" data-anchor-id="evaluation-of-the-criteria-of-the-optimal-number-of-clusters"><span class="header-section-number">3.2.1</span> Evaluation of the criteria of the optimal number of clusters</h4>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to plot optimal number of clusters plot for a certain criteria</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>nbclust_plot <span class="ot">=</span> <span class="cf">function</span>(data, method, ...) {</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  nbclust <span class="ot">&lt;-</span> <span class="fu">fviz_nbclust</span>(</span>
@@ -479,7 +478,7 @@ div.csl-indent {
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2022</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nbclust_plot</span>(variables_std, <span class="st">"silhouette"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -491,7 +490,7 @@ div.csl-indent {
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nbclust_plot</span>(variables_std, <span class="st">"wss"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -502,7 +501,7 @@ div.csl-indent {
 <div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2022</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nbclust_plot</span>(variables_std, <span class="st">"gap_stat"</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -520,7 +519,7 @@ div.csl-indent {
 <p>Next, we plotted the clusters in a plane using PCA for 4 and 5 clusters.</p>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to cut tree</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>cut_tree <span class="ot">=</span> <span class="cf">function</span>(data, k) {</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  tree <span class="ot">=</span> <span class="fu">hcut</span>(</span>
@@ -547,7 +546,7 @@ div.csl-indent {
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>tree_4 <span class="ot">=</span> <span class="fu">cut_tree</span>(variables_std, <span class="dv">4</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cluster_plot</span>(tree_4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -559,7 +558,7 @@ div.csl-indent {
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>tree_5 <span class="ot">=</span> <span class="fu">cut_tree</span>(variables_std, <span class="dv">5</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cluster_plot</span>(tree_5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -577,7 +576,7 @@ div.csl-indent {
 <p>Next, we plotted the individual silhouette width for the observations grouped 4 and 5 clusters.</p>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to plot individual silhouette widths</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>silhouette_plot <span class="ot">=</span> <span class="cf">function</span>(tree) {</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  ind_silhouette <span class="ot">&lt;-</span> tree <span class="sc">%&gt;%</span></span>
@@ -594,7 +593,7 @@ div.csl-indent {
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">silhouette_plot</span>(tree_4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -605,7 +604,7 @@ div.csl-indent {
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">silhouette_plot</span>(tree_5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -622,7 +621,7 @@ div.csl-indent {
 <p>As an additional step, for each number of clusters, we plotted the population centers (polygon centroids) on a map to see their spatial distribution.</p>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create table with the groups</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>ccpp_clusters <span class="ot">=</span> ccpp <span class="sc">%&gt;%</span> </span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
@@ -663,7 +662,7 @@ div.csl-indent {
 <div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Palette for 4 clusters</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>palette_hc_4 <span class="ot">=</span> <span class="fu">colorFactor</span>(</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">palette =</span> <span class="st">"viridis"</span>, <span class="at">domain =</span> ccpp_clusters<span class="sc">$</span>hc_group_4</span>
@@ -681,7 +680,7 @@ div.csl-indent {
 <div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Palette for 5 clusters</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>palette_hc_5 <span class="ot">=</span> <span class="fu">colorFactor</span>(</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">palette =</span> <span class="st">"viridis"</span>, <span class="at">domain =</span> ccpp_clusters<span class="sc">$</span>hc_group_5</span>
@@ -706,7 +705,7 @@ div.csl-indent {
 <p>Principal component analysis (PCA) was used as an alternative method for clustering. Our approach was to use the principal component to build an aggregate index of all the variables considered. Then, the scores of the populated centers on this principal component were grouped into different categories according to the quantiles of the distribution. In order to compare this approach with the results of hierarchical clustering, we tested with 4 (25th, 50th and 75th quantiles) and 5 (20th, 40th, 60th and 80th quantiles) groups.</p>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform PCA</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>pca <span class="ot">=</span> FactoMineR<span class="sc">::</span><span class="fu">PCA</span>(variables_std, <span class="at">graph =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -716,7 +715,7 @@ div.csl-indent {
 <p>After having performed the PCA, we plotted the scree plot to check the percentage of explained variance each component or dimension.</p>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>pca <span class="sc">%&gt;%</span> </span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fviz_screeplot</span>() <span class="sc">+</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -732,7 +731,7 @@ div.csl-indent {
 <p>Next, we plotted the top 10 variables according to their contribution to the first component.</p>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>pca <span class="sc">%&gt;%</span> </span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fviz_contrib</span>(<span class="at">choice =</span> <span class="st">"var"</span>, <span class="at">axes =</span> <span class="dv">1</span>, <span class="at">top =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">13</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -748,7 +747,7 @@ div.csl-indent {
 <p>Finally, we created the groups dividing the population centers according to the quantiles of the scores on the principal component. Then we plotted the population centers on maps for 2, 3 and 4 groups.</p>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get scores</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>pca_results <span class="ot">=</span> <span class="fu">get_pca_ind</span>(pca)</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>scores <span class="ot">=</span> pca_results<span class="sc">$</span>coord</span>
@@ -777,7 +776,7 @@ div.csl-indent {
 <div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Palette for 4 groups</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>palette_pca_4 <span class="ot">=</span> <span class="fu">colorFactor</span>(</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">palette =</span> <span class="st">"viridis"</span>, <span class="at">domain =</span> ccpp_strata<span class="sc">$</span>pca_group_4</span>
@@ -795,7 +794,7 @@ div.csl-indent {
 <div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Palette for 5 groups</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>palette_pca_5 <span class="ot">=</span> <span class="fu">colorFactor</span>(</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">palette =</span> <span class="st">"viridis"</span>, <span class="at">domain =</span> ccpp_strata<span class="sc">$</span>pca_group_5</span>
@@ -826,7 +825,7 @@ div.csl-indent {
 <div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ccpp_strata <span class="sc">%&gt;%</span> </span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  yardstick<span class="sc">::</span><span class="fu">conf_mat</span>(hc_group_4, pca_group_4, <span class="at">dnn =</span> <span class="fu">c</span>(<span class="st">"PCA"</span>, <span class="st">"HC"</span>)) <span class="sc">%&gt;%</span> </span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(<span class="at">type =</span> <span class="st">"heatmap"</span>) <span class="sc">+</span></span>
@@ -840,7 +839,7 @@ div.csl-indent {
 <div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>ccpp_strata <span class="sc">%&gt;%</span> </span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  yardstick<span class="sc">::</span><span class="fu">conf_mat</span>(hc_group_5, pca_group_5, <span class="at">dnn =</span> <span class="fu">c</span>(<span class="st">"PCA"</span>, <span class="st">"HC"</span>)) <span class="sc">%&gt;%</span> </span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(<span class="at">type =</span> <span class="st">"heatmap"</span>) <span class="sc">+</span></span>
@@ -855,7 +854,7 @@ div.csl-indent {
 </div>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get kappa statistic</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>kap_4 <span class="ot">=</span> yardstick<span class="sc">::</span><span class="fu">kap</span>(ccpp_strata, hc_group_4, pca_group_4)</span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>kap_5 <span class="ot">=</span> yardstick<span class="sc">::</span><span class="fu">kap</span>(ccpp_strata, hc_group_5, pca_group_5)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -871,7 +870,7 @@ div.csl-indent {
 <p>Having chosen the number of clusters, we determined the number of population centers we should select from each one of them to obtain a sample of 10 population centers with the same proportion of cases in each cluster.</p>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample size for each cluster</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">table</span>(ccpp_strata<span class="sc">$</span>hc_group_4)<span class="sc">/</span><span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -923,7 +922,7 @@ div.csl-indent {
 </table>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the 26 populated centers previously selected</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>raw_path <span class="ot">=</span> <span class="st">"data/raw/"</span></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>ccpp_previous_path <span class="ot">=</span> fs<span class="sc">::</span><span class="fu">path</span>(raw_path, <span class="st">"ccpp-perimeters-diresa.csv"</span>)</span>
@@ -952,7 +951,7 @@ div.csl-indent {
 </div>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2023</span>)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>group_3_sample <span class="ot">=</span> ccpp_previous_strata <span class="sc">%&gt;%</span> </span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(hc_group_4 <span class="sc">==</span> <span class="st">"3"</span>, <span class="sc">!</span>(nomcp <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"HUAMBE"</span>, <span class="st">"23 DE FEBRERO"</span>))) <span class="sc">%&gt;%</span> </span>
@@ -969,7 +968,7 @@ div.csl-indent {
 <p>Finally, we plot the samples in a map to see their geographical distribution.</p>
 <div class="cell">
 <details>
-<summary>Code</summary>
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Coordinates of all the population centers</span></span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>ccpp_coord <span class="ot">=</span> ccpp_strata <span class="sc">%&gt;%</span> </span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  sf<span class="sc">::</span><span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lng"</span>, <span class="st">"lat"</span>))</span>
