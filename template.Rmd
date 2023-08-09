@@ -54,7 +54,6 @@ body{
 }
 </style>
 ```
-
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(shiny)
@@ -154,8 +153,6 @@ sliderInput(
 )
 ```
 
-
-
 ```{r}
 observeEvent(
   input$unit, {
@@ -200,19 +197,21 @@ observeEvent(
 ```
 
 <br>
-<p>Una interfaz web que muestra la distribución y los datos de las estaciones meteorológicas y los monitores de calidad del aire a lo largo del eje carretero Iquitos - Nauta. Los equipos se han instalado en 5 comunidades y recogen diversos datos como humedad, temperatura, precipitaciones, así como partículas PM2,5 y PM10.
-</p>
+
+<p>Una interfaz web que muestra la distribución y los datos de las estaciones meteorológicas y los monitores de calidad del aire a lo largo del eje carretero Iquitos - Nauta. Los equipos se han instalado en 5 comunidades y recogen diversos datos como humedad, temperatura, precipitaciones, así como partículas PM2,5 y PM10.</p>
+
 <br/> <img src="https://raw.githubusercontent.com/healthinnovation/harmonize/main/img/Harmonize_logo.png" width="70%" align="left"/> <br/> <br/> <br/> <br/> <br/> <img src="https://raw.githubusercontent.com/healthinnovation/harmonize/app/icons/cayetano.svg" width="70%"/>
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
+<br> <br> <br> <br> <br> <br>
+
 <center>
-<button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"><a href="#" style='color:white;'>Último registro: 27-07-2023</a>
+
+<button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+
+<a href="#" style='color:white;'>Último registro: 27-07-2023</a>
+
 </button>
+
 </center>
 
 ## Column
