@@ -17,6 +17,7 @@ data/interim/*/*/*.csv
 data/processed/*/*.csv
 data/raw/*/*/*/*.csv
 data/raw/*/*/*.xlsx
+data/raw/cases-report/*.csv
 
 # rsconnect
 rsconnect/
