@@ -1,5 +1,5 @@
-in_path = "data/processed/"
-out_path = "data/shiny"
+in_path = "data/processed"
+out_path = "data/app"
 in_directories = in_path |> 
   fs::dir_ls(recurse = TRUE, type = "file") |> 
   fs::path_dir() |> 
@@ -7,6 +7,8 @@ in_directories = in_path |>
 
 col_types_weather = "DTddddddcddcddddddddddddddddddcc"
 col_types_quality = paste(c("DTccc", rep("d", 37), "cc"), collapse = "")
+
+dataset_stations = vector(mode = "list", length = 2L)
 
 for (i in seq_along(in_directories)) {
   type = fs::path_file(in_directories[i])
@@ -30,10 +32,36 @@ for (i in seq_along(in_directories)) {
       month = lubridate::month(dttm),
       year = lubridate::epiyear(dttm)
     )
-  out_filepath = fs::path(out_path, paste(type, "csv", sep = "."))
-  if (!dir.exists(fs::path_dir(out_filepath))) {
-    dir.create(fs::path_dir(out_filepath), recursive = TRUE)
-  }
-  readr::write_csv(dataset, out_filepath, na = "")
-  print(out_filepath)
+  dataset_stations[[i]] = dataset
 }
+
+weather_long_raw <- dataset_stations[[2]] |> 
+  dplyr::select(
+    ccpp_ubigeo, ccpp_name, day, week, month, year, temp_out, rain, out_humm
+  ) |> 
+  tidyr::pivot_longer(
+    cols = temp_out:out_humm,
+    names_to = "variable",
+    values_to = "value"
+  ) 
+
+weather_long <- weather_long_raw |> 
+  dplyr::group_by(ccpp_ubigeo, ccpp_name, year, month, week, day, variable) |> 
+  dplyr::summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
+
+quality_long_raw <- dataset_stations[[1]] |> 
+  dplyr::select(
+    ccpp_ubigeo, ccpp_name, day, week, month, year, p_2_5_um, p_10_0_um
+  ) |> 
+  tidyr::pivot_longer(
+    cols = p_2_5_um:p_10_0_um,
+    names_to = "variable",
+    values_to = "value"
+  )
+
+quality_long <- quality_long_raw |> 
+  dplyr::group_by(ccpp_ubigeo, ccpp_name, year, month, week, day, variable) |> 
+  dplyr::summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
+
+dataset_app <- dplyr::bind_rows(weather_long, quality_long)
+readr::write_csv(dataset_app, paste(out_path, "dataset.csv", sep = "/"))

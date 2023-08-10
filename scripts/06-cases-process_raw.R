@@ -69,6 +69,4 @@ cases <- cases_raw |>
     disease %in% c("Malaria", "Dengue", "Leptospirosis")
   )
 
-cases |> 
-  dplyr::group_by(ccpp_name, disease) |> 
-  dplyr::count()
+ccpp_10km <- readr::read_csv("data/raw/cases-report/ccpp-10km.csv")

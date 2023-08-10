@@ -67,37 +67,41 @@ library(lubridate)
 ```
 
 ```{r}
-weather <- read_csv(
-  "data/app/weather-stations.csv", 
-  col_types = "DTddddddcddcddddddddddddddddddccDiii"
-)
-
-quality <- read_csv(
-  "data/app/quality-stations.csv",
-  col_types = paste(c("DTccc", rep("d", 37), "ccDiii"), collapse = "")
-)
+# weather <- read_csv(
+#   "data/app/weather-stations.csv", 
+#   col_types = "DTddddddcddcddddddddddddddddddccDiii"
+# )
+# 
+# quality <- read_csv(
+#   "data/app/quality-stations.csv",
+#   col_types = paste(c("DTccc", rep("d", 37), "ccDiii"), collapse = "")
+# )
 ```
 
 ```{r}
-weather_long <- weather |> 
-  pivot_longer(
-    -c(
-      cutoff_date, dttm, ccpp_ubigeo, ccpp_name, day, week, month, year,
-      where(is.character)
-    ),
-    names_to = "variable",
-    values_to = "value"
-  )
+# weather_long <- weather |> 
+#   pivot_longer(
+#     -c(
+#       cutoff_date, dttm, ccpp_ubigeo, ccpp_name, day, week, month, year,
+#       where(is.character)
+#     ),
+#     names_to = "variable",
+#     values_to = "value"
+#   )
+# 
+# quality_long <- quality |> 
+#   pivot_longer(
+#     -c(
+#       cutoff_date, dttm, ccpp_ubigeo, ccpp_name, day, week, month, year,
+#       where(is.character)
+#     ),
+#     names_to = "variable",
+#     values_to = "value"
+#   )
+```
 
-quality_long <- quality |> 
-  pivot_longer(
-    -c(
-      cutoff_date, dttm, ccpp_ubigeo, ccpp_name, day, week, month, year,
-      where(is.character)
-    ),
-    names_to = "variable",
-    values_to = "value"
-  )
+```{r}
+stations <- read_csv("data/app/dataset.csv", col_types = "cciiiDcd")
 ```
 
 ```{r}
@@ -133,67 +137,116 @@ selectInput(
 ```
 
 ```{r out.width=100}
+# selectInput(
+#   inputId = "unit", label = "Unit of time ⌚",
+#   choices = c("Hour", "Day", "Week", "Month", "Year"),
+#   multiple = FALSE
+# )
+```
+
+```{r out.width=100}
 selectInput(
   inputId = "unit", label = "Unit of time ⌚",
-  choices = c("Hour", "Day", "Week", "Month", "Year"),
+  choices = c("Day", "Week", "Month", "Year"),
   multiple = FALSE
 )
 ```
 
 ```{r out.width=100}
+# sliderInput(
+#   inputId = "slider_date", label = "Date range 📆",
+#   min = min(c(min(weather$dttm), min(quality$dttm))),
+#   max = max(c(max(weather$dttm), max(quality$dttm))),
+#   value = c(
+#     min(c(min(weather$dttm), min(quality$dttm))),
+#     max(c(max(weather$dttm), max(quality$dttm)))
+#   ), step = 3600, ticks = FALSE
+# )
+```
+
+```{r out.width=100}
 sliderInput(
   inputId = "slider_date", label = "Date range 📆",
-  min = min(c(min(weather$dttm), min(quality$dttm))),
-  max = max(c(max(weather$dttm), max(quality$dttm))),
+  min = min(stations$day),
+  max = max(stations$day),
   value = c(
-    min(c(min(weather$dttm), min(quality$dttm))),
-    max(c(max(weather$dttm), max(quality$dttm)))
-  ), step = 3600, ticks = FALSE
+    min(stations$day),
+    max(stations$day)
+  ), step = 1, ticks = FALSE
 )
+```
+
+```{r}
+# observeEvent(
+#   input$unit, {
+#     if (input$unit == "Hour") {
+#       range_min = c(min(weather$dttm), min(quality$dttm))
+#       range_max = c(max(weather$dttm), max(quality$dttm))
+#       updateSliderInput(
+#         session, "slider_date", min = min(range_min), max = max(range_max),
+#         value = c(min(range_min), max(range_max)),  step = 3600
+#       )
+#     } else if (input$unit == "Day") {
+#       range_min = c(min(weather$day), min(quality$day))
+#       range_max = c(max(weather$day), max(quality$day))
+#       updateSliderInput(
+#         session, "slider_date", min = min(range_min), max = max(range_max),
+#         value = c(min(range_min), max(range_max)), step = 1
+#       )
+#     } else if (input$unit == "Week") {
+#       range_min = c(min(weather$week), min(quality$week))
+#       range_max = c(max(weather$week), max(quality$week))
+#       updateSliderInput(
+#         session, "slider_date", min = min(range_min), max = max(range_max),
+#         value = c(min(range_min), max(range_max)), step = 1
+#       )
+#     } else if (input$unit == "Month") {
+#       range_min = c(min(weather$month), min(quality$month))
+#       range_max = c(max(weather$month), max(quality$month))
+#       updateSliderInput(
+#         session, "slider_date", min = min(range_min), max = max(range_max),
+#         value = c(min(range_min), max(range_max)), step = 1
+#       )
+#     } else {
+#       range_min = c(min(weather$year), min(quality$year))
+#       range_max = c(max(weather$year), max(quality$year))
+#       updateSliderInput(
+#         session, "slider_date", min = min(range_min), max = max(range_max),
+#         value = c(min(range_min), max(range_max)), step = 1
+#       )
+#     }
+#   }
+# )
 ```
 
 ```{r}
 observeEvent(
   input$unit, {
-    if (input$unit == "Hour") {
-      range_min = c(min(weather$dttm), min(quality$dttm))
-      range_max = c(max(weather$dttm), max(quality$dttm))
+    if (input$unit == "Day") {
       updateSliderInput(
-        session, "slider_date", min = min(range_min), max = max(range_max),
-        value = c(min(range_min), max(range_max)),  step = 3600
-      )
-    } else if (input$unit == "Day") {
-      range_min = c(min(weather$day), min(quality$day))
-      range_max = c(max(weather$day), max(quality$day))
-      updateSliderInput(
-        session, "slider_date", min = min(range_min), max = max(range_max),
-        value = c(min(range_min), max(range_max)), step = 1
+        session, "slider_date", min = min(stations$day), max = max(stations$day),
+        value = c(min(stations$day), max(stations$day)), step = 1
       )
     } else if (input$unit == "Week") {
-      range_min = c(min(weather$week), min(quality$week))
-      range_max = c(max(weather$week), max(quality$week))
       updateSliderInput(
-        session, "slider_date", min = min(range_min), max = max(range_max),
-        value = c(min(range_min), max(range_max)), step = 1
+        session, "slider_date", min = min(stations$week), max = max(stations$week),
+        value = c(min(stations$week), max(stations$week)), step = 1
       )
     } else if (input$unit == "Month") {
-      range_min = c(min(weather$month), min(quality$month))
-      range_max = c(max(weather$month), max(quality$month))
       updateSliderInput(
-        session, "slider_date", min = min(range_min), max = max(range_max),
-        value = c(min(range_min), max(range_max)), step = 1
+        session, "slider_date", min = min(stations$month), max = max(stations$month),
+        value = c(min(stations$month), max(stations$month)), step = 1
       )
     } else {
-      range_min = c(min(weather$year), min(quality$year))
-      range_max = c(max(weather$year), max(quality$year))
       updateSliderInput(
-        session, "slider_date", min = min(range_min), max = max(range_max),
-        value = c(min(range_min), max(range_max)), step = 1
+        session, "slider_date", min = min(stations$year), max = max(stations$year),
+        value = c(min(stations$year), max(stations$year)), step = 1
       )
     }
   }
 )
 ```
+
 
 <p>A web interface that showcases the distribution and data from weather stations and air quality monitors along the Iquitos - Nauta highway axis. The equipment has been installed in 5 communities and collects various data including humidity, temperature, precipitation, as well as PM2.5 and PM10 particles.</p>
 
@@ -283,15 +336,8 @@ plot_line <- function(data, x, y = value, color, title) {
 plot_unit <- function(data, vars, ccpp, unit, color, title, lower, upper) {
   data_filter <- data |> 
     dplyr::filter(variable == vars, ccpp_name == ccpp)
-  if (unit == "Hour") {
-    data_plot <- data_filter |> 
-      filter(between(dttm, lower, upper))
-    plot_line(data = data_plot, x = dttm, y = value, color = color, title = title)
-  } else
   if (unit == "Day") {
     data_plot <- data_filter |> 
-      group_by(day) |> 
-      summarise(value = mean(value, na.rm = TRUE), .groups = "drop") |> 
       filter(between(day, lower, upper)) 
     plot_line(data = data_plot, x = day, y = value, color = color, title = title)
   } else
@@ -335,7 +381,7 @@ renderUI({
     })
   } else {
     plot_unit(
-      weather_long, vars = "temp_out", ccpp = toupper(input$village), 
+      stations, vars = "temp_out", ccpp = toupper(input$village), 
       unit = input$unit, color = "#FF3030", title = "Temperature (˚C)", 
       lower = input$slider_date[1], upper = input$slider_date[2] 
     )
@@ -356,7 +402,7 @@ renderUI({
     })
   } else {
     plot_unit(
-      weather_long, vars = "rain", ccpp = toupper(input$village), 
+      stations, vars = "rain", ccpp = toupper(input$village), 
       unit = input$unit, color = "#1E90FF", title = "Rain (mm)", 
       lower = input$slider_date[1], upper = input$slider_date[2]
     )
@@ -376,7 +422,7 @@ renderUI({
     })
   } else {
     plot_unit(
-      weather_long, vars = "out_humm", ccpp = toupper(input$village), 
+      stations, vars = "out_humm", ccpp = toupper(input$village), 
       unit = input$unit, color = "#87CEEB", title = "Humidity", 
       lower = input$slider_date[1], upper = input$slider_date[2]
     )
@@ -395,7 +441,7 @@ renderUI({
     })
   } else {
     plot_unit(
-      quality_long, vars = "p_2_5_um", ccpp = toupper(input$village), 
+      stations, vars = "p_2_5_um", ccpp = toupper(input$village), 
       unit = input$unit, color = "#FF8247", title = "PM2.5", 
       lower = input$slider_date[1], upper = input$slider_date[2]
     )
@@ -414,7 +460,7 @@ renderUI({
     })
   } else {
     plot_unit(
-      quality_long, vars = "p_10_0_um", ccpp = toupper(input$village), 
+      stations, vars = "p_10_0_um", ccpp = toupper(input$village), 
       unit = input$unit, color = "#3CB371", title = "PM10", 
       lower = input$slider_date[1], upper = input$slider_date[2]
     )
