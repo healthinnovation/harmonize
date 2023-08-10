@@ -66,10 +66,11 @@ cahuide <- st_read("data/processed/kml/cahuide.kml",quiet=T) %>%
 drone_1km <- bind_rows(drone_1km,zungaro,cahuide)
 
 s10_pal <- colorFactor(
-  palette = c("#005378","#1E7DA6","#85BDC1","#F2DDBD"),
+  palette = c("#772E25","#D1776A","#5F9596","#283D3B"),
   domain = areas$hc_group_4
 )
 
+# "#005378" "#006FA0" "#5C99B3" "#9BCFC8" "#F2DDBD"
 map_layers <- function() {
   #number of groups
   k <- c(
@@ -83,10 +84,10 @@ map_layers <- function() {
     addProviderTiles(provider = providers$CartoDB,group = "CartoDB") %>% 
     addProviderTiles(provider = providers$CartoDB.DarkMatter,group = "CartoDB.DarkMatter") %>% 
     addProviderTiles(provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery") %>% 
-    setView(lng = -73.44775,lat = -4.08754,zoom = 10) %>%
+    setView(lng = -73.44775,lat = -4.0,zoom = 11) %>%
     addPulseMarkers(
       data = ccpp,
-      icon = makePulseIcon(color=~s10_pal(hc_group_4), heartbeat = 0.5),
+      icon = makePulseIcon(color=~s10_pal(hc_group_4), heartbeat = 1),
       popup = ~paste0(
         "<center><h3> 🏕️",ccpp$nomcp,"</h3></center>","<hr>",
         "- ⛈️Precipitation: ",round(ccpp$pr_avg,4),"<br>",
