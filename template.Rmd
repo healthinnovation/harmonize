@@ -1,5 +1,5 @@
 ---
-title: "Meteorological station in the Iquitos - Nauta road 🎏"
+title: "Estación meteorológica en la carretera Iquitos - Nauta 🎏"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -64,44 +64,19 @@ library(tidyverse)
 library(pixture)
 library(plotly)
 library(lubridate)
+library(leaflet.extras)
+library(ggthemr)
 ```
 
-```{r}
-# weather <- read_csv(
-#   "data/app/weather-stations.csv", 
-#   col_types = "DTddddddcddcddddddddddddddddddccDiii"
-# )
-# 
-# quality <- read_csv(
-#   "data/app/quality-stations.csv",
-#   col_types = paste(c("DTccc", rep("d", 37), "ccDiii"), collapse = "")
-# )
-```
-
-```{r}
-# weather_long <- weather |> 
-#   pivot_longer(
-#     -c(
-#       cutoff_date, dttm, ccpp_ubigeo, ccpp_name, day, week, month, year,
-#       where(is.character)
-#     ),
-#     names_to = "variable",
-#     values_to = "value"
-#   )
-# 
-# quality_long <- quality |> 
-#   pivot_longer(
-#     -c(
-#       cutoff_date, dttm, ccpp_ubigeo, ccpp_name, day, week, month, year,
-#       where(is.character)
-#     ),
-#     names_to = "variable",
-#     values_to = "value"
-#   )
-```
 
 ```{r}
 stations <- read_csv("data/app/stations.csv", col_types = "cciiiDcd")
+```
+
+```{r}
+diseases <- read_csv("data/app/cases-report.csv") |> rename(
+  variable = disease,
+  ccpp_name = ccpp)
 ```
 
 ```{r}
@@ -127,120 +102,72 @@ pto <- read_sf("data/app/metheorological_station_location.gpkg") |>
 
 ```{r out.width=100}
 selectInput(
-   inputId = "village", label = "Select community 🔎", 
+   inputId = "village", label = "Elija una comunidad 🔎", 
    choices = c(
-       "Choose one" = "", "Quistococha", "12 de Abril", "El Paujil", "San Lucas", 
+       "Elije uno" = "", "Quistococha", "12 de Abril", "El Paujil", "San Lucas", 
      "El Varillal"
    ),
    multiple = FALSE
 )
 ```
 
-```{r out.width=100}
-# selectInput(
-#   inputId = "unit", label = "Unit of time ⌚",
-#   choices = c("Hour", "Day", "Week", "Month", "Year"),
-#   multiple = FALSE
-# )
-```
+
 
 ```{r out.width=100}
 selectInput(
-  inputId = "unit", label = "Unit of time ⌚",
-  choices = c("Day", "Week", "Month", "Year"),
+  inputId = "unit", label = "Unidad de tiempo ⌚",
+  choices = c("Día"="Day", "Semana"="Week", "Mes"="Month","Año" ="Year"),
   multiple = FALSE
 )
 ```
 
-```{r out.width=100}
-# sliderInput(
-#   inputId = "slider_date", label = "Date range 📆",
-#   min = min(c(min(weather$dttm), min(quality$dttm))),
-#   max = max(c(max(weather$dttm), max(quality$dttm))),
-#   value = c(
-#     min(c(min(weather$dttm), min(quality$dttm))),
-#     max(c(max(weather$dttm), max(quality$dttm)))
-#   ), step = 3600, ticks = FALSE
-# )
-```
 
 ```{r out.width=100}
 sliderInput(
-  inputId = "slider_date", label = "Date range 📆",
-  min = min(stations$day),
-  max = max(stations$day),
+  inputId = "slider_date", label = "Rango de dato 📆",
+  min = min(diseases$day),
+  max = max(diseases$day),
   value = c(
-    min(stations$day),
-    max(stations$day)
+    min(diseases$day),
+    max(diseases$day)
   ), step = 1, ticks = FALSE
 )
 ```
 
-```{r}
-# observeEvent(
-#   input$unit, {
-#     if (input$unit == "Hour") {
-#       range_min = c(min(weather$dttm), min(quality$dttm))
-#       range_max = c(max(weather$dttm), max(quality$dttm))
-#       updateSliderInput(
-#         session, "slider_date", min = min(range_min), max = max(range_max),
-#         value = c(min(range_min), max(range_max)),  step = 3600
-#       )
-#     } else if (input$unit == "Day") {
-#       range_min = c(min(weather$day), min(quality$day))
-#       range_max = c(max(weather$day), max(quality$day))
-#       updateSliderInput(
-#         session, "slider_date", min = min(range_min), max = max(range_max),
-#         value = c(min(range_min), max(range_max)), step = 1
-#       )
-#     } else if (input$unit == "Week") {
-#       range_min = c(min(weather$week), min(quality$week))
-#       range_max = c(max(weather$week), max(quality$week))
-#       updateSliderInput(
-#         session, "slider_date", min = min(range_min), max = max(range_max),
-#         value = c(min(range_min), max(range_max)), step = 1
-#       )
-#     } else if (input$unit == "Month") {
-#       range_min = c(min(weather$month), min(quality$month))
-#       range_max = c(max(weather$month), max(quality$month))
-#       updateSliderInput(
-#         session, "slider_date", min = min(range_min), max = max(range_max),
-#         value = c(min(range_min), max(range_max)), step = 1
-#       )
-#     } else {
-#       range_min = c(min(weather$year), min(quality$year))
-#       range_max = c(max(weather$year), max(quality$year))
-#       updateSliderInput(
-#         session, "slider_date", min = min(range_min), max = max(range_max),
-#         value = c(min(range_min), max(range_max)), step = 1
-#       )
-#     }
-#   }
-# )
+
+```{r out.width=100}
+selectInput(
+  inputId = "disease",
+  label = "Elija una enfermedad",
+  choices = c("Malaria","Dengue","Leptospirosis"),
+  multiple = F,
+  selected = "Malaria")
 ```
+
+
 
 ```{r}
 observeEvent(
   input$unit, {
     if (input$unit == "Day") {
       updateSliderInput(
-        session, "slider_date", min = min(stations$day), max = max(stations$day),
-        value = c(min(stations$day), max(stations$day)), step = 1
+        session, "slider_date", min = min(diseases$day), max = max(diseases$day),
+        value = c(min(diseases$day), max(diseases$day)), step = 1
       )
     } else if (input$unit == "Week") {
       updateSliderInput(
-        session, "slider_date", min = min(stations$week), max = max(stations$week),
-        value = c(min(stations$week), max(stations$week)), step = 1
+        session, "slider_date", min = min(diseases$week), max = max(diseases$week),
+        value = c(min(diseases$week), max(diseases$week)), step = 1
       )
     } else if (input$unit == "Month") {
       updateSliderInput(
-        session, "slider_date", min = min(stations$month), max = max(stations$month),
-        value = c(min(stations$month), max(stations$month)), step = 1
+        session, "slider_date", min = min(diseases$month), max = max(diseases$month),
+        value = c(min(diseases$month), max(diseases$month)), step = 1
       )
     } else {
       updateSliderInput(
-        session, "slider_date", min = min(stations$year), max = max(stations$year),
-        value = c(min(stations$year), max(stations$year)), step = 1
+        session, "slider_date", min = min(diseases$year), max = max(diseases$year),
+        value = c(min(diseases$year), max(diseases$year)), step = 1
       )
     }
   }
@@ -248,26 +175,34 @@ observeEvent(
 ```
 
 
-<p>A web interface that showcases the distribution and data from weather stations and air quality monitors along the Iquitos - Nauta highway axis. The equipment has been installed in 5 communities and collects various data including humidity, temperature, precipitation, as well as PM2.5 and PM10 particles.</p>
 
-<br/> <img src="https://raw.githubusercontent.com/healthinnovation/harmonize/main/img/Harmonize_logo.png" width="70%" align="left"/> <br/> <br/> <br/> <br/> <br/> <img src="https://raw.githubusercontent.com/healthinnovation/harmonize/app/icons/cayetano.svg" width="70%"/>
+<br>
+<p>Una interfaz web que muestra la distribución y los datos de las estaciones meteorológicas y los monitores de calidad del aire a lo largo del eje carretero Iquitos - Nauta. Los equipos se han instalado en 5 comunidades y recogen diversos datos como humedad, temperatura, precipitaciones, así como partículas PM2,5 y PM10.
+</p>
+<br/> <center><img src="https://raw.githubusercontent.com/healthinnovation/harmonize/main/img/Harmonize_logo.png" width="70%" align="left"/> </center><br/> <br/> <br/> <br/><center><br/><img src="https://raw.githubusercontent.com/healthinnovation/harmonize/app/icons/cayetano.svg" width="70%"/></center>
+<br>
+<br>
+<center>
+<button type="button" class="btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+<a href="#" style='color:white;'>Último registro: 07-07-2023</a>
+</button>
+</center>
 
 ## Column
 
-###  {data-width="1750"}
+###  {data-width="1185"}
 
 ```{r}
 icon_station = "https://raw.githubusercontent.com/ambarja/utilsUPCH/main/estacion_meteorologica.svg"
 icon_station_v2 = "https://raw.githubusercontent.com/ambarja/utilsUPCH/37eaf7c2fd380449b038a5804955e98cfd1fd7bc/estacion_meteorologica_v2.svg"
 ```
 
+
 ```{r}
 output$map <- renderLeaflet({
   output$map <- renderLeaflet({
     leaflet() |>
-      addProviderTiles(
-        provider = providers$Esri.WorldImagery,group = "Esri.WorldImagery"
-      ) 
+      addTiles()
   })
   observe({
     comunidad <- toupper(input$village)
@@ -275,19 +210,8 @@ output$map <- renderLeaflet({
       region <- sp
       leafletProxy("map") |>
         clearShapes() |>
-        addPolygons(
-          data = region, color = "yellow", fill = NA, weight = 3, opacity = 1
-        ) |>
-        addMarkers(
-          data = pto, 
-          icon = iconList(
-            "Meteorological station" = makeIcon(
-              icon_station_v2, iconWidth = 20, iconHeight = 20
-            )
-          ),
-          popup = pto$clasificacion
-        ) |>
-        setView(lng = -73.39127,lat =-4.03404 ,zoom = 9)
+        addPulseMarkers(data = pto,popup = pto$clasificacion,icon = makePulseIcon(heartbeat = 1,color ='#ff1105')) |> 
+        setView(lng = -73.39127,lat =-4.03404 ,zoom = 10)
     } else {
       estacion <- pto |> filter(nombre %in% comunidad)
       region <- sp |> filter(village %in% comunidad)
@@ -299,18 +223,11 @@ output$map <- renderLeaflet({
         clearMarkers() |>
         addPolygons(
           data = region,
-          color = "yellow",
+          color = "black",
           fill = NA,
           weight = 2,
           opacity = 1) |>
-        addMarkers(
-          data = estacion, icon = iconList(
-            "Meteorological station" = makeIcon(
-              icon_station,iconWidth = 20, iconHeight = 20
-            )
-          ),
-          popup = estacion$clasificacion
-        ) |>
+        addPulseMarkers(data = pto,popup = pto$clasificacion,icon = makePulseIcon(heartbeat = 1,color ='#ff1101')) |> 
         flyTo(lng = lng,lat = lat,zoom = 15)
     }
   })
@@ -318,18 +235,58 @@ output$map <- renderLeaflet({
 leafletOutput("map")
 ```
 
-### 
 
 ```{r}
 plot_line <- function(data, x, y = value, color, title) {
+  ggthemr("dust")
   line_plot <- data |> 
     ggplot(aes(x = {{x}}, y = {{y}})) +
     geom_line(color = color) +
-    labs(y = "", x = "", title = title) +
-    theme_bw()
+    labs(y = "", x = "", title = title) 
   ggplotly(p = line_plot) |> 
     config(displayModeBar = FALSE)
 }
+```
+
+
+###
+
+```{r}
+renderUI({
+  if(input$village == ""){
+    renderPixfigure({
+      pixfigure(portada_url)
+    })
+  } else {
+    plot_unit(
+      diseases, vars = input$disease, ccpp = toupper(input$village), 
+      unit = input$unit, color = "#8C3A33", title = sprintf("Distribución de casos de %s",input$disease), 
+      lower = input$slider_date[1], upper = input$slider_date[2]
+    )
+  }
+})
+# "#0B4E60" "#2D819F" "#5AB7B0" "#F5C690" "#8C3A33"
+```
+
+
+
+### 
+
+```{r}
+renderUI({
+  if(input$village == ""){
+    renderPixfigure({
+      pixfigure(sanlucas_url)
+    })
+  } else {
+    plot_unit(
+      stations, vars = "rain", ccpp = toupper(input$village), 
+      unit = input$unit, color = "#005378", title = "Lluvia (mm)", 
+      lower = input$slider_date[1], upper = input$slider_date[2]
+    )
+  }
+})
+
 ```
 
 ```{r}
@@ -370,7 +327,14 @@ sanlucas_url <- "https://user-images.githubusercontent.com/23284899/241096089-e6
 docedeabril_url <- "https://user-images.githubusercontent.com/23284899/241096093-cc752bb7-9477-4ecc-ba6b-a2823b9bb73a.jpg"
 elvarillal_url <- "https://user-images.githubusercontent.com/23284899/241096098-f3be7565-324c-4114-82e5-cf18075b9305.jpg"
 elpaujil_url <- "https://user-images.githubusercontent.com/23284899/241096092-c70968d2-6b0f-4700-8157-3d59487cd04c.jpg"
+portada_url <- "https://user-images.githubusercontent.com/36087833/259876753-644217fa-b04a-4fe6-bc69-679ac57dd8f2.jpg"
 ```
+
+
+
+## Column {data-width="350"}
+
+### 
 
 ```{r out.width="100%"}
 # Temperature
@@ -382,33 +346,11 @@ renderUI({
   } else {
     plot_unit(
       stations, vars = "temp_out", ccpp = toupper(input$village), 
-      unit = input$unit, color = "#FF3030", title = "Temperature (˚C)", 
+      unit = input$unit, color = "#ACD1C5", title = "Temperatura (˚C)", 
       lower = input$slider_date[1], upper = input$slider_date[2] 
     )
   }
 })
-```
-
-## Column {data-width="350"}
-
-### 
-
-```{r out.width="100%"}
-# Rain
-renderUI({
-  if(input$village == ""){
-    renderPixfigure({
-      pixfigure(sanlucas_url)
-    })
-  } else {
-    plot_unit(
-      stations, vars = "rain", ccpp = toupper(input$village), 
-      unit = input$unit, color = "#1E90FF", title = "Rain (mm)", 
-      lower = input$slider_date[1], upper = input$slider_date[2]
-    )
-  }
-})
-
 ```
 
 ### 
@@ -423,7 +365,7 @@ renderUI({
   } else {
     plot_unit(
       stations, vars = "out_humm", ccpp = toupper(input$village), 
-      unit = input$unit, color = "#87CEEB", title = "Humidity", 
+      unit = input$unit, color = "#006998", title = "Humedad (%)", 
       lower = input$slider_date[1], upper = input$slider_date[2]
     )
   }
@@ -442,7 +384,7 @@ renderUI({
   } else {
     plot_unit(
       stations, vars = "p_2_5_um", ccpp = toupper(input$village), 
-      unit = input$unit, color = "#FF8247", title = "PM2.5", 
+      unit = input$unit, color = "#3788AB", title = "PM2.5 (um3)", 
       lower = input$slider_date[1], upper = input$slider_date[2]
     )
   }
@@ -461,7 +403,7 @@ renderUI({
   } else {
     plot_unit(
       stations, vars = "p_10_0_um", ccpp = toupper(input$village), 
-      unit = input$unit, color = "#3CB371", title = "PM10", 
+      unit = input$unit, color = "#75AEBB", title = "PM10 (um3)", 
       lower = input$slider_date[1], upper = input$slider_date[2]
     )
   }
