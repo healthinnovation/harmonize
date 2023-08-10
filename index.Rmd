@@ -1,5 +1,5 @@
 ---
-title: "Disease mapping on the Iquitos-Nauta road 🦟🛣️"
+title: "Mapeo de enfermedades en la ruta Iqutos - Nauta🦟🛣️"
 output:
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -109,7 +109,7 @@ pal_criadero <- colorFactor(palette = plasma(n = 2,direction = -1),domain = uniq
 ```{r}
 selectInput(
    inputId = "village",
-   label = h5("Selected community 🔎"), 
+   label = h5("Elije una comunidad 🔎"), 
    choices = c("QUISTOCOCHA","12 DE ABRIL","23 DE FEBRERO","LLANCHAMA","EL PAUJIL","SAN CARLOS",
                "SAN LUCAS", "EL VARILLAL","ZUNGAROCOCHA"),
    multiple = FALSE
@@ -131,7 +131,7 @@ selectInput(
 
 Column {data-height=700}
 ---------------------------------------------
-### Maps <i class="fa fa-map" aria-hidden="true"></i> 
+### 
 
 ```{r out.width='100%'}
 
@@ -165,6 +165,11 @@ output$map <- renderLeaflet({
       select(rgb) %>% 
       pull()
     
+    termal_drone <- drones %>% 
+      filter(villages %in% comunidad) %>% 
+      select(termal) %>% 
+      pull()
+    
     criadero <- criadero_b %>% filter(village %in% comunidad)
     cobertura <- cobertura_b %>% filter(village %in% comunidad)
     
@@ -176,6 +181,8 @@ output$map <- renderLeaflet({
         clearMarkers() %>% 
         addTiles() %>% 
         addTiles(urlTemplate = rgb_drone, group = sprintf("%s-rgb",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
+        addTiles(urlTemplate = termal_drone, group = sprintf("%s-térmico",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
+        addTiles(urlTemplate = rgb_drone, group = sprintf("%s-ndvi",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
         addCircleMarkers(
           data = criadero,
           lng = criadero$Longitud,
@@ -189,7 +196,7 @@ output$map <- renderLeaflet({
           lng = criadero$Longitud,
           lat = criadero$Latitud,
           radius = 13,
-          group = "focus-criadero" 
+          group = "focos de criadero" 
         ) %>% 
         addCircleMarkers(
           data = cobertura,
@@ -204,7 +211,7 @@ output$map <- renderLeaflet({
           lng = cobertura$Longitud,
           lat = cobertura$Latitud,
           radius = 13,
-          group = "focus-cobertura" 
+          group = "focos de cobertura" 
         ) %>% 
         setView(lng = lon,lat = lat,zoom = 10) %>%
         addLayersControl(
@@ -212,13 +219,15 @@ output$map <- renderLeaflet({
           baseGroups = c("OpenStreetMap",sprintf("%s-rgb",comunidad)),
           options = layersControlOptions(collapsed = FALSE,title = "TITLE")
         ) %>% 
-        hideGroup(c("criadero","cobertura","focus-criadero","focus-cobertura"))
+        hideGroup(c("criadero","cobertura","focos de criadero","focos de cobertura"))
           
     } else{
       leafletProxy("map") %>% 
         clearMarkers() %>% 
         addTiles() %>% 
-        addTiles(urlTemplate = rgb_drone, group = sprintf("%s-rgb",comunidad),options = providerTileOptions(maxZoom = 22))  %>% 
+        addTiles(urlTemplate = rgb_drone, group = sprintf("%s-rgb",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
+        addTiles(urlTemplate = termal_drone, group = sprintf("%s-térmico",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
+        addTiles(urlTemplate = rgb_drone, group = sprintf("%s-ndvi",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
         addCircleMarkers(
           data = criadero,
           lng = criadero$Longitud,
@@ -237,7 +246,7 @@ output$map <- renderLeaflet({
           lng = criadero$Longitud,
           lat = criadero$Latitud,
           radius = 13,
-          group = "focus-criadero" 
+          group = "focos de criadero" 
         ) %>% 
         addCircleMarkers(
           data = cobertura,
@@ -257,7 +266,7 @@ output$map <- renderLeaflet({
           lng = cobertura$Longitud,
           lat = cobertura$Latitud,
           radius = 13,
-          group = "focus-cobertura" 
+          group = "focos de cobertura" 
         ) %>% 
         flyToBounds(
           lng1 = region[["xmin"]],
@@ -267,11 +276,11 @@ output$map <- renderLeaflet({
           options = list(zoom = 10)
           ) %>% 
       addLayersControl(
-         overlayGroups = c("criadero","cobertura", "focus-criadero","focus-cobertura"),
-          baseGroups = c("OpenStreetMap",sprintf("%s-rgb",comunidad)),
+         overlayGroups = c("criadero","cobertura", "focos de criadero","focos de cobertura"),
+          baseGroups = c("OpenStreetMap",sprintf("%s-rgb",comunidad), sprintf("%s-térmico",comunidad),sprintf("%s-ndvi",comunidad)),
           options = layersControlOptions(collapsed = FALSE)
       ) %>% 
-        hideGroup(c("criadero","cobertura","focus-criadero","focus-cobertura"))}  
+        hideGroup(c("criadero","cobertura","focos de criadero","focos de cobertura"))}  
   })
 })
 

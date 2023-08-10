@@ -3,12 +3,15 @@ library(tidyverse)
 library(sf)
 ee_Initialize(drive = T)
 
-hex <- st_read("data/flying_mission_1km2.gpkg") %>% 
-  sf_as_ee()
+hex <- st_read("data/flying_mission_1km2.gpkg") %>%
+  st_geometry() |> 
+  sf_as_ee() |> 
+  ee$FeatureCollection$geometry()
 
 
 sunga <- st_read("data/zunga.kml") %>% 
   sf_as_ee()
+
 quisto <- st_read("data/quistococha.kml") %>% 
   sf_as_ee()
 
@@ -31,10 +34,15 @@ piloto <- ee$ImageCollection(
   san_carlos,san_lucas,varillal_01,zungaro
   ))
 
+termal <- ee$ImageCollection("users/bryanfernandezc/harmonize-thermal-may2023")$
+  map(function(x){x$clip(hex)}) |> 
+  Map$addLayers()
+
 rgb <- Map$addLayers(piloto)
 new_links <- tibble(
   villages = rgb$rgee$name,
-  rgb = rgb$rgee$tokens
+  rgb = rgb$rgee$tokens,
+  termal = termal$rgee$tokens[1:9]
   ) %>%
   mutate(villages = str_to_upper(case_when(
     villages == "12_abril_rgb" ~ "12 abril",
