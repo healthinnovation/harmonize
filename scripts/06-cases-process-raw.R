@@ -36,6 +36,7 @@ cases <- cases_raw |>
       grepl("ABRIL", ccpp_name) ~ "12 DE ABRIL",
       grepl("QUISTO", ccpp_name) ~ "QUISTOCOCHA",
       grepl("PAUJIL", ccpp_name) ~ "EL PAUJIL",
+      ccpp_name == "VARILLAL" ~ "EL VARILLAL",
       TRUE ~ as.character(ccpp_name)
     )
   ) |> 
@@ -69,4 +70,32 @@ cases <- cases_raw |>
     disease %in% c("Malaria", "Dengue", "Leptospirosis")
   )
 
-ccpp_10km <- readr::read_csv("data/raw/cases-report/ccpp-10km.csv")
+ccpp_10km <- readr::read_csv(
+  "data/raw/cases-report/ccpp-10km.csv", 
+  col_types = "ccccccddcdddddddddddddddddddddddddddd",
+  col_select = c(ubigeocp, nomcp)
+)
+
+cases_report = cases |> 
+  dplyr::left_join(ccpp_10km, by = c("ccpp_name" = "nomcp")) |> 
+  dplyr::rename(ccpp_ubigeo = ubigeocp)
+
+cases_report_daily = cases_report |> 
+  dplyr::count(
+    ccpp_ubigeo, ccpp = ccpp_name, disease, year, month, week, day, 
+    name = "value"
+  )
+
+cases_report_complete = cases_report_daily |> 
+  dplyr::group_by(ccpp_ubigeo, ccpp, disease) |> 
+  tidyr::complete(
+    day = seq(min(cases_report_daily$day), max(cases_report_daily$day), by = "day"),
+    fill = list(value = 0)
+  ) |> 
+  dplyr::mutate(
+    week = lubridate::epiweek(day),
+    month = lubridate::month(day),
+    year = lubridate::epiyear(day)
+  )
+
+readr::write_csv(cases_report_complete, "data/app/cases-report.csv")

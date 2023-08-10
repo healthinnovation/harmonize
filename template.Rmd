@@ -101,7 +101,7 @@ library(lubridate)
 ```
 
 ```{r}
-stations <- read_csv("data/app/dataset.csv", col_types = "cciiiDcd")
+stations <- read_csv("data/app/stations.csv", col_types = "cciiiDcd")
 ```
 
 ```{r}

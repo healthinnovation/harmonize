@@ -64,4 +64,4 @@ quality_long <- quality_long_raw |>
   dplyr::summarise(value = mean(value, na.rm = TRUE), .groups = "drop")
 
 dataset_app <- dplyr::bind_rows(weather_long, quality_long)
-readr::write_csv(dataset_app, paste(out_path, "dataset.csv", sep = "/"))
+readr::write_csv(dataset_app, paste(out_path, "stations.csv", sep = "/"))
