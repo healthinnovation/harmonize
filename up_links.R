@@ -1,7 +1,7 @@
 library(rgee)
 library(tidyverse)
 library(sf)
-ee_Initialize(drive = T)
+ee_Initialize(user = "geografo.pe@gmail.com",drive = T)
 
 hex <- st_read("data/flying_mission_1km2.gpkg") %>%
   st_geometry() |> 
