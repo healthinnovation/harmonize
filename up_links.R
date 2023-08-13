@@ -8,7 +8,6 @@ hex <- st_read("data/flying_mission_1km2.gpkg") %>%
   sf_as_ee() |> 
   ee$FeatureCollection$geometry()
 
-
 sunga <- st_read("data/zunga.kml") %>% 
   sf_as_ee()
 
