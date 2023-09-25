@@ -1,0 +1,10 @@
+name: droneapp
+title:
+username: innovalab-upch
+account: innovalab-upch
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9641382
+bundleId: 7724188
+url: https://innovalab-upch.shinyapps.io/droneapp/
+version: 1
