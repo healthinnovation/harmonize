@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;600&display=swap');
+
+.navbar{
+  position: fixed !important;
+  top: 0;
+  width: 100%;
+}
+
+.navbar-logo {
+    max-height: 40px;
+    width: auto;
+    padding-right: 19px;
+}
+
+.navbar-dark {
+    background-color: #000000;
+}
+
+
+.card {
+  background-color:#0909096b;
+}
+.navbar-dark .navbar-nav .nav-link{
+    color: #ffffff;
+}
+
+.navbar-dark .navbar-nav .show>.nav-link, .navbar-dark .navbar-nav .active>.nav-link, .navbar-dark .navbar-nav .nav-link.active {
+    color: #ffffff;
+}
+
+.navbar-dark .navbar-brand {
+    color: #ffffff;
+}
+
+
+h5, .h5 {
+    font-size: 1.2rem;
+}
+.navbar #quarto-search.type-overlay .aa-Autocomplete svg.aa-SubmitIcon {
+    width: 23px;
+    height: 23px;
+    color: #ffffff;
+    opacity: 1;
+}
