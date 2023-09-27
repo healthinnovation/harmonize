@@ -90,13 +90,7 @@ cobertura_b <-  db_inventario %>% filter(type == "cobertura") %>%
 criadero_b <- db_inventario %>% filter(type == "criadero") %>% 
   drop_na(village)
 
-drones <- read_csv("data/drones.csv") %>% 
-  mutate(villages = case_when(
-    villages == "12 ABRIL" ~ "12 DE ABRIL",
-    villages == "PAUJIL" ~ "EL PAUJIL",
-    villages == "VARILLAL" ~"EL VARILLAL",
-    TRUE ~ villages
-  ))
+drones <- read_csv("data/drones.csv")
 
 pal_cobertura <- colorFactor(palette = mako(n = 4,direction = -1),domain = unique(cobertura_b$class))
 pal_criadero <- colorFactor(palette = plasma(n = 2,direction = -1),domain = unique(criadero_b$class))
@@ -110,8 +104,7 @@ pal_criadero <- colorFactor(palette = plasma(n = 2,direction = -1),domain = uniq
 selectInput(
    inputId = "village",
    label = h5("Elije una comunidad 🔎"), 
-   choices = c("QUISTOCOCHA","12 DE ABRIL","23 DE FEBRERO","LLANCHAMA","EL PAUJIL","SAN CARLOS",
-               "SAN LUCAS", "EL VARILLAL","ZUNGAROCOCHA"),
+   choices = unique(drones$villages) |> sort(),
    multiple = FALSE
    )
 ```
@@ -145,16 +138,10 @@ output$map <- renderLeaflet({
   
 
     bbox <- st_read("data/flying_mission_1km2.gpkg") %>% 
+      distinct(village,.keep_all = T) |> 
       st_transform(crs = 4326) %>% 
       rename(name = village) %>% 
-      mutate(
-        name = str_to_upper(name),
-        name = case_when(
-          name == "12 ABRIL" ~ "12 DE ABRIL",
-          name == "PAUJIL" ~ "EL PAUJIL",
-          name == "EL VARRILLAL" ~ "EL VARILLAL",
-          TRUE ~ name)
-        ) 
+      mutate(name = str_to_upper(name)) 
 
   observe({
     comunidad <- input$village

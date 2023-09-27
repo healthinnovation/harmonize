@@ -1,7 +1,7 @@
 library(rgee)
 library(tidyverse)
 library(sf)
-ee_Initialize(user = "geografo.pe@gmail.com",drive = T)
+ee_Initialize(user = "barja.geografo.pe",drive = T)
 
 hex <- st_read("data/flying_mission_1km2.gpkg") %>%
   st_geometry() |> 
@@ -30,26 +30,27 @@ zungaro <- ee$Image("users/bryanfernandezc/harmonize_piloto/zungarococha")$
 
 piloto <- ee$ImageCollection(
   list(doce_abril,veinte_3,llanchama,paujil,quistococha,
-  san_carlos,san_lucas,varillal_01,zungaro
+  san_carlos,san_lucas,varillal_01,zungaro,cahuide
   ))
 
 termal <- ee$ImageCollection("users/bryanfernandezc/harmonize-thermal-may2023")$
   map(function(x){x$clip(hex)}) |> 
   Map$addLayers()
 
+
 rgb <- Map$addLayers(piloto)
 new_links <- tibble(
   villages = rgb$rgee$name,
   rgb = rgb$rgee$tokens,
-  termal = termal$rgee$tokens[1:9]
+  termal = termal$rgee$tokens[c(1:3,6:11,14)]
   ) %>%
   mutate(villages = str_to_upper(case_when(
-    villages == "12_abril_rgb" ~ "12 abril",
+    villages == "12_abril_rgb" ~ "12 de abril",
     villages == "23_febrero_marzo" ~ "23 de febrero",
     villages == "llanchama_marzo_2023" ~ "llanchama",
     villages == "san_carlos" ~ "san carlos",
     villages == "san_lucas" ~ "san lucas",
-    villages == "varillal_zona_01" ~ "varillal",
+    villages == "varillal_zona_01" ~ "el varillal",
     TRUE ~ villages)
   ))
 
