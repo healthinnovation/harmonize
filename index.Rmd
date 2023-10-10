@@ -14,6 +14,8 @@ output:
     lib_dir: "lib"
 runtime: shiny
 ---
+
+```{=html}
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap');
 
@@ -68,7 +70,7 @@ body{
 }
 
 </style>
-
+```
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(leaflet)
@@ -96,10 +98,8 @@ pal_cobertura <- colorFactor(palette = mako(n = 4,direction = -1),domain = uniqu
 pal_criadero <- colorFactor(palette = plasma(n = 2,direction = -1),domain = unique(criadero_b$class))
 ```
 
-
-{.sidebar}
------------------------------------------------
-
+##  {.sidebar}
+<center>
 ```{r}
 selectInput(
    inputId = "village",
@@ -109,21 +109,11 @@ selectInput(
    )
 ```
 
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<img src='https://raw.githubusercontent.com/healthinnovation/harmonize/main/img/Harmonize_logo.png' width='70%' align='left'>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<img src='https://raw.githubusercontent.com/healthinnovation/harmonize/app/icons/cayetano.svg' width='70%'>
+<br/> <br/> <br/> <br/> <br/> <img src="https://raw.githubusercontent.com/healthinnovation/harmonize/main/img/Harmonize_logo.png" width="70%" align="center"/> <br/> <br/> <br/><img src="https://raw.githubusercontent.com/healthinnovation/harmonize/app/icons/cayetano.svg" width="70%"/>
+</center>
 
-Column {data-height=700}
----------------------------------------------
+## Column {data-height="700"}
+
 ### 
 
 ```{r out.width='100%'}
