@@ -3,38 +3,58 @@ library(sf)
 library(rgee)
 library(innovar)
 ee_Initialize(user = "geografo.pe@gmail.com")
-cp <- st_read("../raw_data/villages.gpkg",layer = "cp_5km") %>%
+
+# 1. Reading spatial data -------------------------------------------------
+road_path <- "../data/raw/iquitos-nauta-road-mtc.gpkg"
+cp_path <- "../data/raw/villages_loreto_inei_2017.gpkg"
+
+# 2. Geoprocessing with spatial data --------------------------------------
+
+road <- st_read(road_path) %>% 
+  st_transform(crs = 32718) %>% 
+  st_buffer(dist = 10*1000) %>% 
+  st_transform(crs = 4326)
+
+cp <- st_read(cp_path) %>%
   select(IDCCPP_17,NOMCCPP_17) %>% 
   rename(
     codigo = IDCCPP_17,
     village = NOMCCPP_17
   )
 
-cp_ee <- cp %>% 
-  st_transform(32718) %>%
-  st_buffer(dist = 5000) %>%
+cp_in_road <- st_intersection(cp,road)
+
+cp_in_road_ee <- cp_in_road %>% 
   st_transform(4326) %>%
   sf_as_ee()
 
 # Precipiation -----------------
 
-pp_2021 <- get_climate(
-  from = "2021-01-01",
-  to = "2021-12-31",
-  by = "year",
-  band = "pr",
-  fun = "mean",
-  region = cp_ee) %>% 
-  select(codigo,pr2021)
+db_pp <- ee$ImageCollection("IDAHO_EPSCOR/TERRACLIMATE")$
+  select("pr")$filter(ee$Filter$calendarRange(2021,2021,'year'))$
+  sum()
 
-pp_2010 <- get_climate(
-  from = "2010-01-01",
-  to = "2010-12-31",
-  by = "year",
-  band = "pr",
-  fun = "mean",
-  region = cp_ee) %>% 
-  select(codigo,pr2010)
+pp_2021 <- ee_extract(
+  x = db_pp,
+  y = cp_in_road_ee,
+  fun = ee$Reducer$mean(),
+  scale = 4638.3)
+
+
+db_pp <- ee$ImageCollection("IDAHO_EPSCOR/TERRACLIMATE")$
+  select("pr")$filter(ee$Filter$calendarRange(2021,2021,'year'))$
+  sum()
+
+pp_2021 <- ee_extract(
+  x = db_pp,
+  y = cp_in_road_ee,
+  fun = ee$Reducer$mean(),
+  scale = 4638.3)
+
+
+
+
+pp_2010 <- 
 
 pp_total<- pp_2021 %>% 
   left_join(pp_2010,by = "codigo") %>% 
@@ -50,7 +70,7 @@ ro_2021 <- get_climate(
   by = "year",
   band = "ro",
   fun = "mean",
-  region = cp_ee) %>% 
+  region = cp_in_road_ee) %>% 
   select(codigo,ro2021)
 
 ro_2010 <- get_climate(
@@ -59,7 +79,7 @@ ro_2010 <- get_climate(
   by = "year",
   band = "ro",
   fun = "mean",
-  region = cp_ee) %>% 
+  region = cp_in_road_ee) %>% 
   select(codigo,ro2010)
 
 ro_total <- ro_2021 %>% 
@@ -76,7 +96,7 @@ soil_2021 <- get_climate(
   by = "year",
   band = "soil",
   fun = "mean",
-  region = cp_ee) %>% 
+  region = cp_in_road_ee) %>% 
   select(codigo,soil2021)
 
 soil_2010 <- get_climate(
@@ -85,7 +105,7 @@ soil_2010 <- get_climate(
   by = "year",
   band = "soil",
   fun = "mean",
-  region = cp_ee) %>% 
+  region = cp_in_road_ee) %>% 
   select(codigo,soil2010)
 
 soil_total <- soil_2021 %>% 
@@ -96,13 +116,24 @@ rm(soil_2021)
 rm(soil_2010)
 
 # Tmmx -------------------------
+
+
+db <- ee$ImageCollection("IDAHO_EPSCOR/TERRACLIMATE")$
+  select(c("tmmx"))$
+  filterDate("2021-01-01","2021-12-31")$
+  toBands()$
+  multiply(0.1)
+
+test <- ee_extract(x = db,y = cp_in_road_ee,fun = ee$Reducer$mean(),scale = 4638.3)
+
+
 tmax_2021 <- get_climate(
   from = "2021-01-01",
   to = "2021-12-31",
   by = "year",
   band = "tmmx",
-  fun = "mean",
-  region = cp_ee) %>% 
+  fun = "max",
+  region = cp_in_road_ee) %>% 
   select(codigo,tmmx2021)
 
 tmax_2010 <- get_climate(
@@ -111,7 +142,7 @@ tmax_2010 <- get_climate(
   by = "year",
   band = "tmmx",
   fun = "mean",
-  region = cp_ee) %>% 
+  region = cp_in_road_ee) %>% 
   select(codigo,tmmx2010)
 
 tmax_total <- tmax_2021 %>% 
