@@ -92,8 +92,7 @@ cobertura_b <-  db_inventario %>% filter(type == "cobertura") %>%
 criadero_b <- db_inventario %>% filter(type == "criadero") %>% 
   drop_na(village)
 
-drones <- read_csv("data/drones.csv")
-
+drones <- read_csv("data/drones.csv") %>% mutate(villages = str_to_upper(villages))
 pal_cobertura <- colorFactor(palette = mako(n = 4,direction = -1),domain = unique(cobertura_b$class))
 pal_criadero <- colorFactor(palette = plasma(n = 2,direction = -1),domain = unique(criadero_b$class))
 ```
@@ -127,8 +126,7 @@ output$map <- renderLeaflet({
   })
   
 
-    bbox <- st_read("data/flying_mission_1km2.gpkg") %>% 
-      distinct(village,.keep_all = T) |> 
+    bbox <- st_read("data/community_hexagons_of_1km2.gpkg") %>% 
       st_transform(crs = 4326) %>% 
       rename(name = village) %>% 
       mutate(name = str_to_upper(name)) 
@@ -142,9 +140,9 @@ output$map <- renderLeaflet({
       select(rgb) %>% 
       pull()
     
-    termal_drone <- drones %>% 
+    thermal_drone <- drones %>% 
       filter(villages %in% comunidad) %>% 
-      select(termal) %>% 
+      select(thermal) %>% 
       pull()
     
     criadero <- criadero_b %>% filter(village %in% comunidad)
@@ -158,7 +156,7 @@ output$map <- renderLeaflet({
         clearMarkers() %>% 
         addTiles() %>% 
         addTiles(urlTemplate = rgb_drone, group = sprintf("%s-rgb",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
-        addTiles(urlTemplate = termal_drone, group = sprintf("%s-térmico",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
+        addTiles(urlTemplate = thermal_drone, group = sprintf("%s-térmico",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
         addCircleMarkers(
           data = criadero,
           lng = criadero$Longitud,
@@ -202,7 +200,7 @@ output$map <- renderLeaflet({
         clearMarkers() %>% 
         addTiles() %>% 
         addTiles(urlTemplate = rgb_drone, group = sprintf("%s-rgb",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
-        addTiles(urlTemplate = termal_drone, group = sprintf("%s-térmico",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
+        addTiles(urlTemplate = thermal_drone, group = sprintf("%s-térmico",comunidad),options = providerTileOptions(maxZoom = 22)) %>% 
         addCircleMarkers(
           data = criadero,
           lng = criadero$Longitud,
