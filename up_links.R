@@ -1,7 +1,8 @@
 library(rgee)
 library(tidyverse)
 library(sf)
-ee_Initialize(user = "barja.geografo.pe",drive = T)
+library(cptcity)
+ee_Initialize(user = "geografo.pe@gmail.com",drive = T)
 
 # 1. Reading community hexagons -------------------------------------------
 
